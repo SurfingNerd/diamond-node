@@ -801,7 +801,7 @@ impl HoneyBadgerBFT {
         let steps = match self.hbbft_state.try_write_for(Duration::from_millis(10)) {
             Some(mut hbbft_state_lock) => hbbft_state_lock.replay_cached_messages(client.clone()),
             None => {
-                trace!(target: "engine", "could not acquire write lock for replaying cached messages, stepping back..",);
+                debug!(target: "engine", "could not acquire write lock for replaying cached messages, stepping back..",);
                 return None;
             }
         };
@@ -1438,7 +1438,7 @@ impl Engine<EthereumMachine> for HoneyBadgerBFT {
     }
 
     fn use_block_author(&self) -> bool {
-        false
+        true
     }
 
     fn on_before_transactions(&self, block: &mut ExecutedBlock) -> Result<(), Error> {
@@ -1506,7 +1506,7 @@ impl Engine<EthereumMachine> for HoneyBadgerBFT {
 
     /// Allow mutating the header during seal generation.
     fn on_seal_block(&self, block: &mut ExecutedBlock) -> Result<(), Error> {
-        let random_numbers = self.random_numbers.read();
+       let random_numbers = self.random_numbers.read();
         match random_numbers.get(&block.header.number()) {
             None => {
                 warn!("No rng value available for header.");
