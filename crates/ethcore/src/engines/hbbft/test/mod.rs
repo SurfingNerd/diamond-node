@@ -252,8 +252,10 @@ fn test_moc_to_first_validator() {
     // Create staking address
     let _staker_1 = create_staker(&mut moc, &transactor, &validator_1, transaction_funds);
 
+    validator_1.announce_availability().unwrap();
+
     // Wait for moc keygen phase to finish
-    moc.create_some_transaction(Some(&transactor));
+    // moc.create_some_transaction(Some(&transactor));
     moc.create_some_transaction(Some(&transactor));
     //moc.create_some_transaction(Some(&transactor));
 

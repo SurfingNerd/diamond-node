@@ -1,3 +1,7 @@
+use crate::{engines::hbbft::contracts::validator_set::send_tx_announce_availability};
+
+use types::transaction::Error;
+
 use super::create_transactions::{create_call, create_transaction, create_transfer};
 use client::{
     traits::{Balance, StateOrBlock},
@@ -134,6 +138,16 @@ impl HbbftTestClient {
         other
             .miner
             .import_external_transactions(&*self.client, transactions);
+    }
+
+    /// announces the availability of this node.
+    pub fn announce_availability(&self) -> Result<(), Error> {
+
+        return send_tx_announce_availability(self.client.as_ref(), &self.address());
+        
+        // self.miner
+        //     .import_claimed_local_transaction(self.client.as_ref(), transaction.into(), false)
+        //     .unwrap();
     }
 }
 
