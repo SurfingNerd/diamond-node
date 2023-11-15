@@ -1467,6 +1467,7 @@ dependencies = [
  "serde_derive",
  "serde_json",
  "slab 0.2.0",
+ "stats",
  "tempdir",
  "tiny-keccak 1.5.0",
 ]

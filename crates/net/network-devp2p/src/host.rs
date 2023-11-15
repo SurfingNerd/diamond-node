@@ -19,6 +19,7 @@ use ethereum_types::H256;
 use hash::keccak;
 use mio::{deprecated::EventLoop, tcp::*, udp::*, *};
 use rlp::{Encodable, RlpStream};
+use stats::{PrometheusMetrics, PrometheusRegistry};
 use std::{
     cmp::{max, min},
     collections::{HashMap, HashSet},
@@ -1453,6 +1454,10 @@ impl IoHandler<NetworkIoMessage> for Host {
             _ => warn!("Unexpected stream update"),
         }
     }
+}
+
+impl PrometheusMetrics for Host {
+    fn prometheus_metrics(&self, registry: &mut PrometheusRegistry) {}
 }
 
 fn save_key(path: &Path, key: &Secret) {
