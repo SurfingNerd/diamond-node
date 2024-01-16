@@ -651,7 +651,7 @@ impl Miner {
                     ref offend_threshold,
                 } if &took > offend_threshold => {
                     senders_to_penalize.insert(sender);
-                    debug!(target: "miner", "Detected heavy transaction ({} ms). Penalizing sender.", took_ms(&took));
+                    info!(target: "miner", "Detected heavy transaction ({} ms). Penalizing sender.", took_ms(&took));
                 }
                 _ => {}
             }
@@ -1238,8 +1238,14 @@ impl miner::MinerService for Miner {
         // note: you may want to use `import_claimed_local_transaction` instead of this one.
 
         trace!(target: "own_tx", "Importing transaction: {:?}", pending);
+        //self.nonce_cache
 
-        let client = self.pool_client(chain);
+        
+        let chain = chain.chain_info();
+        let cache = CachedNonceClient::new(chain, &self.nonce_cache);
+
+        //cache.account_nonce(address)
+
         let imported = self
             .transaction_queue
             .import(client, vec![pool::verifier::Transaction::Local(pending)])
