@@ -551,6 +551,7 @@ pub trait BlockChainClient:
 /// Gas limit, gas price, or nonce can be set explicitly, e.g. to create service
 /// transactions with zero gas price, or sequences of transactions with consecutive nonces.
 /// Added for AuRa needs.
+#[derive(Debug)] 
 pub struct TransactionRequest {
     /// Transaction action
     pub action: Action,
