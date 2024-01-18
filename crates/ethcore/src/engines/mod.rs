@@ -26,6 +26,7 @@ mod validator_set;
 
 pub mod block_reward;
 pub mod signer;
+mod service_transaction_manager;
 
 pub use self::{
     authority_round::AuthorityRound,
