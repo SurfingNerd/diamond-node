@@ -8,6 +8,8 @@ use ethereum_types::{Address, U256};
 use std::{collections::BTreeMap, net::SocketAddr, str::FromStr};
 use types::{ids::BlockId, transaction::Error};
 
+use crate::engines::service_transaction_manager::ServiceTransactionManager;
+
 use_contract!(
     validator_set_hbbft,
     "res/contracts/validator_set_hbbft.json"
@@ -161,6 +163,7 @@ pub fn set_validator_internet_address(
 pub fn send_tx_announce_availability(
     full_client: &dyn BlockChainClient,
     address: &Address,
+    service_transaction_manager: &mut ServiceTransactionManager
 ) -> Result<(), Error> {
     // chain.latest_nonce(address)
     // we need to get the real latest nonce.
