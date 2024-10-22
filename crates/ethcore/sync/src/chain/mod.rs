@@ -1275,7 +1275,10 @@ impl ChainSync {
                         // todo: temporary disabled peer deactivation.
                         // we are just returning now.
                         // will we see this problem in sequences now, but less disconnects ?
-                        // io.disable_peer(peer_id);
+
+                        io.disconnect_peer(peer_id);
+                        self.deactivate_peer(io, peer_id);
+                         
                         // self.deactivate_peer(io, peer_id);
 
                         return;
