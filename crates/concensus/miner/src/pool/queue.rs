@@ -24,12 +24,13 @@ use std::{
         atomic::{self, AtomicUsize},
         Arc,
     },
+    time::{Duration, Instant},
 };
 
 use self::scoring::ScoringEvent;
 use ethereum_types::{Address, H256, U256};
 use parking_lot::RwLock;
-use txpool::{self, Verifier};
+use txpool::{self, VerifiedTransaction, Verifier};
 use types::transaction;
 
 use pool::{
@@ -115,6 +116,16 @@ impl CachedPending {
     /// Remove cached pending set.
     pub fn clear(&mut self) {
         self.pending = None;
+    }
+
+    /// removes service transactions that did not get included yet.
+    pub fn clear_invalid_service_transactions(&mut self) {
+        // TODO: find better strategy.
+        // atm, we delete all service transaction here.
+
+        if let Some(pending) = self.pending.as_mut() {
+            pending.retain(|tx| !tx.has_zero_gas_price());
+        }
     }
 
     /// Returns cached pending set (if any) if it's valid.
