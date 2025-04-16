@@ -1053,8 +1053,8 @@ mod tests {
         Account, Args, ArgsError, Config, Footprint, Ipc, Metrics, Mining, Misc, Network,
         Operating, Rpc, SecretStore, Snapshots, Ws,
     };
-    use crate::NODE_SOFTWARE_NAME;
     use clap::ErrorKind as ClapErrorKind;
+    use parity_version::NODE_SOFTWARE_NAME;
     use toml;
 
     #[test]

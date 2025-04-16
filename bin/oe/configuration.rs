@@ -1268,6 +1268,7 @@ mod tests {
     use dir::Directories;
     use ethcore::{client::VMType, miner::MinerOptions};
     use parity_rpc::NetworkSettings;
+    use parity_version::NODE_SOFTWARE_NAME;
     use tempdir::TempDir;
 
     use crate::network::{AllowIP, IpFilter};

@@ -135,9 +135,6 @@ pub use parity_rpc::PubSubSession;
 #[global_allocator]
 static A: System = System;
 
-/// The name of the node software.
-pub const NODE_SOFTWARE_NAME: &str = "diamond-node";
-
 fn print_hash_of(maybe_file: Option<String>) -> Result<String, String> {
     if let Some(file) = maybe_file {
         let mut f =
