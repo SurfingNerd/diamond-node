@@ -18,8 +18,9 @@ use parity_crypto::{
     publickey::{KeyPair, Secret},
     Keccak256,
 };
-use parity_wordlist;
 
+use crate::parity_wordlist;
+use crate::WordlistError;
 /// Simple brainwallet.
 pub struct Brain(String);
 
@@ -28,7 +29,7 @@ impl Brain {
         Brain(s)
     }
 
-    pub fn validate_phrase(phrase: &str, expected_words: usize) -> Result<(), ::WordlistError> {
+    pub fn validate_phrase(phrase: &str, expected_words: usize) -> Result<(), WordlistError> {
         parity_wordlist::validate_phrase(phrase, expected_words)
     }
 
@@ -57,7 +58,7 @@ impl Brain {
 
 #[cfg(test)]
 mod tests {
-    use Brain;
+    use crate::Brain;
 
     #[test]
     fn test_brain() {

@@ -21,19 +21,19 @@ use std::{
 
 use crate::access_list::AccessList;
 use bytes::Bytes;
-use error::TrapKind;
+use crate::error::TrapKind;
 use ethereum_types::{Address, H256, U256};
 use hash::keccak;
-use CallType;
-use ContractCreateResult;
-use CreateContractAddress;
-use EnvInfo;
-use Ext;
-use GasLeft;
-use MessageCallResult;
-use Result;
-use ReturnData;
-use Schedule;
+use crate::CallType;
+use crate::ContractCreateResult;
+use crate::CreateContractAddress;
+use crate::EnvInfo;
+use crate::Ext;
+use crate::GasLeft;
+use crate::MessageCallResult;
+use crate::Result;
+use crate::ReturnData;
+use crate::Schedule;
 
 pub struct FakeLogEntry {
     pub topics: Vec<H256>,

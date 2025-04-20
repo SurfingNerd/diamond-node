@@ -15,15 +15,19 @@
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
 use ansi_term::Colour;
-use host::Host;
+
 use io::*;
-use network::{
+
+
+use crate::network::{
     ConnectionFilter, Error, NetworkConfiguration, NetworkContext, NetworkIoMessage,
     NetworkProtocolHandler, NonReservedPeerMode, PeerId, ProtocolId,
 };
 use parking_lot::RwLock;
 use stats::{PrometheusMetrics, PrometheusRegistry};
 use std::{net::SocketAddr, ops::RangeInclusive, sync::Arc, time::Duration};
+
+use crate::host::Host;
 
 struct HostHandler {
     public_url: RwLock<Option<String>>,

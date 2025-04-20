@@ -19,7 +19,7 @@
 #![allow(deprecated)]
 
 use crypto;
-use io::IoError;
+use crate::io::IoError;
 use libc::{EMFILE, ENFILE};
 use rlp;
 use snappy;

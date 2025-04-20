@@ -24,7 +24,7 @@ use std::collections::{
 use ethereum_types::{Address, H256};
 use types::BlockNumber;
 
-use engines::validator_set::SimpleList;
+use crate::engines::validator_set::SimpleList;
 
 /// Error indicating unknown validator.
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]

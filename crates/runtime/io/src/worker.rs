@@ -16,7 +16,7 @@
 
 use deque;
 use futures::future::{self, Loop};
-use service_mio::{HandlerId, IoChannel, IoContext};
+use crate::service_mio::{HandlerId, IoChannel, IoContext};
 use std::{
     sync::{
         atomic::{AtomicBool, Ordering as AtomicOrdering},
@@ -25,8 +25,8 @@ use std::{
     thread::{self, JoinHandle},
 };
 use tokio::{self};
-use IoHandler;
-use LOCAL_STACK_SIZE;
+use crate::IoHandler;
+use crate::LOCAL_STACK_SIZE;
 
 use parking_lot::{Condvar, Mutex};
 

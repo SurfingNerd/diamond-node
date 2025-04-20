@@ -17,7 +17,7 @@
 use crypto::publickey::{Generator, KeyPair, Random, Secret};
 use ethereum_types::H256;
 use hash::keccak;
-use mio::{deprecated::EventLoop, tcp::*, udp::*, *};
+use crate::mio::{deprecated::EventLoop, tcp::*, udp::*, *};
 use rlp::{Encodable, RlpStream};
 use std::{
     cmp::{max, min},
@@ -35,20 +35,20 @@ use std::{
     time::Duration,
 };
 
-use discovery::{Discovery, NodeEntry, TableUpdates, MAX_DATAGRAM_SIZE};
-use io::*;
-use ip_utils::{map_external_address, select_public_address};
+use crate::discovery::{Discovery, NodeEntry, TableUpdates, MAX_DATAGRAM_SIZE};
+use crate::io::*;
+use crate::ip_utils::{map_external_address, select_public_address};
 use network::{
     client_version::ClientVersion, ConnectionDirection, ConnectionFilter, DisconnectReason, Error,
     ErrorKind, NetworkConfiguration, NetworkContext as NetworkContextTrait, NetworkIoMessage,
     NetworkProtocolHandler, NonReservedPeerMode, PacketId, PeerId, ProtocolId, SessionInfo,
 };
-use node_table::*;
+use crate::node_table::*;
 use parity_path::restrict_permissions_owner;
 use parking_lot::{Mutex, RwLock};
-use session::{Session, SessionData};
+use crate::session::{Session, SessionData};
 use stats::{PrometheusMetrics, PrometheusRegistry};
-use PROTOCOL_VERSION;
+use crate::PROTOCOL_VERSION;
 
 type Slab<T> = ::slab::Slab<T, usize>;
 
@@ -183,7 +183,7 @@ impl<'s> NetworkContext<'s> {
 }
 
 impl<'s> NetworkContextTrait for NetworkContext<'s> {
-    fn send(&self, peer: PeerId, packet_id: PacketId, data: Vec<u8>) -> Result<(), Error> {
+    fn send(&self, peer: PeerId, packet_id: PacketId, data: Vec<u8>) -> std::result::Result<(), network::Error> {
         self.send_protocol(self.protocol, peer, packet_id, data)
     }
 
@@ -193,7 +193,7 @@ impl<'s> NetworkContextTrait for NetworkContext<'s> {
         peer: PeerId,
         packet_id: PacketId,
         data: Vec<u8>,
-    ) -> Result<(), Error> {
+    ) -> std::result::Result<(), Error> {
         let session = self.resolve_session(peer);
         if let Some(session) = session {
             session
@@ -219,7 +219,7 @@ impl<'s> NetworkContextTrait for NetworkContext<'s> {
         Ok(())
     }
 
-    fn respond(&self, packet_id: PacketId, data: Vec<u8>) -> Result<(), Error> {
+    fn respond(&self, packet_id: PacketId, data: Vec<u8>) -> std::result::Result<(), network::Error> {
         assert!(
             self.session.is_some(),
             "Respond called without network context"
@@ -246,7 +246,7 @@ impl<'s> NetworkContextTrait for NetworkContext<'s> {
         self.session.as_ref().map_or(false, |s| s.lock().expired())
     }
 
-    fn register_timer(&self, token: TimerToken, delay: Duration) -> Result<(), Error> {
+    fn register_timer(&self, token: TimerToken, delay: Duration) -> std::result::Result<(), Error> {
         self.io
             .message(NetworkIoMessage::AddTimer {
                 token,
@@ -1366,7 +1366,7 @@ impl IoHandler<NetworkIoMessage> for Host {
         }
     }
 
-    fn message(&self, io: &IoContext<NetworkIoMessage>, message: &NetworkIoMessage) {
+    fn message(&self, io: &::io::IoContext<NetworkIoMessage>, message: &NetworkIoMessage) {
         if self.stopping.load(AtomicOrdering::SeqCst) {
             return;
         }

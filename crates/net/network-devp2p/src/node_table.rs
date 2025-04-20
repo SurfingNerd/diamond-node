@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
-use discovery::{NodeEntry, TableUpdates};
+use crate::discovery::{NodeEntry, TableUpdates};
 use ethereum_types::H512;
-use ip_utils::*;
+use crate::ip_utils::*;
 use network::{AllowIP, Error, ErrorKind, IpFilter};
 use rand::seq::SliceRandom;
 use rlp::{DecoderError, Rlp, RlpStream};

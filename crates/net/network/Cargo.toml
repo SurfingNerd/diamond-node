@@ -5,7 +5,7 @@ license = "GPL-3.0"
 name = "ethcore-network"
 version = "1.12.0"
 authors = ["Parity Technologies <admin@parity.io>"]
-edition = "2015"
+edition = "2024"
 
 [dependencies]
 error-chain = { version = "0.12", default-features = false }

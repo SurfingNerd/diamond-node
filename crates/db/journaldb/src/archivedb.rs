@@ -31,8 +31,8 @@ use ethereum_types::H256;
 use hash_db::HashDB;
 use keccak_hasher::KeccakHasher;
 use rlp::{decode, encode};
-use traits::JournalDB;
-use DB_PREFIX_LEN;
+use crate::traits::JournalDB;
+use crate::DB_PREFIX_LEN;
 
 /// Implementation of the `HashDB` trait for a disk-backed database with a memory overlay
 /// and latent-removal semantics.
@@ -56,7 +56,7 @@ impl ArchiveDB {
             .expect("Low-level database error.")
             .map(|val| decode::<u64>(&val).expect("decoding db value failed"));
         ArchiveDB {
-            overlay: ::new_memory_db(),
+            overlay: crate::new_memory_db(),
             backing,
             latest_era,
             column,
@@ -97,7 +97,7 @@ impl HashDB<KeccakHasher, DBValue> for ArchiveDB {
     }
 }
 
-impl ::traits::KeyedHashDB for ArchiveDB {
+impl crate::traits::KeyedHashDB for ArchiveDB {
     fn keys(&self) -> HashMap<H256, i32> {
         let mut ret: HashMap<H256, i32> = self
             .backing

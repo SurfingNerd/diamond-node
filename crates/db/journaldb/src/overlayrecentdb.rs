@@ -33,7 +33,7 @@ use memory_db::*;
 use parity_util_mem::MallocSizeOf;
 use parking_lot::RwLock;
 use rlp::{decode, encode, Decodable, DecoderError, Encodable, Rlp, RlpStream};
-use util::DatabaseKey;
+use crate::util::DatabaseKey;
 
 /// Implementation of the `JournalDB` trait for a disk-backed database with a memory overlay
 /// and, possibly, latent-removal semantics.
@@ -156,7 +156,7 @@ impl OverlayRecentDB {
     pub fn new(backing: Arc<dyn KeyValueDB>, col: Option<u32>) -> OverlayRecentDB {
         let journal_overlay = Arc::new(RwLock::new(OverlayRecentDB::read_overlay(&*backing, col)));
         OverlayRecentDB {
-            transaction_overlay: ::new_memory_db(),
+            transaction_overlay: crate::new_memory_db(),
             backing: backing,
             journal_overlay: journal_overlay,
             column: col,
@@ -182,7 +182,7 @@ impl OverlayRecentDB {
 
     fn read_overlay(db: &dyn KeyValueDB, col: Option<u32>) -> JournalOverlay {
         let mut journal = HashMap::new();
-        let mut overlay = ::new_memory_db();
+        let mut overlay = crate::new_memory_db();
         let mut count = 0;
         let mut latest_era = None;
         let mut earliest_era = None;
@@ -256,7 +256,7 @@ fn to_short_key(key: &H256) -> H256 {
     k
 }
 
-impl ::traits::KeyedHashDB for OverlayRecentDB {
+impl crate::traits::KeyedHashDB for OverlayRecentDB {
     fn keys(&self) -> HashMap<H256, i32> {
         let mut ret: HashMap<H256, i32> = self
             .backing

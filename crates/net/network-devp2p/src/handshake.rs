@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
-use connection::Connection;
+use crate::connection::Connection;
 use crypto::publickey::{ecdh, ecies, recover, sign, Generator, KeyPair, Public, Random, Secret};
 use ethereum_types::{H256, H520};
-use host::HostInfo;
+use crate::host::HostInfo;
 use io::{IoContext, StreamToken};
 use mio::tcp::*;
 use network::{Error, ErrorKind};
-use node_table::NodeId;
+use crate::node_table::NodeId;
 use parity_bytes::Bytes;
 use rand::{random, Rng};
 use rlp::{Rlp, RlpStream};

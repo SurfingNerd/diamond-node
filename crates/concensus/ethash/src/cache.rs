@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
-use compute::Light;
+use crate::compute::Light;
 use either::Either;
-use keccak::{keccak_512, H256};
+use crate::keccak::{keccak_512, H256};
 use memmap::MmapMut;
 use parking_lot::Mutex;
-use seed_compute::SeedHashCompute;
+use crate::seed_compute::SeedHashCompute;
 
-use shared::{epoch, get_cache_size, to_hex, Node, ETHASH_CACHE_ROUNDS, NODE_BYTES};
+use crate::shared::{epoch, get_cache_size, to_hex, Node, ETHASH_CACHE_ROUNDS, NODE_BYTES};
 
 use std::{
     borrow::Cow,

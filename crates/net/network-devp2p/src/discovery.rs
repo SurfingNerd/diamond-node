@@ -19,7 +19,7 @@ use ethereum_types::{H256, H520};
 use hash::keccak;
 use lru_cache::LruCache;
 use network::{Error, ErrorKind, IpFilter};
-use node_table::*;
+use crate::node_table::*;
 use parity_bytes::Bytes;
 use rlp::{Rlp, RlpStream};
 use std::{
@@ -29,7 +29,7 @@ use std::{
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 
-use PROTOCOL_VERSION;
+use crate::PROTOCOL_VERSION;
 
 const ADDRESS_BYTES_SIZE: usize = 32; // Size of address type in bytes.
 const ADDRESS_BITS: usize = 8 * ADDRESS_BYTES_SIZE; // Denoted by n in [Kademlia].
@@ -982,7 +982,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use node_table::{Node, NodeEndpoint, NodeId};
+    use crate::node_table::{Node, NodeEndpoint, NodeId};
     use std::net::{IpAddr, Ipv4Addr};
 
     use crypto::publickey::{Generator, Random};

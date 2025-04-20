@@ -22,11 +22,11 @@ use std::{
     time::{Duration, Instant},
 };
 
-use connection::{Connection, EncryptedConnection, Packet, MAX_PAYLOAD_SIZE};
+use crate::connection::{Connection, EncryptedConnection, Packet, MAX_PAYLOAD_SIZE};
 use ethereum_types::H256;
-use handshake::Handshake;
-use host::*;
-use io::{IoContext, StreamToken};
+use crate::handshake::Handshake;
+use crate::host::*;
+use crate::io::{IoContext, StreamToken};
 use mio::{
     deprecated::{EventLoop, Handler},
     tcp::*,
@@ -36,7 +36,7 @@ use network::{
     client_version::ClientVersion, DisconnectReason, Error, ErrorKind, PeerCapabilityInfo,
     ProtocolId, SessionCapabilityInfo, SessionInfo,
 };
-use node_table::NodeId;
+use crate::node_table::NodeId;
 use rlp::{Rlp, RlpStream, EMPTY_LIST_RLP};
 use snappy;
 

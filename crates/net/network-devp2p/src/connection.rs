@@ -20,9 +20,9 @@ use crypto::{
     publickey::Secret,
 };
 use ethereum_types::{H128, H256, H512};
-use handshake::Handshake;
+use crate::handshake::Handshake;
 use hash::{keccak, write_keccak};
-use io::{IoContext, StreamToken};
+use crate::io::{IoContext, StreamToken};
 use mio::{
     deprecated::{EventLoop, Handler, TryRead, TryWrite},
     tcp::*,
@@ -586,7 +586,7 @@ mod tests {
     };
 
     use super::*;
-    use io::*;
+    use crate::io::*;
     use mio::Ready;
     use parity_bytes::Bytes;
 

@@ -34,8 +34,8 @@ use memory_db::*;
 use parity_util_mem::MallocSizeOf;
 use parking_lot::RwLock;
 use rlp::{decode, encode};
-use util::{DatabaseKey, DatabaseValueRef, DatabaseValueView};
-use DB_PREFIX_LEN;
+use crate::util::{DatabaseKey, DatabaseValueRef, DatabaseValueView};
+use crate::DB_PREFIX_LEN;
 
 #[derive(Debug, Clone, PartialEq, Eq, MallocSizeOf)]
 struct RefInfo {
@@ -119,7 +119,7 @@ impl EarlyMergeDB {
         let (latest_era, refs) = EarlyMergeDB::read_refs(&*backing, col);
         let refs = Some(Arc::new(RwLock::new(refs)));
         EarlyMergeDB {
-            overlay: ::new_memory_db(),
+            overlay: crate::new_memory_db(),
             backing: backing,
             refs: refs,
             latest_era: latest_era,
@@ -363,7 +363,7 @@ impl HashDB<KeccakHasher, DBValue> for EarlyMergeDB {
     }
 }
 
-impl ::traits::KeyedHashDB for EarlyMergeDB {
+impl crate::traits::KeyedHashDB for EarlyMergeDB {
     fn keys(&self) -> HashMap<H256, i32> {
         let mut ret: HashMap<H256, i32> = self
             .backing

@@ -29,11 +29,11 @@ use ethereum_types::H256;
 use hash_db::HashDB;
 use keccak_hasher::KeccakHasher;
 use memory_db::MemoryDB;
-use overlaydb::OverlayDB;
+use crate::overlaydb::OverlayDB;
 use parity_util_mem::{allocators::new_malloc_size_ops, MallocSizeOf};
 use rlp::{decode, encode};
-use util::{DatabaseKey, DatabaseValueRef, DatabaseValueView};
-use DB_PREFIX_LEN;
+use crate::util::{DatabaseKey, DatabaseValueRef, DatabaseValueView};
+use crate::DB_PREFIX_LEN;
 
 /// Implementation of the `HashDB` trait for a disk-backed database with a memory overlay
 /// and latent-removal semantics.
@@ -104,7 +104,7 @@ impl HashDB<KeccakHasher, DBValue> for RefCountedDB {
     }
 }
 
-impl ::traits::KeyedHashDB for RefCountedDB {
+impl crate::traits::KeyedHashDB for RefCountedDB {
     fn keys(&self) -> HashMap<H256, i32> {
         self.forward.keys()
     }

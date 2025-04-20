@@ -17,7 +17,7 @@
 //! Evm input params.
 use super::access_list::AccessList;
 use bytes::Bytes;
-use call_type::CallType;
+use crate::call_type::CallType;
 use ethereum_types::{Address, H256, U256};
 use ethjson;
 use hash::{keccak, KECCAK_EMPTY};

@@ -20,7 +20,7 @@
 
 use igd::{search_gateway_from_timeout, PortMappingProtocol};
 use ipnetwork::IpNetwork;
-use node_table::NodeEndpoint;
+use crate::node_table::NodeEndpoint;
 use std::{
     io,
     net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, SocketAddrV4, SocketAddrV6},
