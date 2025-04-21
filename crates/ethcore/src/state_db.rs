@@ -32,7 +32,7 @@ use memory_cache::MemoryLruCache;
 use parking_lot::Mutex;
 use types::BlockNumber;
 
-use state::{self, Account};
+use crate::state::{self, Account};
 
 const STATE_CACHE_BLOCKS: usize = 12;
 
@@ -447,7 +447,7 @@ unsafe impl Sync for SyncAccount {}
 mod tests {
     use ethereum_types::{Address, H256, U256};
     use kvdb::DBTransaction;
-    use state::{Account, Backend};
+    use crate::state::{Account, Backend};
     use test_helpers::get_temp_state_db;
 
     #[test]

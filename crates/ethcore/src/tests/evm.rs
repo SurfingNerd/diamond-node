@@ -17,9 +17,9 @@
 //! Tests of EVM integration with transaction execution.
 
 use evm::{Factory, VMType};
-use executive::Executive;
+use crate::executive::Executive;
 use hash::keccak;
-use state::Substate;
+use crate::state::Substate;
 use std::sync::Arc;
 use test_helpers::get_temp_state_with_factory;
 use trace::{NoopTracer, NoopVMTracer};

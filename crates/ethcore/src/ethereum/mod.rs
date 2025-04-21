@@ -370,7 +370,7 @@ pub fn new_kovan_wasm_test_machine() -> EthereumMachine {
 mod tests {
     use super::*;
     use ethereum_types::{H160, H256, U256};
-    use state::*;
+    use crate::state::*;
     use std::str::FromStr;
     use test_helpers::get_temp_state_db;
     use types::{view, views::BlockView};

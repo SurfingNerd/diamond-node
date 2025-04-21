@@ -55,7 +55,7 @@ use client::{
     SealedBlockImporter,
 };
 use error::Error;
-use state::StateInfo;
+use crate::state::StateInfo;
 
 /// Provides methods to verify incoming external transactions
 pub trait TransactionVerifierClient: Send + Sync

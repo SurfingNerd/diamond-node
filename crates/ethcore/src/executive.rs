@@ -18,16 +18,16 @@
 use bytes::{Bytes, BytesRef};
 use ethereum_types::{Address, H256, U256, U512};
 use evm::{CallType, FinalizationResult, Finalize};
-use executed::ExecutionError;
-pub use executed::{Executed, ExecutionResult};
-use externalities::*;
-use factory::VmFactory;
+use crate::executed::ExecutionError;
+pub use crate::executed::{Executed, ExecutionResult};
+use crate::externalities::*;
+use crate::factory::VmFactory;
 use hash::keccak;
 use machine::EthereumMachine as Machine;
-use state::{Backend as StateBackend, CleanupMode, State, Substate};
+use crate::state::{Backend as StateBackend, CleanupMode, State, Substate};
 use std::{cmp, convert::TryFrom, sync::Arc};
 use trace::{self, Tracer, VMTracer};
-use transaction_ext::Transaction;
+use crate::transaction_ext::Transaction;
 use types::transaction::{Action, SignedTransaction, TypedTransaction};
 use vm::{
     self, AccessList, ActionParams, ActionValue, CleanDustMode, CreateContractAddress, EnvInfo,
@@ -1633,7 +1633,7 @@ mod tests {
     use evm::{Factory, VMType};
     use machine::EthereumMachine;
     use rustc_hex::FromHex;
-    use state::{CleanupMode, Substate};
+    use crate::state::{CleanupMode, Substate};
     use std::{str::FromStr, sync::Arc};
     use test_helpers::{get_temp_state, get_temp_state_with_factory};
     use trace::{

@@ -18,7 +18,7 @@ use super::test_common::*;
 use client::EvmTestClient;
 use ethjson;
 use std::path::Path;
-use transaction_ext::Transaction;
+use crate::transaction_ext::Transaction;
 use types::{
     header::Header,
     transaction::{TypedTransaction, UnverifiedTransaction},

@@ -3730,7 +3730,7 @@ mod tests {
 
     #[test]
     fn should_rewrite_bytecode_according_to_transitions() {
-        use state::StateInfo;
+        use crate::state::StateInfo;
 
         let tap = Arc::new(AccountProvider::transient_provider());
         let addr1 = tap.insert_account(keccak("1").into(), &"1".into()).unwrap();

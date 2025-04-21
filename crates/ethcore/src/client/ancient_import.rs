@@ -55,7 +55,7 @@ impl AncientVerifier {
     ) -> Result<(), ::error::Error> {
         // perform verification
         let verified = if let Some(ref cur_verifier) = *self.cur_verifier.read() {
-            match rng.gen::<f32>() <= HEAVY_VERIFY_RATE {
+            match rng.r#gen::<f32>() <= HEAVY_VERIFY_RATE {
                 true => cur_verifier.verify_heavy(header)?,
                 false => cur_verifier.verify_light(header)?,
             }

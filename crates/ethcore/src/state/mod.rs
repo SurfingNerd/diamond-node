@@ -27,15 +27,15 @@ use std::{
     sync::Arc,
 };
 
-use error::Error;
-use executed::{Executed, ExecutionError};
-use executive::{Executive, TransactOptions};
-use factory::{Factories, VmFactory};
-use machine::EthereumMachine as Machine;
-use pod_account::*;
-use pod_state::{self, PodState};
-use state_db::StateDB;
-use trace::{self, FlatTrace, VMTrace};
+use crate::error::Error;
+use crate::executed::{Executed, ExecutionError};
+use crate::executive::{Executive, TransactOptions};
+use crate::factory::{Factories, VmFactory};
+use crate::machine::EthereumMachine as Machine;
+use crate::pod_account::*;
+use crate::pod_state::{self, PodState};
+use crate::state_db::StateDB;
+use crate::trace::{self, FlatTrace, VMTrace};
 use types::{
     basic_account::BasicAccount,
     receipt::{LegacyReceipt, TransactionOutcome, TypedReceipt},
@@ -3357,7 +3357,7 @@ mod tests {
 
     #[test]
     fn should_trace_diff_suicided_accounts() {
-        use pod_account;
+        use crate::pod_account;
 
         let a = Address::from_low_u64_be(10);
         let db = get_temp_state_db();
@@ -3396,7 +3396,7 @@ mod tests {
 
     #[test]
     fn should_trace_diff_unmodified_storage() {
-        use pod_account;
+        use crate::pod_account;
 
         let a = Address::from_low_u64_be(10);
         let db = get_temp_state_db();

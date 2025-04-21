@@ -33,7 +33,7 @@ use keccak_hasher::KeccakHasher;
 use kvdb::DBValue;
 use memory_db::MemoryDB;
 use parking_lot::Mutex;
-use state::Account;
+use crate::state::Account;
 
 /// State backend. See module docs for more details.
 pub trait Backend: Send {

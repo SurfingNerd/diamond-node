@@ -36,7 +36,7 @@ use miner::{
     self,
     cache::{Cache, CachedClient},
 };
-use transaction_ext::Transaction;
+use crate::transaction_ext::Transaction;
 
 pub(crate) struct CachedNonceClient<'a, C: 'a> {
     cached_client: CachedClient<'a, C, Address, U256>,

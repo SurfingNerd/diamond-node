@@ -19,7 +19,7 @@
 use ethereum_types::{Address, H256};
 use ethjson;
 use itertools::Itertools;
-use pod_account::{self, PodAccount};
+use crate::pod_account::{self, PodAccount};
 use std::{collections::BTreeMap, fmt};
 use triehash::sec_trie_root;
 use types::state_diff::StateDiff;
@@ -104,7 +104,7 @@ pub fn diff_pod(pre: &PodState, post: &PodState) -> StateDiff {
 mod test {
     use super::PodState;
     use ethereum_types::H160;
-    use pod_account::PodAccount;
+    use crate::pod_account::PodAccount;
     use std::collections::BTreeMap;
     use types::{account_diff::*, state_diff::*};
 

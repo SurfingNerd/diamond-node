@@ -49,10 +49,10 @@ use client::{
 };
 use engines::{EngineSigner, Seal};
 use ethjson::crypto::publickey::{Public, Signature};
-use factory::Factories;
+use crate::factory::Factories;
 use miner::Miner;
 use spec::Spec;
-use state::*;
+use crate::state::*;
 use state_db::StateDB;
 use verification::queue::kind::blocks::Unverified;
 

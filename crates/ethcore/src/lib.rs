@@ -149,5 +149,5 @@ pub mod test_helpers;
 mod tests;
 
 pub use evm::CreateContractAddress;
-pub use executive::contract_address;
+pub use crate::executive::contract_address;
 pub use trie::TrieSpec;

@@ -38,8 +38,8 @@ use ethereum_types::{Address, Bloom, H256, U256};
 
 use engines::EthEngine;
 use error::{BlockError, Error};
-use factory::Factories;
-use state::State;
+use crate::factory::Factories;
+use crate::state::State;
 use state_db::StateDB;
 use trace::Tracing;
 use triehash::ordered_trie_root;
@@ -630,7 +630,7 @@ mod tests {
     use engines::EthEngine;
     use error::Error;
     use ethereum_types::Address;
-    use factory::Factories;
+    use crate::factory::Factories;
     use state_db::StateDB;
     use std::sync::Arc;
     use test_helpers::get_temp_state_db;

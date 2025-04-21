@@ -33,7 +33,7 @@ use unexpected::{Mismatch, OutOfBounds};
 
 use engines::EngineError;
 
-pub use executed::{CallError, ExecutionError};
+pub use crate::executed::{CallError, ExecutionError};
 
 #[derive(Debug, PartialEq, Clone, Eq)]
 /// Errors concerning block processing.

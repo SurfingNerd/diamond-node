@@ -28,13 +28,13 @@ use client::{
 use crypto::publickey::KeyPair;
 use ethereum;
 use ethereum_types::{Address, U256};
-use executive::{Executive, TransactOptions};
+use crate::executive::{Executive, TransactOptions};
 use hash::keccak;
 use io::IoChannel;
 use miner::{Miner, MinerService, PendingOrdering};
 use rustc_hex::ToHex;
 use spec::Spec;
-use state::{self, CleanupMode, State, StateInfo};
+use crate::state::{self, CleanupMode, State, StateInfo};
 use tempdir::TempDir;
 use test_helpers::{
     self, generate_dummy_client, generate_dummy_client_with_data, get_bad_state_dummy_block,

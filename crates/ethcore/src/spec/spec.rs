@@ -40,13 +40,13 @@ use engines::{
     InstantSealParams, NullEngine, DEFAULT_BLOCKHASH_CONTRACT,
 };
 use error::Error;
-use executive::Executive;
-use factory::Factories;
+use crate::executive::Executive;
+use crate::factory::Factories;
 use machine::EthereumMachine;
 use maplit::btreeset;
 use pod_state::PodState;
 use spec::{seal::Generic as GenericSeal, Genesis};
-use state::{backend::Basic as BasicBackend, Backend, State, Substate};
+use crate::state::{backend::Basic as BasicBackend, Backend, State, Substate};
 use trace::{NoopTracer, NoopVMTracer};
 
 pub use ethash::OptimizeFor;
@@ -1237,7 +1237,7 @@ impl Spec {
 mod tests {
     use super::*;
     use ethereum_types::{H160, H256};
-    use state::State;
+    use crate::state::State;
     use std::str::FromStr;
     use tempdir::TempDir;
     use test_helpers::get_temp_state_db;

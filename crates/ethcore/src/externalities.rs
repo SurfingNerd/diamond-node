@@ -17,9 +17,9 @@
 //! Transaction Execution environment.
 use bytes::Bytes;
 use ethereum_types::{Address, BigEndianHash, H256, U256};
-use executive::*;
+use crate::executive::*;
 use machine::EthereumMachine as Machine;
-use state::{Backend as StateBackend, CleanupMode, State, Substate};
+use crate::state::{Backend as StateBackend, CleanupMode, State, Substate};
 use std::{cmp, sync::Arc};
 use trace::{Tracer, VMTracer};
 use types::transaction::UNSIGNED_SENDER;
@@ -563,7 +563,7 @@ mod tests {
     use super::*;
     use ethereum_types::{Address, U256};
     use evm::{CallType, EnvInfo, Ext};
-    use state::{State, Substate};
+    use crate::state::{State, Substate};
     use std::str::FromStr;
     use test_helpers::get_temp_state;
     use trace::{NoopTracer, NoopVMTracer};
