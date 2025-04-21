@@ -21,7 +21,7 @@ extern crate rpassword;
 extern crate parity_rpc as rpc;
 extern crate parity_rpc_client as client;
 
-use client::signer_client::SignerRpc;
+use crate::client::signer_client::SignerRpc;
 use ethereum_types::U256;
 use rpc::signer::ConfirmationRequest;
 use std::{

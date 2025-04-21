@@ -17,9 +17,9 @@
 //! A queue of blocks. Sits between network or other I/O and the `BlockChain`.
 //! Sorts them ready for blockchain insertion.
 
-use blockchain::BlockChain;
-use client::ClientIoMessage;
-use engines::EthEngine;
+use crate::blockchain::BlockChain;
+use crate::client::ClientIoMessage;
+use crate::engines::EthEngine;
 use error::{BlockError, Error, ErrorKind, ImportErrorKind};
 use ethereum_types::{H256, U256};
 use io::*;

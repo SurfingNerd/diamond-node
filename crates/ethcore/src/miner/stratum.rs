@@ -22,7 +22,7 @@ use std::{
     sync::{Arc, Weak},
 };
 
-use client::{Client, ImportSealedBlock};
+use crate::client::{Client, ImportSealedBlock};
 use ethash::{self, SeedHashCompute};
 #[cfg(feature = "work-notify")]
 use ethcore_miner::work_notify::NotifyWork;

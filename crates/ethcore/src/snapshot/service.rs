@@ -34,9 +34,9 @@ use super::{
     MAX_CHUNK_SIZE,
 };
 
-use blockchain::{BlockChain, BlockChainDB, BlockChainDBHandler};
-use client::{BlockChainClient, BlockInfo, ChainInfo, Client, ClientIoMessage};
-use engines::EthEngine;
+use crate::blockchain::{BlockChain, BlockChainDB, BlockChainDBHandler};
+use crate::client::{BlockChainClient, BlockInfo, ChainInfo, Client, ClientIoMessage};
+use crate::engines::EthEngine;
 use error::{Error, ErrorKind as SnapshotErrorKind};
 use hash::keccak;
 use snapshot::Error as SnapshotError;
@@ -1011,7 +1011,7 @@ impl Drop for Service {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use client::ClientIoMessage;
+    use crate::client::ClientIoMessage;
     use io::IoService;
     use journaldb::Algorithm;
     use snapshot::{ManifestData, RestorationStatus, SnapshotService};

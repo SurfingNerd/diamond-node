@@ -15,7 +15,7 @@
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
 use super::test_common::*;
-use client::EvmTestClient;
+use crate::client::EvmTestClient;
 use ethjson;
 use std::path::Path;
 use crate::transaction_ext::Transaction;

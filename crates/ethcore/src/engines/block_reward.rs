@@ -21,10 +21,10 @@ use ethabi::{self, ParamType};
 use ethereum_types::{Address, H160, U256};
 
 use super::{SystemOrCodeCall, SystemOrCodeCallKind};
-use block::ExecutedBlock;
+use crate::block::ExecutedBlock;
 use error::Error;
 use hash::keccak;
-use machine::Machine;
+use crate::machine::Machine;
 use std::sync::Arc;
 use trace::{self, ExecutiveTracer, Tracer, Tracing};
 use types::BlockNumber;
@@ -195,13 +195,13 @@ pub fn apply_block_rewards<M: Machine>(
 
 #[cfg(test)]
 mod test {
-    use client::PrepareOpenBlock;
+    use crate::client::PrepareOpenBlock;
     use ethereum_types::{H160, U256};
     use spec::Spec;
     use test_helpers::generate_dummy_client_with_spec;
 
     use super::{BlockRewardContract, RewardKind};
-    use engines::SystemOrCodeCallKind;
+    use crate::engines::SystemOrCodeCallKind;
     use std::str::FromStr;
 
     #[test]

@@ -1,5 +1,5 @@
-use client::traits::EngineClient;
-use engines::signer::EngineSigner;
+use crate::client::traits::EngineClient;
+use crate::engines::signer::EngineSigner;
 use ethcore_miner::pool::{PoolVerifiedTransaction, ScoredTransaction};
 use ethereum_types::U256;
 use ethjson::spec::hbbft::HbbftNetworkFork;

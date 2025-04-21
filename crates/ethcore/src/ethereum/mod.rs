@@ -29,7 +29,7 @@ pub mod public_key_to_address;
 pub use self::{denominations::*, ethash::Ethash};
 
 use super::spec::*;
-use machine::EthereumMachine;
+use crate::machine::EthereumMachine;
 
 /// Load chain spec from `SpecParams` and JSON.
 pub fn load<'a, T: Into<Option<SpecParams<'a>>>>(params: T, b: &[u8]) -> Spec {

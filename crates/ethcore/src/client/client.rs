@@ -27,7 +27,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-use blockchain::{
+use crate::blockchain::{
     BlockChain, BlockChainDB, BlockNumberKey, BlockProvider, BlockReceipts, ExtrasInsert,
     ImportRoute, TransactionAddress, TreeRoute,
 };
@@ -60,9 +60,9 @@ use types::{
 use vm::{EnvInfo, LastHashes};
 
 use ansi_term::Colour;
-use block::{enact_verified, ClosedBlock, Drain, LockedBlock, OpenBlock, SealedBlock};
+use crate::block::{enact_verified, ClosedBlock, Drain, LockedBlock, OpenBlock, SealedBlock};
 use call_contract::RegistryInfo;
-use client::{
+use crate::client::{
     ancient_import::AncientVerifier,
     bad_blocks,
     traits::{ChainSyncing, ForceUpdateSealing, ReservedPeersManagement, TransactionRequest},
@@ -74,7 +74,7 @@ use client::{
     ScheduleInfo, SealedBlockImporter, StateClient, StateInfo, StateOrBlock, TraceFilter, TraceId,
     TransactionId, TransactionInfo, UncleId,
 };
-use engines::{
+use crate::engines::{
     epoch::PendingTransition, EngineError, EpochTransition, EthEngine, ForkChoice, SealingState,
     MAX_UNCLE_AGE,
 };
@@ -102,7 +102,7 @@ use verification::{
 };
 use vm::Schedule;
 // re-export
-pub use blockchain::CacheSize as BlockChainCacheSize;
+pub use crate::blockchain::CacheSize as BlockChainCacheSize;
 use db::{keys::BlockDetails, Readable, Writable};
 pub use reth_util::queue::ExecutionQueue;
 pub use types::{block_status::BlockStatus, blockchain_info::BlockChainInfo};
@@ -854,7 +854,7 @@ impl Importer {
         state_db: &StateDB,
         client: &Client,
     ) -> EthcoreResult<Option<PendingTransition>> {
-        use engines::EpochChange;
+        use crate::engines::EpochChange;
 
         let hash = header.hash();
         let auxiliary = ::machine::AuxiliaryData {
@@ -864,7 +864,7 @@ impl Importer {
 
         match self.engine.signals_epoch_end(header, auxiliary) {
             EpochChange::Yes(proof) => {
-                use engines::Proof;
+                use crate::engines::Proof;
 
                 let proof = match proof {
                     Proof::Known(proof) => proof,
@@ -2434,7 +2434,7 @@ impl BlockChainClient for Client {
     }
 
     fn transaction_receipt(&self, id: TransactionId) -> Option<LocalizedReceipt> {
-        // NOTE Don't use block_receipts here for performance reasons
+        // NOTE Don't use crate::block_receipts here for performance reasons
         let address = self.transaction_address(id)?;
         let hash = address.block_hash;
         let chain = self.chain.read();
@@ -3785,14 +3785,14 @@ impl PrometheusMetrics for Client {
 
 #[cfg(test)]
 mod tests {
-    use blockchain::{BlockProvider, ExtrasInsert};
+    use crate::blockchain::{BlockProvider, ExtrasInsert};
     use ethereum_types::{H160, H256};
     use spec::Spec;
     use test_helpers::generate_dummy_client_with_spec_and_data;
 
     #[test]
     fn should_not_cache_details_before_commit() {
-        use client::{BlockChainClient, ChainInfo};
+        use crate::client::{BlockChainClient, ChainInfo};
         use test_helpers::{generate_dummy_client, get_good_dummy_block_hash};
 
         use kvdb::DBTransaction;
@@ -3840,7 +3840,7 @@ mod tests {
 
     #[test]
     fn should_return_block_receipts() {
-        use client::{BlockChainClient, BlockId, TransactionId};
+        use crate::client::{BlockChainClient, BlockId, TransactionId};
         use test_helpers::generate_dummy_client_with_data;
 
         let client = generate_dummy_client_with_data(2, 2, &[1.into(), 1.into()]);

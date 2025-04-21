@@ -21,7 +21,7 @@ use parity_util_mem::MallocSizeOf;
 use super::{SystemCall, ValidatorSet};
 use bytes::Bytes;
 use error::Error as EthcoreError;
-use machine::{AuxiliaryData, Call, EthereumMachine};
+use crate::machine::{AuxiliaryData, Call, EthereumMachine};
 use types::{header::Header, BlockNumber};
 
 /// Validator set containing a known set of addresses.

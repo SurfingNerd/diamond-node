@@ -9,10 +9,10 @@ use crate::{
         hbbft_peers_management::HbbftPeersManagement,
     },
 };
-use block::ExecutedBlock;
-use client::traits::{EngineClient, ForceUpdateSealing};
+use crate::block::ExecutedBlock;
+use crate::client::traits::{EngineClient, ForceUpdateSealing};
 use crypto::publickey::Signature;
-use engines::{
+use crate::engines::{
     default_system_or_code_call, signer::EngineSigner, Engine, EngineError, ForkChoice, Seal,
     SealingState,
 };
@@ -22,7 +22,7 @@ use ethjson::spec::HbbftParams;
 use hbbft::{NetworkInfo, Target};
 use io::{IoContext, IoHandler, IoService, TimerToken};
 use itertools::Itertools;
-use machine::EthereumMachine;
+use crate::machine::EthereumMachine;
 use parking_lot::{Mutex, RwLock};
 use rlp;
 use rmp_serde;
@@ -55,7 +55,7 @@ use super::{
     sealing::{self, RlpSig, Sealing},
     NodeId,
 };
-use engines::hbbft::{
+use crate::engines::hbbft::{
     contracts::validator_set::{
         get_validator_available_since, send_tx_announce_availability, staking_by_mining_address,
     },

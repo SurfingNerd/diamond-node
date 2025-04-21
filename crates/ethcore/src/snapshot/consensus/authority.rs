@@ -26,11 +26,11 @@ use std::sync::{
     Arc,
 };
 
-use engines::{EpochTransition, EpochVerifier, EthEngine};
-use machine::EthereumMachine;
+use crate::engines::{EpochTransition, EpochVerifier, EthEngine};
+use crate::machine::EthereumMachine;
 use snapshot::{Error, ManifestData, Progress};
 
-use blockchain::{BlockChain, BlockChainDB, BlockProvider};
+use crate::blockchain::{BlockChain, BlockChainDB, BlockProvider};
 use bytes::Bytes;
 use db::KeyValueDB;
 use ethereum_types::{H256, U256};
@@ -199,7 +199,7 @@ impl ChunkRebuilder {
         transition_rlp: Rlp,
         engine: &dyn EthEngine,
     ) -> Result<Verified, ::error::Error> {
-        use engines::ConstructedVerifier;
+        use crate::engines::ConstructedVerifier;
 
         // decode.
         let header =

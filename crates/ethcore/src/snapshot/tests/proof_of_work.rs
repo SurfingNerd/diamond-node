@@ -20,7 +20,7 @@ use error::{Error, ErrorKind};
 use std::sync::atomic::AtomicBool;
 use tempdir::TempDir;
 
-use blockchain::{
+use crate::blockchain::{
     generator::{BlockBuilder, BlockGenerator},
     BlockChain, ExtrasInsert,
 };

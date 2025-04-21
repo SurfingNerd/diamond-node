@@ -18,7 +18,7 @@
 
 use std::{fs, io, path::Path, sync::Arc};
 
-use blockchain::{
+use crate::blockchain::{
     BlockChain, BlockChainDB, BlockChainDBHandler, Config as BlockChainConfig, ExtrasInsert,
 };
 use blooms_db;
@@ -42,12 +42,12 @@ use types::{
     BlockNumber,
 };
 
-use block::{Drain, OpenBlock};
-use client::{
+use crate::block::{Drain, OpenBlock};
+use crate::client::{
     BlockInfo, ChainInfo, ChainMessageType, ChainNotify, Client, ClientConfig, ImportBlock,
     PrepareOpenBlock,
 };
-use engines::{EngineSigner, Seal};
+use crate::engines::{EngineSigner, Seal};
 use ethjson::crypto::publickey::{Public, Signature};
 use crate::factory::Factories;
 use miner::Miner;

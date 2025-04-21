@@ -31,7 +31,7 @@ use snapshot::Error as SnapshotError;
 use types::{transaction::Error as TransactionError, BlockNumber};
 use unexpected::{Mismatch, OutOfBounds};
 
-use engines::EngineError;
+use crate::engines::EngineError;
 
 pub use crate::executed::{CallError, ExecutionError};
 

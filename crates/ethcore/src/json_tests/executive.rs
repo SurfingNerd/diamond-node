@@ -23,7 +23,7 @@ use evm::Finalize;
 use crate::executive::*;
 use crate::externalities::*;
 use hash::keccak;
-use machine::EthereumMachine as Machine;
+use crate::machine::EthereumMachine as Machine;
 use rlp::RlpStream;
 use crate::state::{Backend as StateBackend, State, Substate};
 use std::{path::Path, sync::Arc};

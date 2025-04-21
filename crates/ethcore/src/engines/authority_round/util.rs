@@ -20,7 +20,7 @@
 
 use std::fmt;
 
-use client::{traits::EngineClient, BlockChainClient};
+use crate::client::{traits::EngineClient, BlockChainClient};
 use ethabi::{self, FunctionOutputDecoder};
 use ethabi_contract::use_contract;
 use ethereum_types::{Address, U256};

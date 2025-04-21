@@ -9,7 +9,7 @@ use super::{
     contribution::unix_now_secs,
     test::hbbft_test_client::{create_hbbft_client, create_hbbft_clients, HbbftTestClient},
 };
-use client::traits::BlockInfo;
+use crate::client::traits::BlockInfo;
 use crypto::publickey::{Generator, KeyPair, Random, Secret};
 use ethereum_types::{Address, U256};
 use std::str::FromStr;

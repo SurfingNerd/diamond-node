@@ -1,6 +1,6 @@
-use client::traits::EngineClient;
+use crate::client::traits::EngineClient;
 use crypto::{self, publickey::Public};
-use engines::{
+use crate::engines::{
     hbbft::{
         contracts::validator_set::{get_validator_pubkeys, ValidatorType},
         utils::bound_contract::{BoundContract, CallError},
@@ -267,7 +267,7 @@ pub fn initialize_synckeygen(
 mod tests {
     use super::*;
     use crypto::publickey::{KeyPair, Secret};
-    use engines::signer::{from_keypair, EngineSigner};
+    use crate::engines::signer::{from_keypair, EngineSigner};
     use std::{collections::BTreeMap, sync::Arc};
 
     #[test]

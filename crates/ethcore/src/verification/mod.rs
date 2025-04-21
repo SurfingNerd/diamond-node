@@ -31,7 +31,7 @@ pub use self::{
 };
 
 use call_contract::CallContract;
-use client::BlockInfo;
+use crate::client::BlockInfo;
 
 /// Verifier type.
 #[derive(Debug, PartialEq, Clone)]

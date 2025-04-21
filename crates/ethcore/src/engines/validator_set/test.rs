@@ -28,7 +28,7 @@ use types::{header::Header, BlockNumber};
 
 use super::{SimpleList, SystemCall, ValidatorSet};
 use error::Error as EthcoreError;
-use machine::{AuxiliaryData, Call, EthereumMachine};
+use crate::machine::{AuxiliaryData, Call, EthereumMachine};
 
 /// Set used for testing with a single validator.
 #[derive(Clone, MallocSizeOf)]

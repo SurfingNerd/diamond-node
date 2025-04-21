@@ -33,10 +33,10 @@ use rlp::Rlp;
 use triehash::ordered_trie_root;
 use unexpected::{Mismatch, OutOfBounds};
 
-use blockchain::*;
+use crate::blockchain::*;
 use call_contract::CallContract;
-use client::BlockInfo;
-use engines::{EthEngine, MAX_UNCLE_AGE};
+use crate::client::BlockInfo;
+use crate::engines::{EthEngine, MAX_UNCLE_AGE};
 use error::{BlockError, Error};
 use types::{header::Header, transaction::SignedTransaction, BlockNumber};
 use verification::queue::kind::blocks::Unverified;
@@ -540,9 +540,9 @@ fn verify_block_integrity(block: &Unverified) -> Result<(), Error> {
 mod tests {
     use super::*;
 
-    use blockchain::{BlockDetails, BlockReceipts, TransactionAddress};
+    use crate::blockchain::{BlockDetails, BlockReceipts, TransactionAddress};
     use crypto::publickey::{Generator, Random};
-    use engines::EthEngine;
+    use crate::engines::EthEngine;
     use error::{BlockError::*, ErrorKind};
     use ethereum_types::{Address, BloomRef, H256, U256};
     use hash::keccak;
@@ -1125,8 +1125,8 @@ mod tests {
     #[test]
     fn dust_protection() {
         use crypto::publickey::{Generator, Random};
-        use engines::NullEngine;
-        use machine::EthereumMachine;
+        use crate::engines::NullEngine;
+        use crate::machine::EthereumMachine;
         use types::transaction::{Action, Transaction};
 
         let mut params = CommonParams::default();

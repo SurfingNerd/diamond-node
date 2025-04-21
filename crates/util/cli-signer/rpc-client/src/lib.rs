@@ -41,7 +41,7 @@ pub type BoxFuture<T, E> = Box<dyn futures::Future<Item = T, Error = E> + Send>;
 #[cfg(test)]
 mod tests {
 
-    use client::{Rpc, RpcError};
+    use crate::client::{Rpc, RpcError};
     use futures::Future;
     use rpc;
     use std::path::PathBuf;

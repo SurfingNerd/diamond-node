@@ -20,11 +20,11 @@ use std::sync::Weak;
 
 use bytes::Bytes;
 use ethereum_types::{Address, H256, U256};
-use machine::{AuxiliaryData, Call, EthereumMachine};
+use crate::machine::{AuxiliaryData, Call, EthereumMachine};
 use parking_lot::RwLock;
 use types::{header::Header, ids::BlockId, transaction, BlockNumber};
 
-use client::{traits::TransactionRequest, EngineClient};
+use crate::client::{traits::TransactionRequest, EngineClient};
 
 use error::Error as EthcoreError;
 
@@ -219,7 +219,7 @@ mod tests {
     use accounts::AccountProvider;
     use bytes::ToPretty;
     use call_contract::CallContract;
-    use client::{traits::TransactionRequest, BlockChainClient, BlockInfo, ChainInfo};
+    use crate::client::{traits::TransactionRequest, BlockChainClient, BlockInfo, ChainInfo};
     use ethabi::FunctionOutputDecoder;
     use ethereum_types::{Address, H520};
     use hash::keccak;

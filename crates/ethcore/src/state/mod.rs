@@ -1578,7 +1578,7 @@ mod tests {
     use ethereum_types::{Address, BigEndianHash, H256, U256};
     use evm::CallType;
     use hash::{keccak, KECCAK_NULL_RLP};
-    use machine::EthereumMachine;
+    use crate::machine::EthereumMachine;
     use rustc_hex::FromHex;
     use spec::*;
     use std::{str::FromStr, sync::Arc};

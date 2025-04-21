@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
-use block::ExecutedBlock;
-use engines::{Engine, Seal, SealingState};
-use machine::Machine;
+use crate::block::ExecutedBlock;
+use crate::engines::{Engine, Seal, SealingState};
+use crate::machine::Machine;
 use std::sync::atomic::{AtomicU64, Ordering};
 use types::header::{ExtendedHeader, Header};
 
@@ -126,8 +126,8 @@ impl<M: Machine> Engine<M> for InstantSeal<M> {
 
 #[cfg(test)]
 mod tests {
-    use block::*;
-    use engines::Seal;
+    use crate::block::*;
+    use crate::engines::Seal;
     use ethereum_types::{Address, H520};
     use spec::Spec;
     use std::sync::Arc;

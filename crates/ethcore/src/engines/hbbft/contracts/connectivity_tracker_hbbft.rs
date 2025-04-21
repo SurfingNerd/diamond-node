@@ -1,4 +1,4 @@
-use client::EngineClient;
+use crate::client::EngineClient;
 use ethereum_types::{Address, H256, U256};
 use std::str::FromStr;
 use types::ids::BlockId;

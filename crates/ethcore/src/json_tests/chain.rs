@@ -17,7 +17,7 @@
 use crate::exit::ShutdownManager;
 
 use super::HookType;
-use client::{
+use crate::client::{
     Balance, BlockChainClient, BlockId, ChainInfo, Client, ClientConfig, EvmTestClient,
     ImportBlock, Nonce, StateOrBlock,
 };

@@ -511,7 +511,7 @@ impl SyncSupplier {
 #[cfg(test)]
 mod test {
     use super::{super::tests::*, *};
-    use blocks::SyncHeader;
+    use crate::blocks::SyncHeader;
     use bytes::Bytes;
     use ethcore::{
         client::{BlockChainClient, EachBlockWith, TestBlockChainClient},

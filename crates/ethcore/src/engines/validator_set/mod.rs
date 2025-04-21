@@ -28,10 +28,10 @@ use std::sync::Weak;
 use bytes::Bytes;
 use ethereum_types::{Address, H256};
 use ethjson::spec::ValidatorSet as ValidatorSpec;
-use machine::{AuxiliaryData, Call, EthereumMachine};
+use crate::machine::{AuxiliaryData, Call, EthereumMachine};
 use types::{header::Header, ids::BlockId, BlockNumber};
 
-use client::EngineClient;
+use crate::client::EngineClient;
 
 use error::Error as EthcoreError;
 

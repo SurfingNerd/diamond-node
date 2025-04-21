@@ -35,14 +35,14 @@ use types::{header::Header, BlockNumber};
 use vm::{AccessList, ActionParams, ActionValue, CallType, EnvInfo, ParamsType};
 
 use builtin::Builtin;
-use engines::{
+use crate::engines::{
     AuthorityRound, BasicAuthority, Clique, EthEngine, HoneyBadgerBFT, InstantSeal,
     InstantSealParams, NullEngine, DEFAULT_BLOCKHASH_CONTRACT,
 };
 use error::Error;
 use crate::executive::Executive;
 use crate::factory::Factories;
-use machine::EthereumMachine;
+use crate::machine::EthereumMachine;
 use maplit::btreeset;
 use pod_state::PodState;
 use spec::{seal::Generic as GenericSeal, Genesis};

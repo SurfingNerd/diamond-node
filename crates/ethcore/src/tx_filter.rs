@@ -24,7 +24,7 @@ use fastmap::{new_h256_fast_lru_map, H256FastLruMap};
 use lru_cache::LruCache;
 
 use call_contract::CallContract;
-use client::{BlockId, BlockInfo};
+use crate::client::{BlockId, BlockInfo};
 use hash::KECCAK_EMPTY;
 use parking_lot::Mutex;
 use spec::CommonParams;
@@ -266,7 +266,7 @@ impl TransactionFilter {
                 // we can cache every transaciton.
                 permission_cache.insert(transaction.hash.clone(), permissions);
             } else {
-                trace!(target: "tx_filter", "did not add tx [{}] to permission cache, because block changed in the meantime.", transaction.hash);
+                trace!(target: "tx_filter", "did not add tx [{}] to permission cache, because crate::block changed in the meantime.", transaction.hash);
             }
         }
 
@@ -280,7 +280,7 @@ mod test {
     use crate::exit::ShutdownManager;
 
     use super::TransactionFilter;
-    use client::{BlockChainClient, BlockId, Client, ClientConfig};
+    use crate::client::{BlockChainClient, BlockId, Client, ClientConfig};
     use crypto::publickey::{KeyPair, Secret};
     use ethereum_types::{Address, U256};
     use io::IoChannel;

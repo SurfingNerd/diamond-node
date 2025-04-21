@@ -23,7 +23,7 @@ use journaldb;
 use snapshot::SnapshotConfiguration;
 use verification::{QueueConfig, VerifierType};
 
-pub use blockchain::Config as BlockChainConfig;
+pub use crate::blockchain::Config as BlockChainConfig;
 pub use evm::VMType;
 pub use std::time::Duration;
 pub use trace::Config as TraceConfig;

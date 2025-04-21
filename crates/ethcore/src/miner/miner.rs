@@ -56,13 +56,13 @@ use types::{
 };
 use using_queue::{GetAction, UsingQueue};
 
-use block::{ClosedBlock, OpenBlock, SealedBlock};
-use client::{
+use crate::block::{ClosedBlock, OpenBlock, SealedBlock};
+use crate::client::{
     traits::{EngineClient, ForceUpdateSealing},
     BlockChain, BlockId, BlockProducer, ChainInfo, ClientIoMessage, Nonce, SealedBlockImporter,
     TransactionId, TransactionInfo,
 };
-use engines::{EngineSigner, EthEngine, Seal, SealingState};
+use crate::engines::{EngineSigner, EthEngine, Seal, SealingState};
 use error::{Error, ErrorKind};
 use crate::executed::ExecutionError;
 use crate::executive::contract_address;
@@ -1831,7 +1831,7 @@ mod tests {
     use rustc_hex::FromHex;
     use types::BlockNumber;
 
-    use client::{ChainInfo, EachBlockWith, ImportSealedBlock, TestBlockChainClient};
+    use crate::client::{ChainInfo, EachBlockWith, ImportSealedBlock, TestBlockChainClient};
     use miner::{MinerService, PendingOrdering};
     use test_helpers::{
         dummy_engine_signer_with_address, generate_dummy_client, generate_dummy_client_with_spec,

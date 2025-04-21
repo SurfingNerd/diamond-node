@@ -19,8 +19,8 @@
 
 use std::sync::{atomic::AtomicBool, Arc};
 
-use blockchain::{BlockChain, BlockChainDB};
-use engines::EthEngine;
+use crate::blockchain::{BlockChain, BlockChainDB};
+use crate::engines::EthEngine;
 use snapshot::{Error, ManifestData, Progress};
 use types::BlockNumber;
 

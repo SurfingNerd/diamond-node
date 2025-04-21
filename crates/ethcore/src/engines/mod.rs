@@ -60,11 +60,11 @@ use types::{
 };
 use vm::{ActionValue, CallType, CreateContractAddress, EnvInfo, Schedule};
 
-use block::ExecutedBlock;
+use crate::block::ExecutedBlock;
 use bytes::Bytes;
 use crypto::publickey::Signature;
 use ethereum_types::{Address, H256, H512, H64, U256};
-use machine::{self, AuxiliaryData, AuxiliaryRequest, Machine};
+use crate::machine::{self, AuxiliaryData, AuxiliaryRequest, Machine};
 use types::ancestry_action::AncestryAction;
 use unexpected::{Mismatch, OutOfBounds};
 

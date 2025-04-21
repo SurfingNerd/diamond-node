@@ -30,8 +30,8 @@ use std::{
 };
 
 use account_db::{AccountDB, AccountDBMut};
-use blockchain::{BlockChain, BlockProvider};
-use engines::EthEngine;
+use crate::blockchain::{BlockChain, BlockProvider};
+use crate::engines::EthEngine;
 use types::{header::Header, ids::BlockId};
 
 use bytes::Bytes;

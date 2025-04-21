@@ -23,7 +23,7 @@ pub use crate::executed::{Executed, ExecutionResult};
 use crate::externalities::*;
 use crate::factory::VmFactory;
 use hash::keccak;
-use machine::EthereumMachine as Machine;
+use crate::machine::EthereumMachine as Machine;
 use crate::state::{Backend as StateBackend, CleanupMode, State, Substate};
 use std::{cmp, convert::TryFrom, sync::Arc};
 use trace::{self, Tracer, VMTracer};
@@ -1631,7 +1631,7 @@ mod tests {
     use error::ExecutionError;
     use ethereum_types::{Address, BigEndianHash, H160, H256, U256, U512};
     use evm::{Factory, VMType};
-    use machine::EthereumMachine;
+    use crate::machine::EthereumMachine;
     use rustc_hex::FromHex;
     use crate::state::{CleanupMode, Substate};
     use std::{str::FromStr, sync::Arc};

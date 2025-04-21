@@ -16,7 +16,7 @@
 
 //! Simple Client used for EVM tests.
 
-use client;
+use crate::client;
 use db;
 use ethereum_types::{H160, H256, U256};
 use ethtrie;

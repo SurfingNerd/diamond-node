@@ -15,7 +15,7 @@
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
 // use std::backtrace::Backtrace;
-use blocks::{BlockCollection, SyncBody, SyncHeader};
+use crate::blocks::{BlockCollection, SyncBody, SyncHeader};
 use chain::BlockSet;
 use ethcore::{
     client::{BlockId, BlockStatus},

@@ -48,9 +48,9 @@ use types::{
     BlockNumber,
 };
 
-use block::SealedBlock;
+use crate::block::SealedBlock;
 use call_contract::{CallContract, RegistryInfo};
-use client::{
+use crate::client::{
     traits::ForceUpdateSealing, AccountData, BlockChain, BlockProducer, Nonce, ScheduleInfo,
     SealedBlockImporter,
 };

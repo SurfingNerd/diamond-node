@@ -24,9 +24,9 @@ use parking_lot::RwLock;
 use types::{header::Header, ids::BlockId, BlockNumber};
 
 use super::{SystemCall, ValidatorSet};
-use client::EngineClient;
+use crate::client::EngineClient;
 use error::Error as EthcoreError;
-use machine::{AuxiliaryData, Call, EthereumMachine};
+use crate::machine::{AuxiliaryData, Call, EthereumMachine};
 
 type BlockNumberLookup =
     Box<dyn Fn(BlockId) -> Result<BlockNumber, String> + Send + Sync + 'static>;
@@ -207,12 +207,12 @@ impl ValidatorSet for Multi {
 #[cfg(test)]
 mod tests {
     use accounts::AccountProvider;
-    use client::{
+    use crate::client::{
         traits::{ForceUpdateSealing, TransactionRequest},
         BlockChainClient, BlockInfo, ChainInfo, ImportBlock,
     };
     use crypto::publickey::Secret;
-    use engines::{validator_set::ValidatorSet, EpochChange};
+    use crate::engines::{validator_set::ValidatorSet, EpochChange};
     use ethereum_types::Address;
     use hash::keccak;
     use miner::{self, MinerService};

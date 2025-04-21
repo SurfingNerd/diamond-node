@@ -104,7 +104,7 @@ use self::{
 };
 use super::{SyncConfig, WarpSync};
 use api::{EthProtocolInfo as PeerInfoDigest, PriorityTask, ETH_PROTOCOL, PAR_PROTOCOL};
-use block_sync::{BlockDownloader, DownloadAction};
+use crate::block_sync::{BlockDownloader, DownloadAction};
 use bytes::Bytes;
 use derive_more::Display;
 use ethcore::{

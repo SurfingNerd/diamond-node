@@ -15,7 +15,7 @@
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
 use bytes::Bytes;
-use client::Client;
+use crate::client::Client;
 use ethereum_types::H256;
 use snapshot::ManifestData;
 use std::fmt;

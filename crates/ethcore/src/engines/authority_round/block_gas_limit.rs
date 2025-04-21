@@ -16,7 +16,7 @@
 
 //! A client interface for interacting with the block gas limit contract.
 
-use client::{BlockChainClient, BlockId};
+use crate::client::{BlockChainClient, BlockId};
 use types::header::Header;
 use ethabi::FunctionOutputDecoder;
 use ethabi_contract::use_contract;

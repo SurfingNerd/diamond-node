@@ -36,7 +36,7 @@ use std::{cmp, collections::HashSet, ops, sync::Arc};
 use bytes::Bytes;
 use ethereum_types::{Address, Bloom, H256, U256};
 
-use engines::EthEngine;
+use crate::engines::EthEngine;
 use error::{BlockError, Error};
 use crate::factory::Factories;
 use crate::state::State;
@@ -627,7 +627,7 @@ pub fn enact_verified(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use engines::EthEngine;
+    use crate::engines::EthEngine;
     use error::Error;
     use ethereum_types::Address;
     use crate::factory::Factories;

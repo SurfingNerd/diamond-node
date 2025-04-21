@@ -6,7 +6,7 @@
 
 use std::fmt;
 
-use client::EngineClient;
+use crate::client::EngineClient;
 use ethabi;
 use ethereum_types::Address;
 use types::ids::BlockId;

@@ -18,7 +18,7 @@
 use bytes::Bytes;
 use ethereum_types::{Address, BigEndianHash, H256, U256};
 use crate::executive::*;
-use machine::EthereumMachine as Machine;
+use crate::machine::EthereumMachine as Machine;
 use crate::state::{Backend as StateBackend, CleanupMode, State, Substate};
 use std::{cmp, sync::Arc};
 use trace::{Tracer, VMTracer};

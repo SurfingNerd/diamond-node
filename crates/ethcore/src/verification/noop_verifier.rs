@@ -18,8 +18,8 @@
 
 use super::{verification, Verifier};
 use call_contract::CallContract;
-use client::BlockInfo;
-use engines::EthEngine;
+use crate::client::BlockInfo;
+use crate::engines::EthEngine;
 use error::Error;
 use types::header::Header;
 

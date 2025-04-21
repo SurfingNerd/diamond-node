@@ -17,7 +17,7 @@
 //! Trace database.
 use std::{collections::HashMap, sync::Arc};
 
-use blockchain::BlockChainDB;
+use crate::blockchain::BlockChainDB;
 use db::{self, cache_manager::CacheManager, CacheUpdatePolicy, Key, Readable, Writable};
 use ethereum_types::{H256, H264};
 use kvdb::DBTransaction;

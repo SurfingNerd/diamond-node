@@ -15,7 +15,7 @@
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
 use api::{ETH_PROTOCOL, PAR_PROTOCOL};
-use block_sync::{BlockDownloaderImportError as DownloaderImportError, DownloadAction};
+use crate::block_sync::{BlockDownloaderImportError as DownloaderImportError, DownloadAction};
 use bytes::Bytes;
 use enum_primitive::FromPrimitive;
 use ethcore::{

@@ -31,15 +31,15 @@ use types::{
 };
 use unexpected::{Mismatch, OutOfBounds};
 
-use block::ExecutedBlock;
-use engines::{
+use crate::block::ExecutedBlock;
+use crate::engines::{
     self,
     block_reward::{self, BlockRewardContract, RewardKind},
     Engine,
 };
 use error::{BlockError, Error};
 use ethash::{self, quick_get_difficulty, slow_hash_block_number, EthashManager, OptimizeFor};
-use machine::EthereumMachine;
+use crate::machine::EthereumMachine;
 
 /// Number of blocks in an ethash snapshot.
 // make dependent on difficulty incrment divisor?
@@ -563,8 +563,8 @@ mod tests {
         super::{new_homestead_test_machine, new_mcip3_test, new_morden},
         ecip1017_eras_block_reward, Ethash, EthashParams,
     };
-    use block::*;
-    use engines::Engine;
+    use crate::block::*;
+    use crate::engines::Engine;
     use error::{BlockError, Error, ErrorKind};
     use ethereum_types::{Address, H256, H64, U256};
     use rlp;

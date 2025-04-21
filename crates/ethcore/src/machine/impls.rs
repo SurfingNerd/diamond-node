@@ -36,10 +36,10 @@ use vm::{
     Schedule,
 };
 
-use block::ExecutedBlock;
+use crate::block::ExecutedBlock;
 use builtin::Builtin;
 use call_contract::CallContract;
-use client::BlockInfo;
+use crate::client::BlockInfo;
 use error::Error;
 use crate::executive::Executive;
 use spec::CommonParams;

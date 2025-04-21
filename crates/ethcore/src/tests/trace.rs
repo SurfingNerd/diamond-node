@@ -16,8 +16,8 @@
 
 //! Client tests of tracing
 
-use block::*;
-use client::{BlockChainClient, Client, ClientConfig, *};
+use crate::block::*;
+use crate::client::{BlockChainClient, Client, ClientConfig, *};
 use crypto::publickey::KeyPair;
 use ethereum_types::{Address, U256};
 use hash::keccak;

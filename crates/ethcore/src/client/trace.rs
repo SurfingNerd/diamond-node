@@ -16,7 +16,7 @@
 
 //! Bridge between Tracedb and Blockchain.
 
-use blockchain::{BlockChain, BlockProvider, TransactionAddress};
+use crate::blockchain::{BlockChain, BlockProvider, TransactionAddress};
 use ethereum_types::H256;
 use trace::DatabaseExtras as TraceDatabaseExtras;
 use types::BlockNumber;

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
-use client::{Rpc, RpcError};
+use crate::client::{Rpc, RpcError};
 use ethereum_types::U256;
 use futures::Canceled;
 use rpc::signer::{ConfirmationRequest, TransactionCondition, TransactionModification};

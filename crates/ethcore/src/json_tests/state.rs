@@ -15,7 +15,7 @@
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
 use super::{test_common::*, HookType};
-use client::{EvmTestClient, EvmTestError, TransactErr, TransactSuccess};
+use crate::client::{EvmTestClient, EvmTestError, TransactErr, TransactSuccess};
 use ethjson::{self, spec::ForkSpec};
 use pod_state::PodState;
 use std::path::Path;

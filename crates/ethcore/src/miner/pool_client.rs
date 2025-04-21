@@ -29,8 +29,8 @@ use types::{
 };
 
 use call_contract::CallContract;
-use client::{Balance, BlockId, BlockInfo, Nonce, TransactionId};
-use engines::EthEngine;
+use crate::client::{Balance, BlockId, BlockInfo, Nonce, TransactionId};
+use crate::engines::EthEngine;
 use ethcore_miner::pool::client::BalanceClient;
 use miner::{
     self,

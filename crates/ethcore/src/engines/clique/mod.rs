@@ -66,10 +66,10 @@ use std::{
 };
 
 use super::signer::EngineSigner;
-use block::ExecutedBlock;
-use client::{traits::ForceUpdateSealing, BlockId, EngineClient};
+use crate::block::ExecutedBlock;
+use crate::client::{traits::ForceUpdateSealing, BlockId, EngineClient};
 use crypto::publickey::Signature;
-use engines::{
+use crate::engines::{
     clique::util::{extract_signers, recover_creator},
     Engine, EngineError, Seal, SealingState,
 };
@@ -78,7 +78,7 @@ use ethereum_types::{Address, H160, H256, H64, U256};
 use hash::KECCAK_EMPTY_LIST_RLP;
 use itertools::Itertools;
 use lru_cache::LruCache;
-use machine::{Call, EthereumMachine};
+use crate::machine::{Call, EthereumMachine};
 use parking_lot::RwLock;
 use rand::Rng;
 use time_utils::CheckedSystemTime;

@@ -36,8 +36,8 @@ use types::{
 use unexpected::Mismatch;
 
 use super::{simple_list::SimpleList, SystemCall, ValidatorSet};
-use client::{traits::TransactionRequest, BlockChainClient, EngineClient};
-use machine::{AuxiliaryData, AuxiliaryRequest, Call, EthereumMachine};
+use crate::client::{traits::TransactionRequest, BlockChainClient, EngineClient};
+use crate::machine::{AuxiliaryData, AuxiliaryRequest, Call, EthereumMachine};
 
 use_contract!(validator_set, "res/contracts/validator_set.json");
 
@@ -715,7 +715,7 @@ impl ReportQueue {
 mod tests {
     use super::{super::ValidatorSet, ValidatorSafeContract, EVENT_NAME_HASH};
     use accounts::AccountProvider;
-    use client::{
+    use crate::client::{
         traits::{EngineClient, ForceUpdateSealing},
         BlockInfo, ChainInfo, ImportBlock,
     };
@@ -856,8 +856,8 @@ mod tests {
 
     #[test]
     fn detects_bloom() {
-        use engines::EpochChange;
-        use machine::AuxiliaryRequest;
+        use crate::engines::EpochChange;
+        use crate::machine::AuxiliaryRequest;
         use types::{header::Header, log_entry::LogEntry};
 
         let client = generate_dummy_client_with_spec(Spec::new_validator_safe_contract);
@@ -896,7 +896,7 @@ mod tests {
 
     #[test]
     fn initial_contract_is_signal() {
-        use engines::{EpochChange, Proof};
+        use crate::engines::{EpochChange, Proof};
         use types::header::Header;
 
         let client = generate_dummy_client_with_spec(Spec::new_validator_safe_contract);

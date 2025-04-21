@@ -16,7 +16,7 @@
 
 //! Definition of valid items for the verification queue.
 
-use engines::EthEngine;
+use crate::engines::EthEngine;
 use error::Error;
 
 use ethereum_types::{H256, U256};
@@ -78,7 +78,7 @@ pub trait Kind: 'static + Sized + Send + Sync {
 pub mod blocks {
     use super::{BlockLike, Kind};
 
-    use engines::EthEngine;
+    use crate::engines::EthEngine;
     use error::{BlockError, Error, ErrorKind};
     use types::{
         header::Header,
@@ -213,7 +213,7 @@ pub mod blocks {
 pub mod headers {
     use super::{BlockLike, Kind};
 
-    use engines::EthEngine;
+    use crate::engines::EthEngine;
     use error::Error;
     use types::header::Header;
     use verification::verify_header_params;

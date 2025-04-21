@@ -51,14 +51,14 @@ use super::{
     validator_set::{new_validator_set_posdao, SimpleList, ValidatorSet},
     EthEngine,
 };
-use block::*;
+use crate::block::*;
 use bytes::Bytes;
-use client::{
+use crate::client::{
     traits::{ForceUpdateSealing, TransactionRequest},
     EngineClient,
 };
 use crypto::publickey::{self, Signature};
-use engines::{
+use crate::engines::{
     block_reward,
     block_reward::{BlockRewardContract, RewardKind},
     ConstructedVerifier, Engine, EngineError, Seal, SealingState,
@@ -71,7 +71,7 @@ use hash::keccak;
 use io::{IoContext, IoHandler, IoService, TimerToken};
 use itertools::{self, Itertools};
 use lru_cache::LruCache;
-use machine::{AuxiliaryData, Call, EthereumMachine};
+use crate::machine::{AuxiliaryData, Call, EthereumMachine};
 use parking_lot::{Mutex, RwLock};
 use rand::rngs::OsRng;
 use rlp::{encode, Decodable, DecoderError, Encodable, Rlp, RlpStream};
@@ -2386,9 +2386,9 @@ mod tests {
         AuthorityRoundParams, EmptyStep, SealedEmptyStep, StepDurationInfo,
     };
     use accounts::AccountProvider;
-    use block::*;
+    use crate::block::*;
     use crypto::publickey::Signature;
-    use engines::{
+    use crate::engines::{
         block_reward::BlockRewardContract,
         validator_set::{SimpleList, TestSet},
         Engine, EngineError, EngineSigner, EthEngine, Seal,
