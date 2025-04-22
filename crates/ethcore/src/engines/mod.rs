@@ -50,9 +50,9 @@ use std::{
 };
 
 use builtin::Builtin;
-use error::Error;
-use snapshot::SnapshotComponents;
-use spec::CommonParams;
+use crate::error::Error;
+use crate::snapshot::SnapshotComponents;
+use crate::spec::CommonParams;
 use types::{
     header::{ExtendedHeader, Header},
     transaction::{self, SignedTransaction, UnverifiedTransaction},
@@ -360,7 +360,7 @@ pub trait Engine<M: Machine>: Sync + Send {
     }
 
     /// Allow mutating the header during seal generation. Currently only used by Clique.
-    fn on_seal_block(&self, _block: &mut ExecutedBlock) -> Result<(), Error> {
+    fn on_seal_block(&self, _block: &mut ExecutedBlock) -> Result<(), crate::error::Error> {
         Ok(())
     }
 
