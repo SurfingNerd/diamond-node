@@ -26,8 +26,8 @@ use std::{
 };
 use time::Duration as TimeDuration;
 use timer::{Guard as TimerGuard, Timer};
-use IoError;
-use IoHandler;
+use crate::ioError;
+use crate::ioHandler;
 
 /// Timer ID
 pub type TimerToken = usize;

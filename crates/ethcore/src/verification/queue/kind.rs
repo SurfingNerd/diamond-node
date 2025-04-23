@@ -85,7 +85,7 @@ pub mod blocks {
         transaction::{TypedTransaction, UnverifiedTransaction},
         BlockNumber,
     };
-    use verification::{verify_block_basic, verify_block_unordered, PreverifiedBlock};
+    use crate::verification::{verify_block_basic, verify_block_unordered, PreverifiedBlock};
 
     use bytes::Bytes;
     use ethereum_types::{H256, U256};
@@ -216,7 +216,7 @@ pub mod headers {
     use crate::engines::EthEngine;
     use error::Error;
     use types::header::Header;
-    use verification::verify_header_params;
+    use crate::verification::verify_header_params;
 
     use ethereum_types::{H256, U256};
 

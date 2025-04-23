@@ -340,7 +340,7 @@ mod tests {
         LooseReader, LooseWriter, PackedReader, PackedWriter, SnapshotReader, SnapshotWriter,
         SNAPSHOT_VERSION,
     };
-    use snapshot::ManifestData;
+    use crate::snapshot::ManifestData;
 
     const STATE_CHUNKS: &'static [&'static [u8]] =
         &[b"dog", b"cat", b"hello world", b"hi", b"notarealchunk"];

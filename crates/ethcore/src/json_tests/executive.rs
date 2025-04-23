@@ -28,7 +28,7 @@ use rlp::RlpStream;
 use crate::state::{Backend as StateBackend, State, Substate};
 use std::{path::Path, sync::Arc};
 use test_helpers::get_temp_state;
-use trace::{NoopTracer, NoopVMTracer, Tracer, VMTracer};
+use crate::trace::{NoopTracer, NoopVMTracer, Tracer, VMTracer};
 use vm::{
     self, ActionParams, CallType, ContractCreateResult, CreateContractAddress, EnvInfo, Ext,
     MessageCallResult, ReturnData, Schedule,

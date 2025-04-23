@@ -47,7 +47,7 @@ mod error;
 
 pub use connection_filter::{ConnectionDirection, ConnectionFilter};
 pub use error::{DisconnectReason, Error, ErrorKind};
-pub use io::TimerToken;
+pub use crate::io::TimerToken;
 
 use crate::client_version::ClientVersion;
 use crypto::publickey::Secret;

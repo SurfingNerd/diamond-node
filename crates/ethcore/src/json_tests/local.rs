@@ -8,7 +8,7 @@ use types::{
     transaction::{TypedTransaction, TypedTxId, UnverifiedTransaction},
     BlockNumber,
 };
-use verification::queue::kind::blocks::Unverified;
+use crate::verification::queue::kind::blocks::Unverified;
 
 pub fn json_local_block_en_de_test<H: FnMut(&str, HookType)>(
     _test: &ethjson::test::LocalTests,

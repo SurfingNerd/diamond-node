@@ -226,7 +226,7 @@ mod tests {
     use miner::{self, MinerService};
     use rlp::encode;
     use rustc_hex::FromHex;
-    use spec::Spec;
+    use crate::spec::Spec;
     use std::sync::Arc;
     use test_helpers::generate_dummy_client_with_spec;
     use types::{header::Header, ids::BlockId};

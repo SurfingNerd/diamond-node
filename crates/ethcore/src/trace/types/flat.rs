@@ -128,7 +128,7 @@ mod tests {
     use super::{FlatBlockTraces, FlatTrace, FlatTransactionTraces};
     use evm::CallType;
     use rlp::*;
-    use trace::{
+    use crate::trace::{
         trace::{Action, Call, CallResult, Res, Reward, Suicide},
         RewardType,
     };

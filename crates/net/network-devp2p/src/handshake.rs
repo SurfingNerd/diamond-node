@@ -18,7 +18,7 @@ use crate::connection::Connection;
 use crypto::publickey::{ecdh, ecies, recover, sign, Generator, KeyPair, Public, Random, Secret};
 use ethereum_types::{H256, H520};
 use crate::host::HostInfo;
-use io::{IoContext, StreamToken};
+use crate::io::{IoContext, StreamToken};
 use mio::tcp::*;
 use network::{Error, ErrorKind};
 use crate::node_table::NodeId;
@@ -383,7 +383,7 @@ mod test {
     use super::*;
     use crypto::publickey::Public;
     use ethereum_types::{H256, H512};
-    use io::*;
+    use crate::io::*;
     use mio::tcp::TcpStream;
     use rustc_hex::FromHex;
     use std::str::FromStr;

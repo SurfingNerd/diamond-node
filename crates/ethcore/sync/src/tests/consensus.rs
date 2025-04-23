@@ -24,7 +24,7 @@ use ethcore::{
 };
 use ethereum_types::{Address, U256};
 use hash::keccak;
-use io::{IoChannel, IoHandler};
+use crate::io::{IoChannel, IoHandler};
 use std::sync::Arc;
 use types::transaction::{Action, PendingTransaction, Transaction, TypedTransaction};
 use SyncConfig;

@@ -19,7 +19,7 @@
 use super::trace::{Action, Res};
 use ethereum_types::{Address, Bloom, BloomInput};
 use std::ops::Range;
-use trace::flat::FlatTrace;
+use crate::trace::flat::FlatTrace;
 
 /// Addresses filter.
 ///
@@ -134,7 +134,7 @@ impl Filter {
 mod tests {
     use ethereum_types::{Address, Bloom, BloomInput};
     use evm::CallType;
-    use trace::{
+    use crate::trace::{
         flat::FlatTrace,
         trace::{Action, Call, Create, CreateResult, Res, Reward, Suicide},
         AddressesFilter, Filter, RewardType, TraceError,

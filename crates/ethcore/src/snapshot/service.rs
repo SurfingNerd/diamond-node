@@ -37,12 +37,12 @@ use super::{
 use crate::blockchain::{BlockChain, BlockChainDB, BlockChainDBHandler};
 use crate::client::{BlockChainClient, BlockInfo, ChainInfo, Client, ClientIoMessage};
 use crate::engines::EthEngine;
-use error::{Error, ErrorKind as SnapshotErrorKind};
+use crate::error::{Error, ErrorKind as SnapshotErrorKind};
 use hash::keccak;
-use snapshot::Error as SnapshotError;
+use crate::snapshot::Error as SnapshotError;
 use types::ids::BlockId;
 
-use io::IoChannel;
+use crate::io::IoChannel;
 
 use bytes::Bytes;
 use ethereum_types::H256;
@@ -1012,10 +1012,10 @@ impl Drop for Service {
 mod tests {
     use super::*;
     use crate::client::ClientIoMessage;
-    use io::IoService;
+    use crate::io::IoService;
     use journaldb::Algorithm;
-    use snapshot::{ManifestData, RestorationStatus, SnapshotService};
-    use spec::Spec;
+    use crate::snapshot::{ManifestData, RestorationStatus, SnapshotService};
+    use crate::spec::Spec;
     use tempdir::TempDir;
     use test_helpers::{generate_dummy_client_with_spec_and_data, restoration_db_handler};
 

@@ -16,14 +16,14 @@
 
 //! Account state encoding and decoding
 
-use account_db::{AccountDB, AccountDBMut};
+use crate::account_db::{AccountDB, AccountDBMut};
 use bytes::Bytes;
 use ethereum_types::{H256, U256};
 use ethtrie::{TrieDB, TrieDBMut};
 use hash::{KECCAK_EMPTY, KECCAK_NULL_RLP};
 use hash_db::HashDB;
 use rlp::{Rlp, RlpStream};
-use snapshot::{Error, Progress};
+use crate::snapshot::{Error, Progress};
 use std::{collections::HashSet, sync::atomic::Ordering};
 use trie::{Trie, TrieMut};
 use types::basic_account::BasicAccount;
@@ -221,8 +221,8 @@ pub fn from_fat_rlp(
 
 #[cfg(test)]
 mod tests {
-    use account_db::{AccountDB, AccountDBMut};
-    use snapshot::{tests::helpers::fill_storage, Progress};
+    use crate::account_db::{AccountDB, AccountDBMut};
+    use crate::snapshot::{tests::helpers::fill_storage, Progress};
     use test_helpers::get_temp_state_db;
     use types::basic_account::BasicAccount;
 

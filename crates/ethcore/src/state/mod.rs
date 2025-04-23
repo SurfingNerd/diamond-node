@@ -203,7 +203,7 @@ pub fn check_proof(
 ) -> ProvedExecution {
     let backend = self::backend::ProofCheck::new(proof);
     let mut factories = Factories::default();
-    factories.accountdb = ::account_db::Factory::Plain;
+    factories.accountdb = crate::account_db::Factory::Plain;
 
     let res = State::from_existing(
         backend,
@@ -1580,10 +1580,10 @@ mod tests {
     use hash::{keccak, KECCAK_NULL_RLP};
     use crate::machine::EthereumMachine;
     use rustc_hex::FromHex;
-    use spec::*;
+    use crate::spec::*;
     use std::{str::FromStr, sync::Arc};
     use test_helpers::{get_temp_state, get_temp_state_db};
-    use trace::{trace, FlatTrace, TraceError};
+    use crate::trace::{trace, FlatTrace, TraceError};
     use types::transaction::*;
     use vm::EnvInfo;
 

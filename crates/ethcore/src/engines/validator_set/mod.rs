@@ -33,7 +33,7 @@ use types::{header::Header, ids::BlockId, BlockNumber};
 
 use crate::client::EngineClient;
 
-use error::Error as EthcoreError;
+use crate::error::Error as EthcoreError;
 
 pub use self::simple_list::SimpleList;
 #[cfg(test)]

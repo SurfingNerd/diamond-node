@@ -27,7 +27,7 @@ use crypto::publickey::{Generator, Random};
 use ethcore_network::*;
 use ethcore_network_devp2p::NetworkService;
 use ethereum_types::U64;
-use io::TimerToken;
+use crate::io::TimerToken;
 use parity_bytes::Bytes;
 use parking_lot::Mutex;
 use std::{

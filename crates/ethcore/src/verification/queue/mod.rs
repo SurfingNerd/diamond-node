@@ -22,7 +22,7 @@ use crate::client::ClientIoMessage;
 use crate::engines::EthEngine;
 use error::{BlockError, Error, ErrorKind, ImportErrorKind};
 use ethereum_types::{H256, U256};
-use io::*;
+use crate::io::*;
 use len_caching_lock::LenCachingMutex;
 use parity_util_mem::{MallocSizeOf, MallocSizeOfExt};
 use parking_lot::{Condvar, Mutex, RwLock};
@@ -873,8 +873,8 @@ mod tests {
     use super::{kind::blocks::Unverified, BlockQueue, Config, State};
     use bytes::Bytes;
     use error::*;
-    use io::*;
-    use spec::Spec;
+    use crate::io::*;
+    use crate::spec::Spec;
     use test_helpers::{get_good_dummy_block, get_good_dummy_block_seq};
     use types::{view, views::BlockView, BlockNumber};
 

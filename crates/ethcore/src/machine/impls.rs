@@ -42,9 +42,9 @@ use call_contract::CallContract;
 use crate::client::BlockInfo;
 use error::Error;
 use crate::executive::Executive;
-use spec::CommonParams;
+use crate::spec::CommonParams;
 use crate::state::{CleanupMode, Substate};
-use trace::{NoopTracer, NoopVMTracer};
+use crate::trace::{NoopTracer, NoopVMTracer};
 use tx_filter::TransactionFilter;
 
 /// Ethash-specific extensions.

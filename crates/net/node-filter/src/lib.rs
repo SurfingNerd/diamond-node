@@ -105,7 +105,7 @@ mod test {
         test_helpers,
     };
     use ethereum_types::Address;
-    use io::IoChannel;
+    use crate::io::IoChannel;
     use network::{ConnectionDirection, ConnectionFilter, NodeId};
     use std::{
         str::FromStr,

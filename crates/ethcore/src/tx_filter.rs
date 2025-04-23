@@ -27,7 +27,7 @@ use call_contract::CallContract;
 use crate::client::{BlockId, BlockInfo};
 use hash::KECCAK_EMPTY;
 use parking_lot::Mutex;
-use spec::CommonParams;
+use crate::spec::CommonParams;
 use types::{
     transaction::{Action, SignedTransaction},
     BlockNumber,
@@ -283,9 +283,9 @@ mod test {
     use crate::client::{BlockChainClient, BlockId, Client, ClientConfig};
     use crypto::publickey::{KeyPair, Secret};
     use ethereum_types::{Address, U256};
-    use io::IoChannel;
+    use crate::io::IoChannel;
     use miner::Miner;
-    use spec::Spec;
+    use crate::spec::Spec;
     use std::{str::FromStr, sync::Arc};
     use tempdir::TempDir;
     use test_helpers;

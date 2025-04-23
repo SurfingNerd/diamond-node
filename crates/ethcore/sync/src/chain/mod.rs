@@ -118,7 +118,7 @@ use network::{self, client_version::ClientVersion, PeerId};
 use parking_lot::{Mutex, RwLock, RwLockWriteGuard};
 use rand::{seq::SliceRandom, Rng};
 use rlp::{DecoderError, RlpStream};
-use snapshot::Snapshot;
+use crate::snapshot::Snapshot;
 use stats::PrometheusMetrics;
 use std::{
     cmp,

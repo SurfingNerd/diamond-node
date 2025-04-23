@@ -19,7 +19,7 @@ use crate::client::{EvmTestClient, EvmTestError, TransactErr, TransactSuccess};
 use ethjson::{self, spec::ForkSpec};
 use pod_state::PodState;
 use std::path::Path;
-use trace;
+use crate::trace;
 use vm::EnvInfo;
 
 fn skip_test(

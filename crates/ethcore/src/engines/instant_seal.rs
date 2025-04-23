@@ -129,7 +129,7 @@ mod tests {
     use crate::block::*;
     use crate::engines::Seal;
     use ethereum_types::{Address, H520};
-    use spec::Spec;
+    use crate::spec::Spec;
     use std::sync::Arc;
     use test_helpers::get_temp_state_db;
     use types::header::Header;

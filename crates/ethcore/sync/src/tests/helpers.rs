@@ -33,7 +33,7 @@ use ethcore::{
 };
 
 use ethereum_types::H256;
-use io::{IoChannel, IoContext, IoHandler};
+use crate::io::{IoChannel, IoContext, IoHandler};
 use network::{self, client_version::ClientVersion, PacketId, PeerId, ProtocolId, SessionInfo};
 use parking_lot::RwLock;
 use std::{

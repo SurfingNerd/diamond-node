@@ -27,7 +27,7 @@ use ethereum_types::{Address, Bloom, H256, U256};
 use ethtrie::TrieError;
 use rlp;
 use snappy::InvalidInput;
-use snapshot::Error as SnapshotError;
+use crate::snapshot::Error as SnapshotError;
 use types::{transaction::Error as TransactionError, BlockNumber};
 use unexpected::{Mismatch, OutOfBounds};
 

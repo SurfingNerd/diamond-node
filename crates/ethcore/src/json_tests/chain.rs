@@ -23,14 +23,14 @@ use crate::client::{
 };
 use ethereum_types::{H256, U256};
 use ethjson;
-use io::IoChannel;
+use crate::io::IoChannel;
 use log::warn;
 use miner::Miner;
 use rustc_hex::ToHex;
-use spec::Genesis;
+use crate::spec::Genesis;
 use std::{path::Path, sync::Arc};
 use test_helpers;
-use verification::{queue::kind::blocks::Unverified, VerifierType};
+use crate::verification::{queue::kind::blocks::Unverified, VerifierType};
 
 fn check_poststate(
     client: &Arc<Client>,

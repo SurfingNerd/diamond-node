@@ -20,13 +20,13 @@ use std::{
 };
 
 use journaldb;
-use snapshot::SnapshotConfiguration;
-use verification::{QueueConfig, VerifierType};
+use crate::snapshot::SnapshotConfiguration;
+use crate::verification::{QueueConfig, VerifierType};
 
 pub use crate::blockchain::Config as BlockChainConfig;
 pub use evm::VMType;
 pub use std::time::Duration;
-pub use trace::Config as TraceConfig;
+pub use crate::trace::Config as TraceConfig;
 
 /// Client state db compaction profile
 #[derive(Debug, PartialEq, Clone)]

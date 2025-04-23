@@ -19,7 +19,7 @@
 use bytes::Bytes;
 use ethereum_types::{Address, U256, U512};
 use ethtrie;
-use trace::{FlatTrace, VMTrace};
+use crate::trace::{FlatTrace, VMTrace};
 use types::{log_entry::LogEntry, state_diff::StateDiff};
 use vm;
 

@@ -37,7 +37,7 @@ use crate::engines::EthEngine;
 use ethereum_types::H256;
 use rand::rngs::OsRng;
 use rlp::{Rlp, RlpStream};
-use snapshot::{block::AbridgedBlock, Error, ManifestData, Progress};
+use crate::snapshot::{block::AbridgedBlock, Error, ManifestData, Progress};
 use types::{encoded, BlockNumber};
 
 /// Snapshot creation and restoration for PoW chains.
@@ -88,7 +88,7 @@ impl SnapshotComponents for PowSnapshot {
         chain: BlockChain,
         db: Arc<dyn BlockChainDB>,
         manifest: &ManifestData,
-    ) -> Result<Box<dyn Rebuilder>, ::error::Error> {
+    ) -> Result<Box<dyn Rebuilder>,  crate::error::Error> {
         PowRebuilder::new(
             chain,
             db.key_value().clone(),
@@ -99,10 +99,10 @@ impl SnapshotComponents for PowSnapshot {
     }
 
     fn min_supported_version(&self) -> u64 {
-        ::snapshot::MIN_SUPPORTED_STATE_CHUNK_VERSION
+        crate::snapshot::MIN_SUPPORTED_STATE_CHUNK_VERSION
     }
     fn current_version(&self) -> u64 {
-        ::snapshot::STATE_CHUNK_VERSION
+        crate::snapshot::STATE_CHUNK_VERSION
     }
 }
 
@@ -267,9 +267,9 @@ impl Rebuilder for PowRebuilder {
         chunk: &[u8],
         engine: &dyn EthEngine,
         abort_flag: &AtomicBool,
-    ) -> Result<(), ::error::Error> {
+    ) -> Result<(), crate::error::Error> {
         use ethereum_types::U256;
-        use snapshot::verify_old_block;
+        use crate::snapshot::verify_old_block;
         use triehash::ordered_trie_root;
 
         let rlp = Rlp::new(chunk);

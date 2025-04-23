@@ -30,10 +30,10 @@ use ethereum;
 use ethereum_types::{Address, U256};
 use crate::executive::{Executive, TransactOptions};
 use hash::keccak;
-use io::IoChannel;
+use crate::io::IoChannel;
 use miner::{Miner, MinerService, PendingOrdering};
 use rustc_hex::ToHex;
-use spec::Spec;
+use crate::spec::Spec;
 use crate::state::{self, CleanupMode, State, StateInfo};
 use tempdir::TempDir;
 use test_helpers::{
@@ -49,7 +49,7 @@ use types::{
     view,
     views::BlockView,
 };
-use verification::queue::kind::blocks::Unverified;
+use crate::verification::queue::kind::blocks::Unverified;
 
 use crate::exit::ShutdownManager;
 

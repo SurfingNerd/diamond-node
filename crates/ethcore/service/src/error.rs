@@ -19,7 +19,7 @@
 #![allow(deprecated)]
 
 use ethcore;
-use io;
+use crate::io;
 
 error_chain! {
     foreign_links {

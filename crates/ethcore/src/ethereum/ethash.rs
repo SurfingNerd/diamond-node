@@ -568,7 +568,7 @@ mod tests {
     use error::{BlockError, Error, ErrorKind};
     use ethereum_types::{Address, H256, H64, U256};
     use rlp;
-    use spec::Spec;
+    use crate::spec::Spec;
     use std::{collections::BTreeMap, str::FromStr, sync::Arc};
     use tempdir::TempDir;
     use test_helpers::get_temp_state_db;

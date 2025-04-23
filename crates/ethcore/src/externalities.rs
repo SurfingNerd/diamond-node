@@ -21,7 +21,7 @@ use crate::executive::*;
 use crate::machine::EthereumMachine as Machine;
 use crate::state::{Backend as StateBackend, CleanupMode, State, Substate};
 use std::{cmp, sync::Arc};
-use trace::{Tracer, VMTracer};
+use crate::trace::{Tracer, VMTracer};
 use types::transaction::UNSIGNED_SENDER;
 use vm::{
     self, AccessList, ActionParams, ActionValue, CallType, ContractCreateResult,
@@ -566,7 +566,7 @@ mod tests {
     use crate::state::{State, Substate};
     use std::str::FromStr;
     use test_helpers::get_temp_state;
-    use trace::{NoopTracer, NoopVMTracer};
+    use crate::trace::{NoopTracer, NoopVMTracer};
 
     fn get_test_origin() -> OriginInfo {
         OriginInfo {

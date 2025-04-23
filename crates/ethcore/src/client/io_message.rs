@@ -17,7 +17,7 @@
 use bytes::Bytes;
 use crate::client::Client;
 use ethereum_types::H256;
-use snapshot::ManifestData;
+use crate::snapshot::ManifestData;
 use std::fmt;
 
 /// Message type for external and internal events

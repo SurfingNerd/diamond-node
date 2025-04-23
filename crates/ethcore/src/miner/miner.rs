@@ -37,7 +37,7 @@ use ethcore_miner::{
     service_transaction_checker::ServiceTransactionChecker,
 };
 use ethereum_types::{Address, H256, U256};
-use io::IoChannel;
+use crate::io::IoChannel;
 use itertools::Itertools;
 use miner::{
     self,
@@ -66,7 +66,7 @@ use crate::engines::{EngineSigner, EthEngine, Seal, SealingState};
 use error::{Error, ErrorKind};
 use crate::executed::ExecutionError;
 use crate::executive::contract_address;
-use spec::Spec;
+use crate::spec::Spec;
 use crate::state::State;
 
 /// Different possible definitions for pending transaction set.

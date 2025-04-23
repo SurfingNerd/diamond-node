@@ -84,18 +84,18 @@ use error::{
 };
 use crate::executive::{contract_address, Executed, Executive, TransactOptions};
 use crate::factory::{Factories, VmFactory};
-use io::IoChannel;
+use crate::io::IoChannel;
 use miner::{Miner, MinerService};
-use snapshot::{self, io as snapshot_io, SnapshotClient};
-use spec::Spec;
+use crate::snapshot::{self, io as snapshot_io, SnapshotClient};
+use crate::spec::Spec;
 use crate::state::{self, State};
 use state_db::StateDB;
 use stats::{PrometheusMetrics, PrometheusRegistry};
-use trace::{
+use crate::trace::{
     self, Database as TraceDatabase, ImportRequest as TraceImportRequest, LocalizedTrace, TraceDB,
 };
 use crate::transaction_ext::Transaction;
-use verification::{
+use crate::verification::{
     self,
     queue::kind::{blocks::Unverified, BlockLike},
     BlockQueue, PreverifiedBlock, Verifier,
@@ -106,7 +106,7 @@ pub use crate::blockchain::CacheSize as BlockChainCacheSize;
 use db::{keys::BlockDetails, Readable, Writable};
 pub use reth_util::queue::ExecutionQueue;
 pub use types::{block_status::BlockStatus, blockchain_info::BlockChainInfo};
-pub use verification::QueueInfo as BlockQueueInfo;
+pub use crate::verification::QueueInfo as BlockQueueInfo;
 
 use crate::exit::ShutdownManager;
 use_contract!(registry, "res/contracts/registrar.json");
@@ -3787,7 +3787,7 @@ impl PrometheusMetrics for Client {
 mod tests {
     use crate::blockchain::{BlockProvider, ExtrasInsert};
     use ethereum_types::{H160, H256};
-    use spec::Spec;
+    use crate::spec::Spec;
     use test_helpers::generate_dummy_client_with_spec_and_data;
 
     #[test]

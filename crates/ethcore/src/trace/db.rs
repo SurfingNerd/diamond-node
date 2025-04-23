@@ -25,7 +25,7 @@ use parity_util_mem::MallocSizeOfExt;
 use parking_lot::RwLock;
 use types::BlockNumber;
 
-use trace::{
+use crate::trace::{
     flat::{FlatBlockTraces, FlatTrace, FlatTransactionTraces},
     Config, Database as TraceDatabase, DatabaseExtras, Filter, ImportRequest, LocalizedTrace,
 };
@@ -411,7 +411,7 @@ mod tests {
     use kvdb::DBTransaction;
     use std::{collections::HashMap, sync::Arc};
     use test_helpers::new_db;
-    use trace::{
+    use crate::trace::{
         flat::{FlatBlockTraces, FlatTrace, FlatTransactionTraces},
         trace::{Action, Call, Res},
         AddressesFilter, Config, Database as TraceDatabase, DatabaseExtras, Filter, ImportRequest,

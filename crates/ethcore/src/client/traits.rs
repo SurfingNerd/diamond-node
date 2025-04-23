@@ -57,8 +57,8 @@ use error::{Error, EthcoreResult};
 use crate::executed::CallError;
 use crate::executive::Executed;
 use crate::state::StateInfo;
-use trace::LocalizedTrace;
-use verification::queue::{kind::blocks::Unverified, QueueInfo as BlockQueueInfo};
+use crate::trace::LocalizedTrace;
+use crate::verification::queue::{kind::blocks::Unverified, QueueInfo as BlockQueueInfo};
 
 /// State information to be used during client query
 pub enum StateOrBlock {

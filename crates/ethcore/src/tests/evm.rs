@@ -22,7 +22,7 @@ use hash::keccak;
 use crate::state::Substate;
 use std::sync::Arc;
 use test_helpers::get_temp_state_with_factory;
-use trace::{NoopTracer, NoopVMTracer};
+use crate::trace::{NoopTracer, NoopVMTracer};
 use types::transaction::SYSTEM_ADDRESS;
 use vm::{AccessList, ActionParams, ActionValue, CallType, EnvInfo, ParamsType};
 

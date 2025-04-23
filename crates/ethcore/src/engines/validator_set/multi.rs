@@ -25,7 +25,7 @@ use types::{header::Header, ids::BlockId, BlockNumber};
 
 use super::{SystemCall, ValidatorSet};
 use crate::client::EngineClient;
-use error::Error as EthcoreError;
+use crate::error::Error as EthcoreError;
 use crate::machine::{AuxiliaryData, Call, EthereumMachine};
 
 type BlockNumberLookup =
@@ -216,11 +216,11 @@ mod tests {
     use ethereum_types::Address;
     use hash::keccak;
     use miner::{self, MinerService};
-    use spec::Spec;
+    use crate::spec::Spec;
     use std::{collections::BTreeMap, sync::Arc};
     use test_helpers::generate_dummy_client_with_spec;
     use types::{header::Header, ids::BlockId};
-    use verification::queue::kind::blocks::Unverified;
+    use crate::verification::queue::kind::blocks::Unverified;
 
     use super::Multi;
 

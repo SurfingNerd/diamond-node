@@ -22,7 +22,7 @@ use hash::{keccak, KECCAK_NULL_RLP};
 use std::sync::{atomic::AtomicBool, Arc};
 
 use super::helpers::StateProducer;
-use snapshot::{
+use crate::snapshot::{
     account, chunk_state,
     io::{PackedReader, PackedWriter, SnapshotReader, SnapshotWriter},
     Error as SnapshotError, Progress, StateRebuilder, SNAPSHOT_SUBPARTS,
@@ -128,7 +128,7 @@ fn get_code_from_prev_chunk() {
     use rlp::RlpStream;
     use std::collections::HashSet;
 
-    use account_db::{AccountDB, AccountDBMut};
+    use crate::account_db::{AccountDB, AccountDBMut};
 
     let code = b"this is definitely code";
     let mut used_code = HashSet::new();

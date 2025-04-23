@@ -689,7 +689,7 @@ impl fmt::Debug for Account {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_db::*;
+    use crate::account_db::*;
     use bytes::Bytes;
     use ethereum_types::{Address, H256};
     use journaldb::new_memory_db;

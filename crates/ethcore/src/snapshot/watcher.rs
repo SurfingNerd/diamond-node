@@ -21,7 +21,7 @@ use parking_lot::Mutex;
 use types::ids::BlockId;
 
 use ethereum_types::H256;
-use io::IoChannel;
+use crate::io::IoChannel;
 
 use std::sync::Arc;
 

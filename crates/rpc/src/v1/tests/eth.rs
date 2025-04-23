@@ -28,7 +28,7 @@ use ethcore::{
 };
 use ethereum_types::{Address, H256, U256};
 use ethjson::{blockchain::BlockChain, spec::ForkSpec};
-use io::IoChannel;
+use crate::io::IoChannel;
 use miner::external::ExternalMiner;
 use parity_runtime::Runtime;
 use parking_lot::Mutex;

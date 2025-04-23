@@ -45,9 +45,9 @@ use crate::factory::Factories;
 use crate::machine::EthereumMachine;
 use maplit::btreeset;
 use pod_state::PodState;
-use spec::{seal::Generic as GenericSeal, Genesis};
+use crate::spec::{seal::Generic as GenericSeal, Genesis};
 use crate::state::{backend::Basic as BasicBackend, Backend, State, Substate};
-use trace::{NoopTracer, NoopVMTracer};
+use crate::trace::{NoopTracer, NoopVMTracer};
 
 pub use ethash::OptimizeFor;
 

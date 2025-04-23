@@ -41,10 +41,10 @@ use error::{BlockError, Error};
 use crate::factory::Factories;
 use crate::state::State;
 use state_db::StateDB;
-use trace::Tracing;
+use crate::trace::Tracing;
 use triehash::ordered_trie_root;
 use unexpected::{Mismatch, OutOfBounds};
-use verification::PreverifiedBlock;
+use crate::verification::PreverifiedBlock;
 use vm::{EnvInfo, LastHashes};
 
 use hash::keccak;
@@ -635,7 +635,7 @@ mod tests {
     use std::sync::Arc;
     use test_helpers::get_temp_state_db;
     use types::{header::Header, transaction::SignedTransaction, view, views::BlockView};
-    use verification::queue::kind::blocks::Unverified;
+    use crate::verification::queue::kind::blocks::Unverified;
     use vm::LastHashes;
 
     /// Enact the block given by `block_bytes` using `engine` on the database `db` with given `parent` block header
@@ -721,7 +721,7 @@ mod tests {
 
     #[test]
     fn open_block() {
-        use spec::*;
+        use crate::spec::*;
         let spec = Spec::new_test();
         let genesis_header = spec.genesis_header();
         let db = spec
@@ -748,7 +748,7 @@ mod tests {
 
     #[test]
     fn enact_block() {
-        use spec::*;
+        use crate::spec::*;
         let spec = Spec::new_test();
         let engine = &*spec.engine;
         let genesis_header = spec.genesis_header();
@@ -809,7 +809,7 @@ mod tests {
 
     #[test]
     fn enact_block_with_uncle() {
-        use spec::*;
+        use crate::spec::*;
         let spec = Spec::new_test();
         let engine = &*spec.engine;
         let genesis_header = spec.genesis_header();

@@ -8,7 +8,7 @@ use crate::engines::signer::from_keypair;
 use ethereum_types::{Address, U256};
 use miner::{Miner, MinerService};
 use parking_lot::RwLock;
-use spec::Spec;
+use crate::spec::Spec;
 use std::{ops::Deref, sync::Arc};
 use test_helpers::{generate_dummy_client_with_spec, TestNotify};
 use types::{data_format::DataFormat, ids::BlockId};

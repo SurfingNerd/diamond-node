@@ -22,11 +22,11 @@ extern crate trie_standardmap;
 use hash::KECCAK_NULL_RLP;
 use std::sync::Arc;
 
-use account_db::AccountDBMut;
+use crate::account_db::AccountDBMut;
 use crate::blockchain::{BlockChain, BlockChainDB};
 use crate::client::{ChainInfo, Client};
 use crate::engines::EthEngine;
-use snapshot::{
+use crate::snapshot::{
     io::{PackedReader, PackedWriter, SnapshotReader},
     StateRebuilder,
 };
@@ -71,7 +71,7 @@ impl StateProducer {
             let temp = trie
                 .iter()
                 .unwrap() // binding required due to complicated lifetime stuff
-                .filter(|_| rng.gen::<f32>() < ACCOUNT_CHURN)
+                .filter(|_| rng.r#gen::<f32>() < ACCOUNT_CHURN)
                 .map(Result::unwrap)
                 .map(|(k, v)| (H256::from_slice(&k), v.to_owned()))
                 .collect();
@@ -96,7 +96,7 @@ impl StateProducer {
         }
 
         // add between 0 and 5 new accounts each tick.
-        let new_accs = rng.gen::<u32>() % 5;
+        let new_accs = rng.r#gen::<u32>() % 5;
 
         for _ in 0..new_accs {
             let address_hash = H256(rng.r#gen());

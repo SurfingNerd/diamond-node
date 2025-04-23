@@ -24,7 +24,7 @@ use crate::blockchain::{
     generator::{BlockBuilder, BlockGenerator},
     BlockChain, ExtrasInsert,
 };
-use snapshot::{
+use crate::snapshot::{
     chunk_secondary,
     io::{PackedReader, PackedWriter, SnapshotReader, SnapshotWriter},
     Error as SnapshotError, Progress, SnapshotComponents,

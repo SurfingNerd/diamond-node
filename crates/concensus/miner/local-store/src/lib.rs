@@ -19,7 +19,7 @@
 use std::{fmt, sync::Arc, time::Duration};
 
 use ethcore_db::KeyValueDB;
-use io::IoHandler;
+use crate::io::IoHandler;
 use types::transaction::{
     Condition as TransactionCondition, PendingTransaction, SignedTransaction, TypedTransaction,
     UnverifiedTransaction,

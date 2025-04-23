@@ -20,23 +20,23 @@ use std::{fs, sync::Arc};
 
 use crate::blockchain::BlockProvider;
 use crate::client::{BlockInfo, Client, ClientConfig, ImportBlock};
-use snapshot::{
+use crate::snapshot::{
     chunk_secondary, chunk_state,
     io::{PackedReader, PackedWriter, SnapshotReader, SnapshotWriter},
     service::{Service, ServiceParams},
     ManifestData, Progress, RestorationStatus, SnapshotService,
 };
-use spec::Spec;
+use crate::spec::Spec;
 use tempdir::TempDir;
 use test_helpers::{
     generate_dummy_client_with_spec_and_data, new_db, new_temp_db, restoration_db_handler,
 };
 use types::ids::BlockId;
 
-use io::IoChannel;
+use crate::io::IoChannel;
 use kvdb_rocksdb::DatabaseConfig;
 use parking_lot::Mutex;
-use verification::queue::kind::blocks::Unverified;
+use crate::verification::queue::kind::blocks::Unverified;
 
 use crate::exit::ShutdownManager;
 

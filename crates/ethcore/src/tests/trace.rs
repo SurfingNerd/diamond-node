@@ -21,19 +21,19 @@ use crate::client::{BlockChainClient, Client, ClientConfig, *};
 use crypto::publickey::KeyPair;
 use ethereum_types::{Address, U256};
 use hash::keccak;
-use io::*;
+use crate::io::*;
 use miner::Miner;
-use spec::*;
+use crate::spec::*;
 use std::{str::FromStr, sync::Arc};
 use test_helpers::{self, get_temp_state_db};
-use trace::{trace::Action::Reward, LocalizedTrace, RewardType};
+use crate::trace::{trace::Action::Reward, LocalizedTrace, RewardType};
 use types::{
     header::Header,
     transaction::{Action, Transaction, TypedTransaction},
     view,
     views::BlockView,
 };
-use verification::queue::kind::blocks::Unverified;
+use crate::verification::queue::kind::blocks::Unverified;
 
 use crate::exit::ShutdownManager;
 

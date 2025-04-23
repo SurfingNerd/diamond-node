@@ -22,7 +22,7 @@ use itertools::Itertools;
 use memory_cache::MemoryLruCache;
 use parking_lot::RwLock;
 use types::BlockNumber;
-use verification::queue::kind::blocks::Unverified;
+use crate::verification::queue::kind::blocks::Unverified;
 
 /// Recently seen bad blocks.
 pub struct BadBlocks {

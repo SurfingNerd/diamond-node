@@ -27,7 +27,7 @@ use ethereum_types::{H256, H512, U256};
 use hash::keccak;
 use network::{client_version::ClientVersion, PeerId};
 use rlp::Rlp;
-use snapshot::ChunkType;
+use crate::snapshot::ChunkType;
 use std::{cmp, mem, time::Instant};
 use sync_io::SyncIo;
 use types::{block_status::BlockStatus, ids::BlockId, BlockNumber};

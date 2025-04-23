@@ -17,7 +17,7 @@
 //! Nonoperative tracer.
 
 use ethereum_types::{Address, U256};
-use trace::{
+use crate::trace::{
     trace::{RewardType, VMTrace},
     FlatTrace, Tracer, VMTracer,
 };

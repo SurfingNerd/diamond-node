@@ -72,12 +72,12 @@ use crate::executed::CallError;
 use crate::executive::Executed;
 use journaldb;
 use miner::{self, Miner, MinerService};
-use spec::Spec;
+use crate::spec::Spec;
 use crate::state::StateInfo;
 use state_db::StateDB;
 use stats::{PrometheusMetrics, PrometheusRegistry};
-use trace::LocalizedTrace;
-use verification::queue::{kind::blocks::Unverified, QueueInfo};
+use crate::trace::LocalizedTrace;
+use crate::verification::queue::{kind::blocks::Unverified, QueueInfo};
 
 use super::ReservedPeersManagement;
 

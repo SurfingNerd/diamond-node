@@ -28,7 +28,7 @@ use db::KeyValueDB;
 use ethereum_types::{Address, H256, H512, U256};
 use evm::Factory as EvmFactory;
 use hash::keccak;
-use io::IoChannel;
+use crate::io::IoChannel;
 use kvdb_rocksdb::{self, Database, DatabaseConfig};
 use parking_lot::RwLock;
 use rlp::{self, RlpStream};
@@ -51,10 +51,10 @@ use crate::engines::{EngineSigner, Seal};
 use ethjson::crypto::publickey::{Public, Signature};
 use crate::factory::Factories;
 use miner::Miner;
-use spec::Spec;
+use crate::spec::Spec;
 use crate::state::*;
 use state_db::StateDB;
-use verification::queue::kind::blocks::Unverified;
+use crate::verification::queue::kind::blocks::Unverified;
 
 use crate::exit::ShutdownManager;
 

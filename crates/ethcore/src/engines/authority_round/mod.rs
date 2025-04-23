@@ -68,7 +68,7 @@ use ethereum_types::{Address, H256, H512, H520, U128, U256};
 
 use ethjson::{self, uint::Uint};
 use hash::keccak;
-use io::{IoContext, IoHandler, IoService, TimerToken};
+use crate::io::{IoContext, IoHandler, IoService, TimerToken};
 use itertools::{self, Itertools};
 use lru_cache::LruCache;
 use crate::machine::{AuxiliaryData, Call, EthereumMachine};
@@ -2400,7 +2400,7 @@ mod tests {
     use hash::keccak;
     use miner::{Author, MinerService};
     use rlp::encode;
-    use spec::Spec;
+    use crate::spec::Spec;
     use std::{
         collections::BTreeMap,
         str::FromStr,

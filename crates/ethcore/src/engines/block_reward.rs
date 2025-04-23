@@ -26,7 +26,7 @@ use error::Error;
 use hash::keccak;
 use crate::machine::Machine;
 use std::sync::Arc;
-use trace::{self, ExecutiveTracer, Tracer, Tracing};
+use crate::trace::{self, ExecutiveTracer, Tracer, Tracing};
 use types::BlockNumber;
 
 use_contract!(block_reward_contract, "res/contracts/block_reward.json");
@@ -197,7 +197,7 @@ pub fn apply_block_rewards<M: Machine>(
 mod test {
     use crate::client::PrepareOpenBlock;
     use ethereum_types::{H160, U256};
-    use spec::Spec;
+    use crate::spec::Spec;
     use test_helpers::generate_dummy_client_with_spec;
 
     use super::{BlockRewardContract, RewardKind};

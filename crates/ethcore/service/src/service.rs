@@ -19,7 +19,7 @@
 use std::{path::Path, sync::Arc, time::Duration};
 
 use ansi_term::Colour;
-use io::{IoContext, IoError, IoHandler, IoService, TimerToken};
+use crate::io::{IoContext, IoError, IoHandler, IoService, TimerToken};
 use stop_guard::StopGuard;
 
 use crate::blockchain::{BlockChainDB, BlockChainDBHandler};

@@ -19,7 +19,7 @@
 use ethereum_types::{Address, U256};
 use log::{debug, warn};
 use std::cmp::min;
-use trace::{
+use crate::trace::{
     trace::{
         Action, Call, CallResult, Create, CreateResult, MemoryDiff, Res, Reward, RewardType,
         StorageDiff, Suicide, VMExecutedOperation, VMOperation, VMTrace,

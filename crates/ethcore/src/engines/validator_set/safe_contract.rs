@@ -724,14 +724,14 @@ mod tests {
     use hash::keccak;
     use miner::{self, MinerService};
     use rustc_hex::FromHex;
-    use spec::Spec;
+    use crate::spec::Spec;
     use std::sync::Arc;
     use test_helpers::generate_dummy_client_with_spec;
     use types::{
         ids::BlockId,
         transaction::{Action, Transaction, TypedTransaction},
     };
-    use verification::queue::kind::blocks::Unverified;
+    use crate::verification::queue::kind::blocks::Unverified;
 
     #[test]
     fn fetches_validators() {

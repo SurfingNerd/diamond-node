@@ -26,7 +26,7 @@ use hash::keccak;
 use crate::machine::EthereumMachine as Machine;
 use crate::state::{Backend as StateBackend, CleanupMode, State, Substate};
 use std::{cmp, convert::TryFrom, sync::Arc};
-use trace::{self, Tracer, VMTracer};
+use crate::trace::{self, Tracer, VMTracer};
 use crate::transaction_ext::Transaction;
 use types::transaction::{Action, SignedTransaction, TypedTransaction};
 use vm::{
@@ -1636,7 +1636,7 @@ mod tests {
     use crate::state::{CleanupMode, Substate};
     use std::{str::FromStr, sync::Arc};
     use test_helpers::{get_temp_state, get_temp_state_with_factory};
-    use trace::{
+    use crate::trace::{
         trace, ExecutiveTracer, ExecutiveVMTracer, FlatTrace, MemoryDiff, NoopTracer, NoopVMTracer,
         StorageDiff, Tracer, VMExecutedOperation, VMOperation, VMTrace, VMTracer,
     };

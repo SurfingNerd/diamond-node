@@ -39,7 +39,7 @@ use crate::client::BlockInfo;
 use crate::engines::{EthEngine, MAX_UNCLE_AGE};
 use error::{BlockError, Error};
 use types::{header::Header, transaction::SignedTransaction, BlockNumber};
-use verification::queue::kind::blocks::Unverified;
+use crate::verification::queue::kind::blocks::Unverified;
 
 use time_utils::CheckedSystemTime;
 
@@ -547,7 +547,7 @@ mod tests {
     use ethereum_types::{Address, BloomRef, H256, U256};
     use hash::keccak;
     use rlp;
-    use spec::{CommonParams, Spec};
+    use crate::spec::{CommonParams, Spec};
     use std::{
         collections::{BTreeMap, HashMap},
         time::{SystemTime, UNIX_EPOCH},

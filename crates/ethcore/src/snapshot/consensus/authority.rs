@@ -28,7 +28,7 @@ use std::sync::{
 
 use crate::engines::{EpochTransition, EpochVerifier, EthEngine};
 use crate::machine::EthereumMachine;
-use snapshot::{Error, ManifestData, Progress};
+use crate::snapshot::{Error, ManifestData, Progress};
 
 use crate::blockchain::{BlockChain, BlockChainDB, BlockProvider};
 use bytes::Bytes;

@@ -21,7 +21,7 @@ use std::sync::{atomic::AtomicBool, Arc};
 
 use crate::blockchain::{BlockChain, BlockChainDB};
 use crate::engines::EthEngine;
-use snapshot::{Error, ManifestData, Progress};
+use crate::snapshot::{Error, ManifestData, Progress};
 use types::BlockNumber;
 
 use ethereum_types::H256;
