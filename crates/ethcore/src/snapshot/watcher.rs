@@ -18,7 +18,7 @@
 
 use crate::client::{BlockInfo, ChainNotify, Client, ClientIoMessage, NewBlocks};
 use parking_lot::Mutex;
-use types::ids::BlockId;
+use crate::types::ids::BlockId;
 
 use ethereum_types::H256;
 use crate::io::IoChannel;

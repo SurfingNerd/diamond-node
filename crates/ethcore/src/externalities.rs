@@ -22,7 +22,7 @@ use crate::machine::EthereumMachine as Machine;
 use crate::state::{Backend as StateBackend, CleanupMode, State, Substate};
 use std::{cmp, sync::Arc};
 use crate::trace::{Tracer, VMTracer};
-use types::transaction::UNSIGNED_SENDER;
+use crate::types::transaction::UNSIGNED_SENDER;
 use vm::{
     self, AccessList, ActionParams, ActionValue, CallType, ContractCreateResult,
     CreateContractAddress, EnvInfo, Ext, MessageCallResult, ReturnData, Schedule, TrapKind,
@@ -444,7 +444,7 @@ where
     }
 
     fn log(&mut self, topics: Vec<H256>, data: &[u8]) -> vm::Result<()> {
-        use types::log_entry::LogEntry;
+        use crate::types::log_entry::LogEntry;
 
         if self.static_flag {
             return Err(vm::Error::MutableCallInStaticContext);

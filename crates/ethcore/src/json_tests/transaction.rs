@@ -19,7 +19,7 @@ use crate::client::EvmTestClient;
 use ethjson;
 use std::path::Path;
 use crate::transaction_ext::Transaction;
-use types::{
+use crate::types::{
     header::Header,
     transaction::{TypedTransaction, UnverifiedTransaction},
 };

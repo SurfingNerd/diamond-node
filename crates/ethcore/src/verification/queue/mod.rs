@@ -20,7 +20,7 @@
 use crate::blockchain::BlockChain;
 use crate::client::ClientIoMessage;
 use crate::engines::EthEngine;
-use error::{BlockError, Error, ErrorKind, ImportErrorKind};
+use crate::error::{BlockError, Error, ErrorKind, ImportErrorKind};
 use ethereum_types::{H256, U256};
 use crate::io::*;
 use len_caching_lock::LenCachingMutex;
@@ -39,7 +39,7 @@ use std::{
 
 use self::kind::{BlockLike, Kind};
 
-pub use types::verification_queue_info::VerificationQueueInfo as QueueInfo;
+pub use crate::types::verification_queue_info::VerificationQueueInfo as QueueInfo;
 
 pub mod kind;
 
@@ -126,7 +126,7 @@ pub enum Status {
 
 impl Into<::types::block_status::BlockStatus> for Status {
     fn into(self) -> ::types::block_status::BlockStatus {
-        use types::block_status::BlockStatus;
+        use crate::types::block_status::BlockStatus;
         match self {
             Status::Queued => BlockStatus::Queued,
             Status::Bad => BlockStatus::Bad,
@@ -876,7 +876,7 @@ mod tests {
     use crate::io::*;
     use crate::spec::Spec;
     use test_helpers::{get_good_dummy_block, get_good_dummy_block_seq};
-    use types::{view, views::BlockView, BlockNumber};
+    use crate::types::{view, views::BlockView, BlockNumber};
 
     // create a test block queue.
     // auto_scaling enables verifier adjustment.

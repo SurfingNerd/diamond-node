@@ -20,7 +20,7 @@ use hbbft::{
 use itertools::Itertools;
 use parking_lot::RwLock;
 use std::{collections::BTreeMap, str::FromStr, sync::Arc};
-use types::ids::BlockId;
+use crate::types::ids::BlockId;
 
 use_contract!(
     key_history_contract,

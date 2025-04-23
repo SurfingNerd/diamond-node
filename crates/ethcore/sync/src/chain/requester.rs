@@ -22,7 +22,7 @@ use network::PeerId;
 use rlp::RlpStream;
 use std::time::Instant;
 use sync_io::SyncIo;
-use types::BlockNumber;
+use crate::types::BlockNumber;
 
 use super::{
     request_id::generate_request_id,

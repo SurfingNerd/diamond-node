@@ -20,8 +20,8 @@ use super::{verification, Verifier};
 use call_contract::CallContract;
 use crate::client::BlockInfo;
 use crate::engines::EthEngine;
-use error::Error;
-use types::header::Header;
+use crate::error::Error;
+use crate::types::header::Header;
 
 /// A no-op verifier -- this will verify everything it's given immediately.
 #[allow(dead_code)]

@@ -128,7 +128,7 @@ use std::{
 };
 use sync_io::SyncIo;
 use transactions_stats::{Stats as TransactionStats, TransactionsStats};
-use types::{block_status, transaction::UnverifiedTransaction, BlockNumber};
+use crate::types::{block_status, transaction::UnverifiedTransaction, BlockNumber};
 
 use self::{
     handler::SyncHandler,
@@ -1874,7 +1874,7 @@ pub mod tests {
     use rlp::{Rlp, RlpStream};
     use std::collections::VecDeque;
     use tests::{helpers::TestIo, snapshot::TestSnapshotService};
-    use types::header::Header;
+    use crate::types::header::Header;
     use SyncConfig;
 
     pub fn get_dummy_block(order: u32, parent_hash: H256) -> Bytes {

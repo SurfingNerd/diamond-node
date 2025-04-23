@@ -18,7 +18,7 @@ use crate::blockchain::ImportRoute;
 use bytes::Bytes;
 use ethereum_types::{H256, H512, U256};
 use std::{collections::HashMap, time::Duration};
-use types::transaction::UnverifiedTransaction;
+use crate::types::transaction::UnverifiedTransaction;
 
 /// Messages to broadcast via chain
 pub enum ChainMessageType {

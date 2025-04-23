@@ -39,7 +39,7 @@ use ethcore_miner::{
 use ethereum_types::{Address, H256, U256};
 use crate::io::IoChannel;
 use itertools::Itertools;
-use miner::{
+use crate::miner::{
     self,
     cache::Cache,
     pool_client::{CachedNonceClient, PoolClient},
@@ -47,7 +47,7 @@ use miner::{
 };
 use parking_lot::{Mutex, RwLock};
 use rayon::prelude::*;
-use types::{
+use crate::types::{
     block::Block,
     header::Header,
     receipt::RichReceipt,
@@ -63,7 +63,7 @@ use crate::client::{
     TransactionId, TransactionInfo,
 };
 use crate::engines::{EngineSigner, EthEngine, Seal, SealingState};
-use error::{Error, ErrorKind};
+use crate::error::{Error, ErrorKind};
 use crate::executed::ExecutionError;
 use crate::executive::contract_address;
 use crate::spec::Spec;
@@ -1107,7 +1107,7 @@ impl Miner {
 const SEALING_TIMEOUT_IN_BLOCKS: u64 = 5;
 
 impl miner::MinerService for Miner {
-    type State = State<::state_db::StateDB>;
+    type State = State<crate::state_db::StateDB>;
 
     fn authoring_params(&self) -> AuthoringParams {
         self.params.read().clone()
@@ -1743,7 +1743,7 @@ impl miner::MinerService for Miner {
                 let accounts = self.accounts.clone();
                 let service_transaction_checker = self.service_transaction_checker.clone();
 
-                let cull = move |chain: &::client::Client| {
+                let cull = move |chain: &crate::client::Client| {
                     let client = PoolClient::new(
                         chain,
                         &nonce_cache,
@@ -1829,14 +1829,14 @@ mod tests {
     use crypto::publickey::{Generator, Random};
     use hash::keccak;
     use rustc_hex::FromHex;
-    use types::BlockNumber;
+    use crate::types::BlockNumber;
 
     use crate::client::{ChainInfo, EachBlockWith, ImportSealedBlock, TestBlockChainClient};
     use miner::{MinerService, PendingOrdering};
     use test_helpers::{
         dummy_engine_signer_with_address, generate_dummy_client, generate_dummy_client_with_spec,
     };
-    use types::transaction::{Transaction, TypedTransaction};
+    use crate::types::transaction::{Transaction, TypedTransaction};
 
     #[test]
     fn should_prepare_block_to_seal() {

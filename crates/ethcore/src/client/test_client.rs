@@ -38,7 +38,7 @@ use kvdb::DBValue;
 use parking_lot::{Mutex, RwLock};
 use rlp::RlpStream;
 use rustc_hex::FromHex;
-use types::{
+use crate::types::{
     basic_account::BasicAccount,
     encoded,
     filter::Filter,
@@ -497,8 +497,8 @@ impl BroadcastProposalBlock for TestBlockChainClient {
 
 impl SealedBlockImporter for TestBlockChainClient {}
 
-impl ::miner::TransactionVerifierClient for TestBlockChainClient {}
-impl ::miner::BlockChainClient for TestBlockChainClient {}
+impl crate::miner::TransactionVerifierClient for TestBlockChainClient {}
+impl crate::miner::BlockChainClient for TestBlockChainClient {}
 
 impl Nonce for TestBlockChainClient {
     fn nonce(&self, address: &Address, id: BlockId) -> Option<U256> {

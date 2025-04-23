@@ -43,7 +43,7 @@ use std::{
 use sync_io::SyncIo;
 use tests::snapshot::*;
 
-use types::BlockNumber;
+use crate::types::BlockNumber;
 use SyncConfig;
 
 pub trait FlushingBlockChainClient: BlockChainClient {

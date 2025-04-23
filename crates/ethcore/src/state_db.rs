@@ -30,7 +30,7 @@ use kvdb::{DBTransaction, DBValue};
 use lru_cache::LruCache;
 use memory_cache::MemoryLruCache;
 use parking_lot::Mutex;
-use types::BlockNumber;
+use crate::types::BlockNumber;
 
 use crate::state::{self, Account};
 

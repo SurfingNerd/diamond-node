@@ -28,7 +28,7 @@ use ethtrie::TrieError;
 use rlp;
 use snappy::InvalidInput;
 use crate::snapshot::Error as SnapshotError;
-use types::{transaction::Error as TransactionError, BlockNumber};
+use crate::types::{transaction::Error as TransactionError, BlockNumber};
 use unexpected::{Mismatch, OutOfBounds};
 
 use crate::engines::EngineError;

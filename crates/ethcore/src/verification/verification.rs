@@ -37,8 +37,8 @@ use crate::blockchain::*;
 use call_contract::CallContract;
 use crate::client::BlockInfo;
 use crate::engines::{EthEngine, MAX_UNCLE_AGE};
-use error::{BlockError, Error};
-use types::{header::Header, transaction::SignedTransaction, BlockNumber};
+use crate::error::{BlockError, Error};
+use crate::types::{header::Header, transaction::SignedTransaction, BlockNumber};
 use crate::verification::queue::kind::blocks::Unverified;
 
 use time_utils::CheckedSystemTime;
@@ -554,7 +554,7 @@ mod tests {
     };
     use test_helpers::{create_test_block, create_test_block_with_data};
     use triehash::ordered_trie_root;
-    use types::{
+    use crate::types::{
         encoded,
         log_entry::{LocalizedLogEntry, LogEntry},
         transaction::{Action, SignedTransaction, Transaction, TypedTransaction},
@@ -1127,7 +1127,7 @@ mod tests {
         use crypto::publickey::{Generator, Random};
         use crate::engines::NullEngine;
         use crate::machine::EthereumMachine;
-        use types::transaction::{Action, Transaction};
+        use crate::types::transaction::{Action, Transaction};
 
         let mut params = CommonParams::default();
         params.dust_protection_transition = 0;

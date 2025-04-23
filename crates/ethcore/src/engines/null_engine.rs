@@ -21,7 +21,7 @@ use crate::engines::{
 };
 use ethereum_types::U256;
 use crate::machine::Machine;
-use types::{
+use crate::types::{
     ancestry_action::AncestryAction,
     header::{ExtendedHeader, Header},
     BlockNumber,

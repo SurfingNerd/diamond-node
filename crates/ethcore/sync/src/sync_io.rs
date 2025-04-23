@@ -22,7 +22,7 @@ use network::{
 };
 use parking_lot::RwLock;
 use std::collections::HashMap;
-use types::BlockNumber;
+use crate::types::BlockNumber;
 
 /// IO interface for the syncing handler.
 /// Provides peer connection management and an interface to the blockchain client.

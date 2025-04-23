@@ -18,7 +18,7 @@ use std::sync::{atomic, Arc};
 
 use ethereum_types::{Address, H256, U256};
 use rlp::Rlp;
-use types::transaction::{
+use crate::types::transaction::{
     self, SignedTransaction, Transaction, TypedTransaction, UnverifiedTransaction,
 };
 

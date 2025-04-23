@@ -21,7 +21,7 @@ use jsonrpc_core::{
     futures::{Async, Future, IntoFuture, Poll},
     Error, Result,
 };
-use types::transaction::SignedTransaction;
+use crate::types::transaction::SignedTransaction;
 
 use super::{Accounts, PostSign, SignWith, WithToken};
 use v1::helpers::{errors, nonce, FilledTransactionRequest};

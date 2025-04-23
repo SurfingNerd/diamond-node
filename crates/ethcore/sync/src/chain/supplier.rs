@@ -27,7 +27,7 @@ use network::{self, PeerId};
 use parking_lot::RwLock;
 use rlp::{Rlp, RlpStream};
 use std::cmp;
-use types::{ids::BlockId, BlockNumber};
+use crate::types::{ids::BlockId, BlockNumber};
 
 use sync_io::SyncIo;
 

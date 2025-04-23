@@ -3,7 +3,7 @@
 
 use ethereum_types::{Address, U256};
 use std::collections::HashMap;
-use types::transaction::SignedTransaction;
+use crate::types::transaction::SignedTransaction;
 
 /// Combining an address with a random U256 seed using XOR, using big-endian byte ordering always.
 fn address_xor_u256(address: &Address, seed: U256) -> Address {

@@ -13,7 +13,7 @@ use crate::client::traits::BlockInfo;
 use crypto::publickey::{Generator, KeyPair, Random, Secret};
 use ethereum_types::{Address, U256};
 use std::str::FromStr;
-use types::ids::BlockId;
+use crate::types::ids::BlockId;
 
 pub mod create_transactions;
 pub mod hbbft_test_client;

@@ -22,11 +22,11 @@ use bytes::Bytes;
 use ethereum_types::{Address, H256, U256};
 use crate::machine::{AuxiliaryData, Call, EthereumMachine};
 use parking_lot::RwLock;
-use types::{header::Header, ids::BlockId, transaction, BlockNumber};
+use crate::types::{header::Header, ids::BlockId, transaction, BlockNumber};
 
 use crate::client::{traits::TransactionRequest, EngineClient};
 
-use error::Error as EthcoreError;
+use crate::error::Error as EthcoreError;
 
 use super::{safe_contract::ValidatorSafeContract, SimpleList, SystemCall, ValidatorSet};
 
@@ -146,7 +146,7 @@ impl ValidatorSet for ValidatorContract {
         first: bool,
         header: &Header,
         call: &mut SystemCall,
-    ) -> Result<(), ::error::Error> {
+    ) -> Result<(), crate::error::Error> {
         self.validators.on_epoch_begin(first, header, call)
     }
 
@@ -173,7 +173,7 @@ impl ValidatorSet for ValidatorContract {
         machine: &EthereumMachine,
         number: BlockNumber,
         proof: &[u8],
-    ) -> Result<(SimpleList, Option<H256>), ::error::Error> {
+    ) -> Result<(SimpleList, Option<H256>), crate::error::Error> {
         self.validators.epoch_set(first, machine, number, proof)
     }
 
@@ -229,7 +229,7 @@ mod tests {
     use crate::spec::Spec;
     use std::sync::Arc;
     use test_helpers::generate_dummy_client_with_spec;
-    use types::{header::Header, ids::BlockId};
+    use crate::types::{header::Header, ids::BlockId};
 
     #[test]
     fn fetches_validators() {

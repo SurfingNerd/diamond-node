@@ -21,7 +21,7 @@ use std::{
     collections::{HashMap, HashSet},
     hash::BuildHasher,
 };
-use types::BlockNumber;
+use crate::types::BlockNumber;
 
 type NodeId = H512;
 

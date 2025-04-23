@@ -20,7 +20,7 @@ use std::{fmt, sync::Arc, time::Duration};
 
 use ethcore_db::KeyValueDB;
 use crate::io::IoHandler;
-use types::transaction::{
+use crate::types::transaction::{
     Condition as TransactionCondition, PendingTransaction, SignedTransaction, TypedTransaction,
     UnverifiedTransaction,
 };
@@ -241,7 +241,7 @@ mod tests {
 
     use ethkey::Brain;
     use std::sync::Arc;
-    use types::transaction::{Condition, PendingTransaction, Transaction, TypedTransaction};
+    use crate::types::transaction::{Condition, PendingTransaction, Transaction, TypedTransaction};
 
     // we want to test: round-trip of good transactions.
     // failure to roundtrip bad transactions (but that it doesn't panic)

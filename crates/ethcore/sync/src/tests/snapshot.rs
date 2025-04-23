@@ -24,7 +24,7 @@ use ethereum_types::H256;
 use hash::keccak;
 use parking_lot::Mutex;
 use std::{collections::HashMap, sync::Arc};
-use types::BlockNumber;
+use crate::types::BlockNumber;
 use SyncConfig;
 use WarpSync;
 

@@ -11,7 +11,7 @@ use parking_lot::RwLock;
 use crate::spec::Spec;
 use std::{ops::Deref, sync::Arc};
 use test_helpers::{generate_dummy_client_with_spec, TestNotify};
-use types::{data_format::DataFormat, ids::BlockId};
+use crate::types::{data_format::DataFormat, ids::BlockId};
 
 pub fn hbbft_spec() -> Spec {
     Spec::load(

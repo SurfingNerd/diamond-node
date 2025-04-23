@@ -1,6 +1,6 @@
 use ethereum_types::Address;
 use stats::PrometheusMetrics;
-use types::ids::BlockId;
+use crate::types::ids::BlockId;
 
 use crate::{
     client::{BlockChainClient, EngineClient},

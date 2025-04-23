@@ -39,7 +39,7 @@ use ethereum_types::{Address, H256, H520, U256};
 use parity_runtime::{Executor, Runtime};
 use parking_lot::Mutex;
 use serde_json;
-use types::transaction::{Action, SignedTransaction, Transaction, TypedTransaction};
+use crate::types::transaction::{Action, SignedTransaction, Transaction, TypedTransaction};
 
 struct SigningTester {
     pub runtime: Runtime,

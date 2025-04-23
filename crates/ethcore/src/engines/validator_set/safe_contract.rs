@@ -21,7 +21,7 @@ use std::{
 };
 
 use bytes::Bytes;
-use error::{Error as EthcoreError, ErrorKind as EthcoreErrorKind};
+use crate::error::{Error as EthcoreError, ErrorKind as EthcoreErrorKind};
 use ethabi::FunctionOutputDecoder;
 use ethereum_types::{Address, Bloom, H256, U256};
 use hash::keccak;
@@ -29,7 +29,7 @@ use kvdb::DBValue;
 use memory_cache::MemoryLruCache;
 use parking_lot::{Mutex, RwLock};
 use rlp::{Rlp, RlpStream};
-use types::{
+use crate::types::{
     header::Header, ids::BlockId, log_entry::LogEntry, receipt::TypedReceipt, transaction,
     BlockNumber,
 };
@@ -112,7 +112,7 @@ fn check_first_proof(
     old_header: Header,
     state_items: &[DBValue],
 ) -> Result<Vec<Address>, String> {
-    use types::transaction::{Action, Transaction, TypedTransaction};
+    use crate::types::transaction::{Action, Transaction, TypedTransaction};
 
     // TODO: match client contract_call_tx more cleanly without duplication.
     const PROVIDED_GAS: u64 = 50_000_000;
@@ -168,7 +168,7 @@ fn check_first_proof(
 fn decode_first_proof(
     rlp: &Rlp,
     eip1559_transition: BlockNumber,
-) -> Result<(Header, Vec<DBValue>), ::error::Error> {
+) -> Result<(Header, Vec<DBValue>), crate::error::Error> {
     let header = Header::decode_rlp(&rlp.at(0)?, eip1559_transition)?;
     let state_items = rlp
         .at(1)?
@@ -178,7 +178,7 @@ fn decode_first_proof(
             val.append_slice(x.data()?);
             Ok(val)
         })
-        .collect::<Result<_, ::error::Error>>()?;
+        .collect::<Result<_, crate::error::Error>>()?;
 
     Ok((header, state_items))
 }
@@ -196,7 +196,7 @@ fn encode_proof(header: &Header, receipts: &[TypedReceipt]) -> Bytes {
 fn decode_proof(
     rlp: &Rlp,
     eip1559_transition: BlockNumber,
-) -> Result<(Header, Vec<TypedReceipt>), ::error::Error> {
+) -> Result<(Header, Vec<TypedReceipt>), crate::error::Error> {
     Ok((
         Header::decode_rlp(&rlp.at(0)?, eip1559_transition)?,
         TypedReceipt::decode_rlp_list(&rlp.at(1)?)?,
@@ -494,7 +494,7 @@ impl ValidatorSet for ValidatorSafeContract {
         _first: bool,
         _header: &Header,
         caller: &mut SystemCall,
-    ) -> Result<(), ::error::Error> {
+    ) -> Result<(), crate::error::Error> {
         let data = validator_set::functions::finalize_change::encode_input();
         caller(self.contract_address, data)
             .map(|_| ())
@@ -559,7 +559,7 @@ impl ValidatorSet for ValidatorSafeContract {
         machine: &EthereumMachine,
         _number: ::types::BlockNumber,
         proof: &[u8],
-    ) -> Result<(SimpleList, Option<H256>), ::error::Error> {
+    ) -> Result<(SimpleList, Option<H256>), crate::error::Error> {
         let rlp = Rlp::new(proof);
 
         if first {
@@ -727,7 +727,7 @@ mod tests {
     use crate::spec::Spec;
     use std::sync::Arc;
     use test_helpers::generate_dummy_client_with_spec;
-    use types::{
+    use crate::types::{
         ids::BlockId,
         transaction::{Action, Transaction, TypedTransaction},
     };
@@ -858,7 +858,7 @@ mod tests {
     fn detects_bloom() {
         use crate::engines::EpochChange;
         use crate::machine::AuxiliaryRequest;
-        use types::{header::Header, log_entry::LogEntry};
+        use crate::types::{header::Header, log_entry::LogEntry};
 
         let client = generate_dummy_client_with_spec(Spec::new_validator_safe_contract);
         let engine = client.engine();
@@ -897,7 +897,7 @@ mod tests {
     #[test]
     fn initial_contract_is_signal() {
         use crate::engines::{EpochChange, Proof};
-        use types::header::Header;
+        use crate::types::header::Header;
 
         let client = generate_dummy_client_with_spec(Spec::new_validator_safe_contract);
         let engine = client.engine();

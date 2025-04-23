@@ -27,7 +27,7 @@ use crate::spec::*;
 use std::{str::FromStr, sync::Arc};
 use test_helpers::{self, get_temp_state_db};
 use crate::trace::{trace::Action::Reward, LocalizedTrace, RewardType};
-use types::{
+use crate::types::{
     header::Header,
     transaction::{Action, Transaction, TypedTransaction},
     view,

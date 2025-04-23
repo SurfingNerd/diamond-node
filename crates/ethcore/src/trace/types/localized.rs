@@ -18,7 +18,7 @@
 
 use super::trace::{Action, Res};
 use ethereum_types::H256;
-use types::BlockNumber;
+use crate::types::BlockNumber;
 
 /// Localized trace.
 #[derive(Debug, PartialEq, Clone)]

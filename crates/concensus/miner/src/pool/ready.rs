@@ -42,7 +42,7 @@ use std::{cmp, collections::HashMap};
 
 use ethereum_types::{H160 as Address, U256};
 use txpool::{self, VerifiedTransaction as PoolVerifiedTransaction};
-use types::transaction;
+use crate::types::transaction;
 
 use super::{client::NonceClient, VerifiedTransaction};
 

@@ -23,7 +23,7 @@ use std::{
 };
 
 use ethereum_types::{Address, H256, U256};
-use types::{
+use crate::types::{
     header::Header,
     transaction::{
         self, SignedTransaction, TypedTransaction, UnverifiedTransaction, SYSTEM_ADDRESS,
@@ -40,12 +40,12 @@ use crate::block::ExecutedBlock;
 use builtin::Builtin;
 use call_contract::CallContract;
 use crate::client::BlockInfo;
-use error::Error;
+use crate::error::Error;
 use crate::executive::Executive;
 use crate::spec::CommonParams;
 use crate::state::{CleanupMode, Substate};
 use crate::trace::{NoopTracer, NoopVMTracer};
-use tx_filter::TransactionFilter;
+use crate::tx_filter::TransactionFilter;
 
 /// Ethash-specific extensions.
 #[derive(Debug, Clone)]
@@ -207,7 +207,7 @@ impl EthereumMachine {
 
         let res = ex
             .call(params, &mut substate, &mut NoopTracer, &mut NoopVMTracer)
-            .map_err(|e| ::engines::EngineError::FailedSystemCall(format!("{}", e)))?;
+            .map_err(|e| crate::engines::EngineError::FailedSystemCall(format!("{}", e)))?;
         let output = res.return_data.to_vec();
 
         Ok(output)

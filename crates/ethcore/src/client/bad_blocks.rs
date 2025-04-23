@@ -21,7 +21,7 @@ use ethereum_types::H256;
 use itertools::Itertools;
 use memory_cache::MemoryLruCache;
 use parking_lot::RwLock;
-use types::BlockNumber;
+use crate::types::BlockNumber;
 use crate::verification::queue::kind::blocks::Unverified;
 
 /// Recently seen bad blocks.

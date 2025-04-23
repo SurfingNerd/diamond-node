@@ -26,7 +26,7 @@ use ethereum_types::{Address, U256};
 use hash::keccak;
 use crate::io::{IoChannel, IoHandler};
 use std::sync::Arc;
-use types::transaction::{Action, PendingTransaction, Transaction, TypedTransaction};
+use crate::types::transaction::{Action, PendingTransaction, Transaction, TypedTransaction};
 use SyncConfig;
 
 fn new_tx(secret: &Secret, nonce: U256, chain_id: u64) -> PendingTransaction {

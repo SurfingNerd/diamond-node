@@ -24,7 +24,7 @@ use crate::machine::EthereumMachine;
 use crate::blockchain::BlockChain;
 use parking_lot::RwLock;
 use rand::Rng;
-use types::header::Header;
+use crate::types::header::Header;
 
 // do "heavy" verification on ~1/50 blocks, randomly sampled.
 const HEAVY_VERIFY_RATE: f32 = 0.02;
@@ -52,7 +52,7 @@ impl AncientVerifier {
         rng: &mut R,
         header: &Header,
         chain: &BlockChain,
-    ) -> Result<(), ::error::Error> {
+    ) -> Result<(), crate::error::Error> {
         // perform verification
         let verified = if let Some(ref cur_verifier) = *self.cur_verifier.read() {
             match rng.r#gen::<f32>() <= HEAVY_VERIFY_RATE {
@@ -93,7 +93,7 @@ impl AncientVerifier {
         &self,
         header: &Header,
         chain: &BlockChain,
-    ) -> Result<Box<dyn EpochVerifier<EthereumMachine>>, ::error::Error> {
+    ) -> Result<Box<dyn EpochVerifier<EthereumMachine>>, crate::error::Error> {
         trace!(target: "client", "Initializing ancient block restoration.");
         let current_epoch_data = chain
             .epoch_transitions()

@@ -20,7 +20,7 @@ use ethcore::{contract_address, CreateContractAddress};
 use ethereum_types::{H160, H256, H512, U256, U64};
 use miner;
 use serde::{ser::SerializeStruct, Serialize, Serializer};
-use types::transaction::{
+use crate::types::transaction::{
     Action, LocalizedTransaction, PendingTransaction, SignedTransaction, TypedTransaction,
     TypedTxId,
 };
@@ -365,7 +365,7 @@ mod tests {
     use super::{LocalTransactionStatus, Transaction};
     use ethereum_types::H256;
     use serde_json;
-    use types::transaction::TypedTxId;
+    use crate::types::transaction::TypedTxId;
 
     #[test]
     fn test_transaction_serialize() {

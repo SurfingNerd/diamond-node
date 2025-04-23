@@ -23,7 +23,7 @@ use crate::state::Substate;
 use std::sync::Arc;
 use test_helpers::get_temp_state_with_factory;
 use crate::trace::{NoopTracer, NoopVMTracer};
-use types::transaction::SYSTEM_ADDRESS;
+use crate::types::transaction::SYSTEM_ADDRESS;
 use vm::{AccessList, ActionParams, ActionValue, CallType, EnvInfo, ParamsType};
 
 use rustc_hex::FromHex;

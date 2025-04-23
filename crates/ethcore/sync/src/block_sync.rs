@@ -33,7 +33,7 @@ use std::cmp;
 ///
 use std::collections::{BTreeMap, HashSet, VecDeque};
 use sync_io::SyncIo;
-use types::BlockNumber;
+use crate::types::BlockNumber;
 
 const MAX_HEADERS_TO_REQUEST: usize = 128;
 const MAX_BODIES_TO_REQUEST_LARGE: usize = 128;
@@ -804,7 +804,7 @@ mod tests {
     use rlp::{encode_list, RlpStream};
     use tests::{helpers::TestIo, snapshot::TestSnapshotService};
     use triehash_ethereum::ordered_trie_root;
-    use types::{
+    use crate::types::{
         header::Header as BlockHeader,
         transaction::{SignedTransaction, Transaction, TypedTransaction},
     };

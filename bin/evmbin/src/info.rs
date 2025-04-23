@@ -23,7 +23,7 @@ use ethcore::{
 use ethereum_types::{H256, U256};
 use ethjson;
 use std::time::{Duration, Instant};
-use types::transaction;
+use crate::types::transaction;
 use vm::ActionParams;
 
 /// VM execution informant

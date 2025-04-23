@@ -27,7 +27,7 @@ use ethcore::{
 };
 use ethereum_types::{H256, U256};
 use parking_lot::Mutex;
-use types::filter::Filter as EthcoreFilter;
+use crate::types::filter::Filter as EthcoreFilter;
 
 use jsonrpc_core::{
     futures::{future, future::Either, Future},

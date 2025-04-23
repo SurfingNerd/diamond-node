@@ -31,7 +31,7 @@ use evm::Schedule;
 use itertools::Itertools;
 use kvdb::DBValue;
 use parking_lot::Mutex;
-use types::{
+use crate::types::{
     basic_account::BasicAccount,
     block_status::BlockStatus,
     blockchain_info::BlockChainInfo,
@@ -53,7 +53,7 @@ use vm::LastHashes;
 use crate::block::{ClosedBlock, OpenBlock, SealedBlock};
 use crate::client::Mode;
 use crate::engines::EthEngine;
-use error::{Error, EthcoreResult};
+use crate::error::{Error, EthcoreResult};
 use crate::executed::CallError;
 use crate::executive::Executed;
 use crate::state::StateInfo;

@@ -17,7 +17,7 @@
 //! Definition of valid items for the verification queue.
 
 use crate::engines::EthEngine;
-use error::Error;
+use crate::error::Error;
 
 use ethereum_types::{H256, U256};
 use parity_util_mem::MallocSizeOf;
@@ -79,8 +79,8 @@ pub mod blocks {
     use super::{BlockLike, Kind};
 
     use crate::engines::EthEngine;
-    use error::{BlockError, Error, ErrorKind};
-    use types::{
+    use crate::error::{BlockError, Error, ErrorKind};
+    use crate::types::{
         header::Header,
         transaction::{TypedTransaction, UnverifiedTransaction},
         BlockNumber,
@@ -214,8 +214,8 @@ pub mod headers {
     use super::{BlockLike, Kind};
 
     use crate::engines::EthEngine;
-    use error::Error;
-    use types::header::Header;
+    use crate::error::Error;
+    use crate::types::header::Header;
     use crate::verification::verify_header_params;
 
     use ethereum_types::{H256, U256};

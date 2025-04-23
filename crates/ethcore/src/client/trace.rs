@@ -19,7 +19,7 @@
 use crate::blockchain::{BlockChain, BlockProvider, TransactionAddress};
 use ethereum_types::H256;
 use crate::trace::DatabaseExtras as TraceDatabaseExtras;
-use types::BlockNumber;
+use crate::types::BlockNumber;
 
 impl TraceDatabaseExtras for BlockChain {
     fn block_hash(&self, block_number: BlockNumber) -> Option<H256> {

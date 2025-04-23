@@ -22,7 +22,7 @@ use ethcore::{
 };
 use ethereum_types::{Address, H256, U256};
 use parking_lot::Mutex;
-use types::transaction::{PendingTransaction, SignedTransaction};
+use crate::types::transaction::{PendingTransaction, SignedTransaction};
 
 use jsonrpc_core::{
     futures::{future, Future, IntoFuture},

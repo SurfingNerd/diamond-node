@@ -27,7 +27,7 @@ use network::{client_version::ClientCapabilities, PeerId};
 use rand::RngCore;
 use rlp::RlpStream;
 use sync_io::SyncIo;
-use types::{blockchain_info::BlockChainInfo, transaction::SignedTransaction, BlockNumber};
+use crate::types::{blockchain_info::BlockChainInfo, transaction::SignedTransaction, BlockNumber};
 
 use crate::chain::propagator_statistics::SyncPropagatorStatistics;
 
@@ -518,7 +518,7 @@ mod tests {
     use rlp::Rlp;
     use std::collections::VecDeque;
     use tests::{helpers::TestIo, snapshot::TestSnapshotService};
-    use types::transaction::TypedTransaction;
+    use crate::types::transaction::TypedTransaction;
 
     use super::{
         super::{tests::*, *},

@@ -33,7 +33,7 @@ use std::{
     sync::Arc,
 };
 use trie::{Recorder, Trie};
-use types::basic_account::BasicAccount;
+use crate::types::basic_account::BasicAccount;
 
 use std::cell::{Cell, RefCell};
 

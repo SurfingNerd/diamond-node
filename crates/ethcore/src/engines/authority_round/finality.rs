@@ -22,7 +22,7 @@ use std::collections::{
 };
 
 use ethereum_types::{Address, H256};
-use types::BlockNumber;
+use crate::types::BlockNumber;
 
 use crate::engines::validator_set::SimpleList;
 
@@ -193,7 +193,7 @@ impl RollingFinality {
 mod tests {
     use super::RollingFinality;
     use ethereum_types::{Address, H256};
-    use types::BlockNumber;
+    use crate::types::BlockNumber;
 
     #[test]
     fn rejects_unknown_signers() {

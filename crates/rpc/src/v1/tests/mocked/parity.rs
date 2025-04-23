@@ -21,7 +21,7 @@ use ethereum_types::{Address, BigEndianHash, Bloom, H256, U256};
 use miner::pool::local_transactions::Status as LocalTransactionStatus;
 use std::{str::FromStr, sync::Arc};
 use sync::ManageNetwork;
-use types::{
+use crate::types::{
     receipt::{LocalizedReceipt, TransactionOutcome},
     transaction::TypedTxId,
 };
@@ -307,7 +307,7 @@ fn assert_txs_filtered(io: &IoHandler<Metadata>, filter: &str, expected: Vec<u8>
 
 #[test]
 fn rpc_parity_pending_transactions_with_filter() {
-    use types::transaction::{Action, Transaction, TypedTransaction};
+    use crate::types::transaction::{Action, Transaction, TypedTransaction};
     let deps = Dependencies::new();
     let io = deps.default_client();
 
@@ -450,7 +450,7 @@ fn rpc_parity_transactions_stats() {
 
 #[test]
 fn rpc_parity_local_transactions() {
-    use types::transaction::{Transaction, TypedTransaction};
+    use crate::types::transaction::{Transaction, TypedTransaction};
     let deps = Dependencies::new();
     let io = deps.default_client();
     let tx = TypedTransaction::Legacy(Transaction {

@@ -31,7 +31,7 @@ use ethstore::random_phrase;
 use jsonrpc_core::{futures::future, BoxFuture, Result};
 use stats::PrometheusMetrics;
 use sync::{ManageNetwork, SyncProvider};
-use types::ids::BlockId;
+use crate::types::ids::BlockId;
 use v1::{
     helpers::{
         self,

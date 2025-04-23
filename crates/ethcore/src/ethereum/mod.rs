@@ -373,7 +373,7 @@ mod tests {
     use crate::state::*;
     use std::str::FromStr;
     use test_helpers::get_temp_state_db;
-    use types::{view, views::BlockView};
+    use crate::types::{view, views::BlockView};
 
     #[test]
     fn ensure_db_good() {

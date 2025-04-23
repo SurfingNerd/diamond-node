@@ -43,7 +43,7 @@ use rand::rngs::OsRng;
 use rlp::{PayloadInfo, Rlp};
 use rustc_hex::FromHex;
 use trie::{Trie, TrieFactory, TrieSpec};
-use types::{
+use crate::types::{
     ancestry_action::AncestryAction,
     data_format::DataFormat,
     encoded,
@@ -78,18 +78,17 @@ use crate::engines::{
     epoch::PendingTransition, EngineError, EpochTransition, EthEngine, ForkChoice, SealingState,
     MAX_UNCLE_AGE,
 };
-use error::{
+use crate::error::{
     BlockError, CallError, Error, Error as EthcoreError, ErrorKind as EthcoreErrorKind,
     EthcoreResult, ExecutionError, ImportErrorKind, QueueErrorKind,
 };
 use crate::executive::{contract_address, Executed, Executive, TransactOptions};
 use crate::factory::{Factories, VmFactory};
 use crate::io::IoChannel;
-use miner::{Miner, MinerService};
 use crate::snapshot::{self, io as snapshot_io, SnapshotClient};
 use crate::spec::Spec;
 use crate::state::{self, State};
-use state_db::StateDB;
+use crate::state_db::StateDB;
 use stats::{PrometheusMetrics, PrometheusRegistry};
 use crate::trace::{
     self, Database as TraceDatabase, ImportRequest as TraceImportRequest, LocalizedTrace, TraceDB,
@@ -105,7 +104,7 @@ use vm::Schedule;
 pub use crate::blockchain::CacheSize as BlockChainCacheSize;
 use db::{keys::BlockDetails, Readable, Writable};
 pub use reth_util::queue::ExecutionQueue;
-pub use types::{block_status::BlockStatus, blockchain_info::BlockChainInfo};
+pub use crate::types::{block_status::BlockStatus, blockchain_info::BlockChainInfo};
 pub use crate::verification::QueueInfo as BlockQueueInfo;
 
 use crate::exit::ShutdownManager;
@@ -857,7 +856,7 @@ impl Importer {
         use crate::engines::EpochChange;
 
         let hash = header.hash();
-        let auxiliary = ::machine::AuxiliaryData {
+        let auxiliary = crate::machine::AuxiliaryData {
             bytes: Some(block_bytes),
             receipts: Some(&receipts),
         };
@@ -882,7 +881,7 @@ impl Importer {
 
                         let call = move |addr, data| {
                             let mut state_db = state_db.boxed_clone();
-                            let backend = ::state::backend::Proving::new(state_db.as_hash_db_mut());
+                            let backend = crate::state::backend::Proving::new(state_db.as_hash_db_mut());
 
                             let transaction = client.contract_call_tx(
                                 BlockId::Hash(*header.parent_hash()),
@@ -993,7 +992,7 @@ impl Client {
         miner: Arc<Miner>,
         message_channel: IoChannel<ClientIoMessage>,
         shutdown: ShutdownManager,
-    ) -> Result<Arc<Client>, ::error::Error> {
+    ) -> Result<Arc<Client>, crate::error::Error> {
         let trie_spec = match config.fat_db {
             true => TrieSpec::Fat,
             false => TrieSpec::Secure,
@@ -1323,7 +1322,7 @@ impl Client {
     // use a state-proving closure for the given block.
     fn with_proving_caller<F, T>(&self, id: BlockId, with_call: F) -> T
     where
-        F: FnOnce(&::machine::Call) -> T,
+        F: FnOnce(&crate::machine::Call) -> T,
     {
         let call = |a, d| {
             let tx = self.contract_call_tx(id, a, d);
@@ -1343,7 +1342,7 @@ impl Client {
         &self,
         mut state_db: StateDB,
         chain: &BlockChain,
-    ) -> Result<(), ::error::Error> {
+    ) -> Result<(), crate::error::Error> {
         let latest_era = match state_db.journal_db().latest_era() {
             Some(n) => n,
             None => return Ok(()),
@@ -1701,7 +1700,7 @@ impl Client {
     }
 
     fn do_virtual_call(
-        machine: &::machine::EthereumMachine,
+        machine: &crate::machine::EthereumMachine,
         env_info: &EnvInfo,
         state: &mut State<StateDB>,
         t: &SignedTransaction,
@@ -1710,7 +1709,7 @@ impl Client {
         fn call<V, T>(
             state: &mut State<StateDB>,
             env_info: &EnvInfo,
-            machine: &::machine::EthereumMachine,
+            machine: &crate::machine::EthereumMachine,
             state_diff: bool,
             transaction: &SignedTransaction,
             options: TransactOptions<T, V>,
@@ -2054,7 +2053,7 @@ impl ImportBlock for Client {
 }
 
 impl StateClient for Client {
-    type State = State<::state_db::StateDB>;
+    type State = State<crate::state_db::StateDB>;
 
     fn latest_state_and_header(&self) -> (Self::State, Header) {
         Client::latest_state_and_header(self)
@@ -2072,7 +2071,7 @@ impl Drop for Client {
 }
 
 impl Call for Client {
-    type State = State<::state_db::StateDB>;
+    type State = State<crate::state_db::StateDB>;
 
     fn call(
         &self,
@@ -2775,7 +2774,7 @@ impl BlockChainClient for Client {
         };
         self.importer
             .miner
-            .ready_transactions(self, max_len, ::miner::PendingOrdering::Priority)
+            .ready_transactions(self, max_len, crate::miner::PendingOrdering::Priority)
     }
 
     fn transaction(&self, tx_hash: &H256) -> Option<Arc<VerifiedTransaction>> {
@@ -3251,9 +3250,9 @@ impl BroadcastProposalBlock for Client {
 
 impl SealedBlockImporter for Client {}
 
-impl ::miner::TransactionVerifierClient for Client {}
+impl crate::miner::TransactionVerifierClient for Client {}
 
-impl ::miner::BlockChainClient for Client {}
+impl crate::miner::BlockChainClient for Client {}
 
 impl super::traits::EngineClient for Client {
     fn update_sealing(&self, force: ForceUpdateSealing) {
@@ -3515,7 +3514,7 @@ impl ImportExportBlocks for Client {
 /// Returns `LocalizedReceipt` given `LocalizedTransaction`
 /// and a vector of receipts from given block up to transaction index.
 fn transaction_receipt(
-    machine: &::machine::EthereumMachine,
+    machine: &crate::machine::EthereumMachine,
     mut tx: LocalizedTransaction,
     receipt: TypedReceipt,
     prior_gas_used: U256,
@@ -3804,7 +3803,7 @@ mod tests {
             thread,
             time::Duration,
         };
-        use types::encoded;
+        use crate::types::encoded;
 
         let client = generate_dummy_client(0);
         let genesis = client.chain_info().best_block_hash;
@@ -3869,7 +3868,7 @@ mod tests {
         use super::transaction_receipt;
         use crypto::publickey::KeyPair;
         use hash::keccak;
-        use types::{
+        use crate::types::{
             log_entry::{LocalizedLogEntry, LogEntry},
             receipt::{LegacyReceipt, LocalizedReceipt, TransactionOutcome, TypedReceipt},
             transaction::{Action, LocalizedTransaction, Transaction, TypedTransaction},

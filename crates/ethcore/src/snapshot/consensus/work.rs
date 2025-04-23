@@ -38,7 +38,7 @@ use ethereum_types::H256;
 use rand::rngs::OsRng;
 use rlp::{Rlp, RlpStream};
 use crate::snapshot::{block::AbridgedBlock, Error, ManifestData, Progress};
-use types::{encoded, BlockNumber};
+use crate::types::{encoded, BlockNumber};
 
 /// Snapshot creation and restoration for PoW chains.
 /// This includes blocks from the head of the chain as a
@@ -244,7 +244,7 @@ impl PowRebuilder {
         db: Arc<dyn KeyValueDB>,
         manifest: &ManifestData,
         snapshot_blocks: u64,
-    ) -> Result<Self, ::error::Error> {
+    ) -> Result<Self, crate::error::Error> {
         Ok(PowRebuilder {
             chain: chain,
             db: db,
@@ -372,7 +372,7 @@ impl Rebuilder for PowRebuilder {
     }
 
     /// Glue together any disconnected chunks and check that the chain is complete.
-    fn finalize(&mut self, _: &dyn EthEngine) -> Result<(), ::error::Error> {
+    fn finalize(&mut self, _: &dyn EthEngine) -> Result<(), crate::error::Error> {
         let mut batch = self.db.transaction();
 
         for (first_num, first_hash) in self.disconnected.drain(..) {
@@ -391,7 +391,7 @@ impl Rebuilder for PowRebuilder {
         self.chain.insert_epoch_transition(
             &mut batch,
             0,
-            ::engines::EpochTransition {
+            crate::engines::EpochTransition {
                 block_number: 0,
                 block_hash: genesis_hash,
                 proof: vec![],

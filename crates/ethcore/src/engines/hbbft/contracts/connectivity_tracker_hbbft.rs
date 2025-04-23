@@ -1,7 +1,7 @@
 use crate::client::EngineClient;
 use ethereum_types::{Address, H256, U256};
 use std::str::FromStr;
-use types::ids::BlockId;
+use crate::types::ids::BlockId;
 
 use crate::{
     client::{traits::TransactionRequest, BlockChainClient},

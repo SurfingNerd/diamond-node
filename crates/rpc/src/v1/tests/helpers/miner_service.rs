@@ -39,7 +39,7 @@ use miner::pool::{
     VerifiedTransaction,
 };
 use parking_lot::{Mutex, RwLock};
-use types::{
+use crate::types::{
     block::Block,
     header::Header,
     ids::BlockId,

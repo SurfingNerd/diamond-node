@@ -1,5 +1,5 @@
 use crate::client::EngineClient;
-use error::Error;
+use crate::error::Error;
 use ethereum_types::Address;
 use parking_lot::Mutex;
 

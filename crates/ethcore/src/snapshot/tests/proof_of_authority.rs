@@ -25,7 +25,7 @@ use crate::snapshot::tests::helpers as snapshot_helpers;
 use crate::spec::Spec;
 use tempdir::TempDir;
 use test_helpers::generate_dummy_client_with_spec;
-use types::transaction::{Action, SignedTransaction, Transaction, TypedTransaction};
+use crate::types::transaction::{Action, SignedTransaction, Transaction, TypedTransaction};
 
 use ethereum_types::Address;
 use test_helpers;

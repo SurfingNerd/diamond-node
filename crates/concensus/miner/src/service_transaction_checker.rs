@@ -21,7 +21,7 @@ use ethabi::FunctionOutputDecoder;
 use ethereum_types::Address;
 use parking_lot::RwLock;
 use std::{collections::HashMap, mem, str::FromStr, sync::Arc};
-use types::{ids::BlockId, transaction::SignedTransaction};
+use crate::types::{ids::BlockId, transaction::SignedTransaction};
 
 use_contract!(
     service_transaction,

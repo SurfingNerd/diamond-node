@@ -30,7 +30,7 @@ use crate::snapshot::{
     io::{PackedReader, PackedWriter, SnapshotReader},
     StateRebuilder,
 };
-use types::basic_account::BasicAccount;
+use crate::types::basic_account::BasicAccount;
 
 use rand::Rng;
 use tempdir::TempDir;
@@ -138,7 +138,7 @@ pub fn fill_storage(mut db: AccountDBMut, root: &mut H256, seed: &mut H256) {
 /// Take a snapshot from the given client into a temporary file.
 /// Return a snapshot reader for it.
 pub fn snap(client: &Client) -> (Box<dyn SnapshotReader>, TempDir) {
-    use types::ids::BlockId;
+    use crate::types::ids::BlockId;
 
     let tempdir = TempDir::new("").unwrap();
     let path = tempdir.path().join("file");
@@ -162,7 +162,7 @@ pub fn restore(
     engine: &dyn EthEngine,
     reader: &dyn SnapshotReader,
     genesis: &[u8],
-) -> Result<(), ::error::Error> {
+) -> Result<(), crate::error::Error> {
     use std::sync::atomic::AtomicBool;
 
     let flag = AtomicBool::new(true);

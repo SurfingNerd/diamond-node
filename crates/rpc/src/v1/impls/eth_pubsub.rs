@@ -44,7 +44,7 @@ use ethereum_types::H256;
 use parity_runtime::Executor;
 use parking_lot::RwLock;
 
-use types::{encoded, filter::Filter as EthFilter};
+use crate::types::{encoded, filter::Filter as EthFilter};
 
 type Client = Sink<pubsub::Result>;
 

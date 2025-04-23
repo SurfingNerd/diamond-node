@@ -46,7 +46,7 @@ pub use self::{
 };
 pub use crate::state::StateInfo;
 
-pub use types::{
+pub use crate::types::{
     call_analytics::CallAnalytics, ids::*, pruning_info::PruningInfo,
     trace_filter::Filter as TraceFilter,
 };
@@ -54,7 +54,7 @@ pub use types::{
 pub use crate::executive::{Executed, Executive, TransactOptions};
 pub use vm::{EnvInfo, LastHashes};
 
-pub use error::TransactionImportError;
+pub use crate::error::TransactionImportError;
 pub use crate::verification::VerifierType;
 
 pub mod traits;

@@ -22,7 +22,7 @@ use std::{
     collections::{BTreeSet, HashSet, VecDeque},
     sync::Arc,
 };
-use types::filter::Filter;
+use crate::types::filter::Filter;
 use v1::types::Log;
 
 pub type BlockNumber = u64;

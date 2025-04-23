@@ -37,7 +37,7 @@ use ethcore::{
 use hash::keccak;
 use miner::external::ExternalMinerService;
 use sync::SyncProvider;
-use types::{
+use crate::types::{
     encoded,
     filter::Filter as EthcoreFilter,
     header::Header,
@@ -562,7 +562,7 @@ fn check_known<C>(client: &C, number: BlockNumber) -> Result<()>
 where
     C: BlockChainClient,
 {
-    use types::block_status::BlockStatus;
+    use crate::types::block_status::BlockStatus;
 
     let id = match number {
         BlockNumber::Pending => return Ok(()),

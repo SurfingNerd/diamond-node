@@ -27,7 +27,7 @@ use crate::snapshot::{
     io::{PackedReader, PackedWriter, SnapshotReader, SnapshotWriter},
     Error as SnapshotError, Progress, StateRebuilder, SNAPSHOT_SUBPARTS,
 };
-use types::basic_account::BasicAccount;
+use crate::types::basic_account::BasicAccount;
 
 use error::{Error, ErrorKind};
 

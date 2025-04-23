@@ -31,7 +31,7 @@ use tempdir::TempDir;
 use test_helpers::{
     generate_dummy_client_with_spec_and_data, new_db, new_temp_db, restoration_db_handler,
 };
-use types::ids::BlockId;
+use crate::types::ids::BlockId;
 
 use crate::io::IoChannel;
 use kvdb_rocksdb::DatabaseConfig;

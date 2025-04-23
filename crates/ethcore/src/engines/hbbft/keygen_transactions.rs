@@ -20,7 +20,7 @@ use ethereum_types::{Address, U256};
 use itertools::Itertools;
 use parking_lot::RwLock;
 use std::{collections::BTreeMap, sync::Arc};
-use types::ids::BlockId;
+use crate::types::ids::BlockId;
 
 use crate::client::BlockChainClient;
 

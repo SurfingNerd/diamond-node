@@ -18,7 +18,7 @@ use crate::block::ExecutedBlock;
 use crate::engines::{Engine, Seal, SealingState};
 use crate::machine::Machine;
 use std::sync::atomic::{AtomicU64, Ordering};
-use types::header::{ExtendedHeader, Header};
+use crate::types::header::{ExtendedHeader, Header};
 
 /// `InstantSeal` params.
 #[derive(Default, Debug, PartialEq)]
@@ -132,7 +132,7 @@ mod tests {
     use crate::spec::Spec;
     use std::sync::Arc;
     use test_helpers::get_temp_state_db;
-    use types::header::Header;
+    use crate::types::header::Header;
 
     #[test]
     fn instant_can_seal() {

@@ -17,7 +17,7 @@
 use ethereum_types::U256;
 use hash::KECCAK_EMPTY;
 use txpool;
-use types::transaction::{self, PendingTransaction};
+use crate::types::transaction::{self, PendingTransaction};
 
 use crate::pool::{
     transaction_filter::TransactionFilter, verifier, PendingOrdering, PendingSettings,

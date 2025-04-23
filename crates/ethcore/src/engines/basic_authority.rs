@@ -27,7 +27,7 @@ use ethjson;
 use crate::machine::{AuxiliaryData, Call, EthereumMachine};
 use parking_lot::RwLock;
 use std::sync::Weak;
-use types::header::{ExtendedHeader, Header};
+use crate::types::header::{ExtendedHeader, Header};
 
 /// `BasicAuthority` params.
 #[derive(Debug, PartialEq)]
@@ -234,7 +234,7 @@ mod tests {
     use std::sync::Arc;
     use tempdir::TempDir;
     use crate::test_helpers::get_temp_state_db;
-    use types::header::Header;
+    use crate::types::header::Header;
 
     /// Create a new test chain spec with `BasicAuthority` consensus engine.
     fn new_test_authority() -> Spec {

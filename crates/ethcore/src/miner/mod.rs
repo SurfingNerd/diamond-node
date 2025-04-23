@@ -40,7 +40,7 @@ use std::{
 use bytes::Bytes;
 use ethcore_miner::pool::{local_transactions, QueueStatus, VerifiedTransaction};
 use ethereum_types::{Address, H256, U256};
-use types::{
+use crate::types::{
     block::Block,
     header::Header,
     receipt::RichReceipt,
@@ -54,7 +54,7 @@ use crate::client::{
     traits::ForceUpdateSealing, AccountData, BlockChain, BlockProducer, Nonce, ScheduleInfo,
     SealedBlockImporter,
 };
-use error::Error;
+use crate::error::Error;
 use crate::state::StateInfo;
 
 /// Provides methods to verify incoming external transactions

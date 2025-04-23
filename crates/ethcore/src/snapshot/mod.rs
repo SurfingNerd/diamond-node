@@ -32,7 +32,7 @@ use std::{
 use crate::account_db::{AccountDB, AccountDBMut};
 use crate::blockchain::{BlockChain, BlockProvider};
 use crate::engines::EthEngine;
-use types::{header::Header, ids::BlockId};
+use crate::types::{header::Header, ids::BlockId};
 
 use bytes::Bytes;
 use db::{DBValue, KeyValueDB};
@@ -60,7 +60,7 @@ pub use self::{
     traits::SnapshotService,
     watcher::Watcher,
 };
-pub use types::{
+pub use crate::types::{
     basic_account::BasicAccount, creation_status::CreationStatus,
     restoration_status::RestorationStatus, snapshot_manifest::ManifestData,
 };
@@ -447,7 +447,7 @@ impl StateRebuilder {
     }
 
     /// Feed an uncompressed state chunk into the rebuilder.
-    pub fn feed(&mut self, chunk: &[u8], flag: &AtomicBool) -> Result<(), ::error::Error> {
+    pub fn feed(&mut self, chunk: &[u8], flag: &AtomicBool) -> Result<(), crate::error::Error> {
         let rlp = Rlp::new(chunk);
         let mut pairs = Vec::with_capacity(rlp.item_count()?);
 

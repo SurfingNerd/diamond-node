@@ -63,7 +63,7 @@ use crate::engines::{
     block_reward::{BlockRewardContract, RewardKind},
     ConstructedVerifier, Engine, EngineError, Seal, SealingState,
 };
-use error::{BlockError, Error, ErrorKind};
+use crate::error::{BlockError, Error, ErrorKind};
 use ethereum_types::{Address, H256, H512, H520, U128, U256};
 
 use ethjson::{self, uint::Uint};
@@ -76,7 +76,7 @@ use parking_lot::{Mutex, RwLock};
 use rand::rngs::OsRng;
 use rlp::{encode, Decodable, DecoderError, Encodable, Rlp, RlpStream};
 use time_utils::CheckedSystemTime;
-use types::{
+use crate::types::{
     ancestry_action::AncestryAction,
     header::{ExtendedHeader, Header},
     ids::BlockId,
@@ -1879,7 +1879,7 @@ impl Engine<EthereumMachine> for AuthorityRound {
                 };
 
                 let parent = client
-                    .block_header(::client::BlockId::Hash(*block.header.parent_hash()))
+                    .block_header(crate::client::BlockId::Hash(*block.header.parent_hash()))
                     .expect("hash is from parent; parent header must exist; qed")
                     .decode(self.params().eip1559_transition)?;
 
@@ -2393,12 +2393,12 @@ mod tests {
         validator_set::{SimpleList, TestSet},
         Engine, EngineError, EngineSigner, EthEngine, Seal,
     };
-    use error::{Error, ErrorKind};
+    use crate::error::{Error, ErrorKind};
     use ethabi_contract::use_contract;
     use ethereum_types::{Address, H256, H520, U256};
     use ethjson;
     use hash::keccak;
-    use miner::{Author, MinerService};
+    use crate::miner::{Author, MinerService};
     use rlp::encode;
     use crate::spec::Spec;
     use std::{
@@ -2410,11 +2410,11 @@ mod tests {
         },
         time::Duration,
     };
-    use test_helpers::{
+    use crate::test_helpers::{
         generate_dummy_client_with_spec, generate_dummy_client_with_spec_and_data,
         get_temp_state_db, push_block_with_transactions_and_author, TestNotify,
     };
-    use types::{
+    use crate::types::{
         header::Header,
         ids::BlockId,
         transaction::{Action, Transaction, TypedTransaction},

@@ -25,7 +25,7 @@ use ethabi::{self, FunctionOutputDecoder};
 use ethabi_contract::use_contract;
 use ethereum_types::{Address, U256};
 use log::{debug, error};
-use types::{header::Header, ids::BlockId};
+use crate::types::{header::Header, ids::BlockId};
 
 /// A contract bound to a client and block number.
 ///

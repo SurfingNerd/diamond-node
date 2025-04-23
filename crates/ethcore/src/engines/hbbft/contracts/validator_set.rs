@@ -6,7 +6,7 @@ use crypto::publickey::Public;
 use crate::engines::hbbft::utils::bound_contract::{BoundContract, CallError};
 use ethereum_types::{Address, U256};
 use std::{collections::BTreeMap, net::SocketAddr, str::FromStr};
-use types::{ids::BlockId, transaction::Error};
+use crate::types::{ids::BlockId, transaction::Error};
 
 use_contract!(
     validator_set_hbbft,

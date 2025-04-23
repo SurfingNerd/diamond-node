@@ -26,7 +26,7 @@ use rlp::{Rlp, RlpStream};
 use crate::snapshot::{Error, Progress};
 use std::{collections::HashSet, sync::atomic::Ordering};
 use trie::{Trie, TrieMut};
-use types::basic_account::BasicAccount;
+use crate::types::basic_account::BasicAccount;
 
 // An empty account -- these were replaced with RLP null data for a space optimization in v1.
 const ACC_EMPTY: BasicAccount = BasicAccount {
@@ -224,7 +224,7 @@ mod tests {
     use crate::account_db::{AccountDB, AccountDBMut};
     use crate::snapshot::{tests::helpers::fill_storage, Progress};
     use test_helpers::get_temp_state_db;
-    use types::basic_account::BasicAccount;
+    use crate::types::basic_account::BasicAccount;
 
     use ethereum_types::{Address, H256};
     use hash::{keccak, KECCAK_EMPTY, KECCAK_NULL_RLP};

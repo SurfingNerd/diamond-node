@@ -24,7 +24,7 @@ use std::sync::{
 use bytes::Bytes;
 use ethereum_types::{Address, H256};
 use parity_util_mem::MallocSizeOf;
-use types::{header::Header, BlockNumber};
+use crate::types::{header::Header, BlockNumber};
 
 use super::{SimpleList, SystemCall, ValidatorSet};
 use error::Error as EthcoreError;
@@ -109,7 +109,7 @@ impl ValidatorSet for TestSet {
         _: &EthereumMachine,
         _: BlockNumber,
         _: &[u8],
-    ) -> Result<(SimpleList, Option<H256>), ::error::Error> {
+    ) -> Result<(SimpleList, Option<H256>), crate::error::Error> {
         Ok((self.validator.clone(), None))
     }
 

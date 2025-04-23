@@ -28,7 +28,7 @@ use crate::client::{BlockId, BlockInfo};
 use hash::KECCAK_EMPTY;
 use parking_lot::Mutex;
 use crate::spec::CommonParams;
-use types::{
+use crate::types::{
     transaction::{Action, SignedTransaction},
     BlockNumber,
 };
@@ -289,7 +289,7 @@ mod test {
     use std::{str::FromStr, sync::Arc};
     use tempdir::TempDir;
     use test_helpers;
-    use types::transaction::{
+    use crate::types::transaction::{
         AccessListTx, Action, EIP1559TransactionTx, Transaction, TypedTransaction,
     };
 

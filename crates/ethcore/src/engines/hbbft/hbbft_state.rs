@@ -15,7 +15,7 @@ use std::{
     sync::Arc,
     time::Duration,
 };
-use types::{header::Header, ids::BlockId};
+use crate::types::{header::Header, ids::BlockId};
 
 use crate::engines::hbbft::contracts::permission::get_minimum_gas_from_permission_contract;
 

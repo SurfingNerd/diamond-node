@@ -18,7 +18,7 @@ use ethereum_types::U256;
 use ethjson;
 use crate::spec::Spec;
 use std::path::Path;
-use types::header::Header;
+use crate::types::header::Header;
 
 use super::HookType;
 

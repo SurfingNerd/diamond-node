@@ -21,12 +21,12 @@ use crate::engines::{
     clique::{ADDRESS_LENGTH, NULL_MIXHASH, NULL_NONCE, SIGNATURE_LENGTH, VANITY_LENGTH},
     EngineError,
 };
-use error::Error;
+use crate::error::Error;
 use ethereum_types::{Address, H160, H256};
 use lru_cache::LruCache;
 use parking_lot::RwLock;
 use rlp::encode;
-use types::header::Header;
+use crate::types::header::Header;
 
 /// How many recovered signature to cache in the memory.
 pub const CREATOR_CACHE_NUM: usize = 4096;

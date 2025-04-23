@@ -73,7 +73,7 @@ use crate::engines::{
     clique::util::{extract_signers, recover_creator},
     Engine, EngineError, Seal, SealingState,
 };
-use error::{BlockError, Error};
+use crate::error::{BlockError, Error};
 use ethereum_types::{Address, H160, H256, H64, U256};
 use hash::KECCAK_EMPTY_LIST_RLP;
 use itertools::Itertools;
@@ -82,7 +82,7 @@ use crate::machine::{Call, EthereumMachine};
 use parking_lot::RwLock;
 use rand::Rng;
 use time_utils::CheckedSystemTime;
-use types::{
+use crate::types::{
     header::{ExtendedHeader, Header},
     BlockNumber,
 };

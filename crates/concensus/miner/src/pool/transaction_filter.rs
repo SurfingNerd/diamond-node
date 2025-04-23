@@ -21,7 +21,7 @@
 use ethereum_types::{Address, U256};
 
 use crate::pool::VerifiedTransaction;
-use types::transaction::Action;
+use crate::types::transaction::Action;
 
 #[allow(non_camel_case_types)]
 #[derive(Debug, Deserialize, Serialize)]

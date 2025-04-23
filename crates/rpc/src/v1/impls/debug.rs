@@ -19,7 +19,7 @@
 use std::sync::Arc;
 
 use ethcore::client::BlockChainClient;
-use types::{header::Header, transaction::LocalizedTransaction};
+use crate::types::{header::Header, transaction::LocalizedTransaction};
 
 use jsonrpc_core::Result;
 use v1::{

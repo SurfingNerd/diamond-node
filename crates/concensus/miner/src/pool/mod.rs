@@ -19,7 +19,7 @@
 use ethereum_types::{Address, H256, U256};
 use parity_util_mem::MallocSizeOfExt;
 use txpool;
-use types::transaction;
+use crate::types::transaction;
 
 mod listener;
 mod queue;

@@ -32,7 +32,7 @@ use parity_runtime::Runtime;
 use parking_lot::Mutex;
 use rustc_hex::{FromHex, ToHex};
 use sync::SyncState;
-use types::{
+use crate::types::{
     ids::{BlockId, TransactionId},
     log_entry::{LocalizedLogEntry, LogEntry},
     receipt::{LocalizedReceipt, RichReceipt, TransactionOutcome},
@@ -751,7 +751,7 @@ fn rpc_eth_transaction_count_by_number_pending() {
 #[test]
 fn rpc_eth_pending_transaction_by_hash() {
     use ethereum_types::H256;
-    use types::transaction::SignedTransaction;
+    use crate::types::transaction::SignedTransaction;
 
     let tester = EthTester::default();
     {

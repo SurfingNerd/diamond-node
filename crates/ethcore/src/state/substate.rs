@@ -19,7 +19,7 @@ use super::CleanupMode;
 use ethereum_types::Address;
 use evm::{CleanDustMode, Schedule};
 use std::collections::HashSet;
-use types::log_entry::LogEntry;
+use crate::types::log_entry::LogEntry;
 use vm::access_list::AccessList;
 
 /// State changes which should be applied in finalize,
@@ -89,7 +89,7 @@ impl Substate {
 mod tests {
     use super::Substate;
     use ethereum_types::Address;
-    use types::log_entry::LogEntry;
+    use crate::types::log_entry::LogEntry;
 
     #[test]
     fn created() {

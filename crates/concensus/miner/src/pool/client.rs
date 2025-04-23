@@ -23,7 +23,7 @@
 use std::fmt;
 
 use ethereum_types::{H160 as Address, H256, U256};
-use types::transaction;
+use crate::types::transaction;
 
 /// Account Details
 #[derive(Debug, Clone)]

@@ -32,7 +32,7 @@ use crate::io::IoChannel;
 use miner::external::ExternalMiner;
 use parity_runtime::Runtime;
 use parking_lot::Mutex;
-use types::ids::BlockId;
+use crate::types::ids::BlockId;
 
 use jsonrpc_core::IoHandler;
 use v1::{

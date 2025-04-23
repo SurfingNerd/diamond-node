@@ -38,7 +38,7 @@ pub use self::{
 };
 
 // TODO [ToDr] Remove re-export (#10130)
-pub use types::engines::{
+pub use crate::types::engines::{
     epoch::{self, Transition as EpochTransition},
     ForkChoice,
 };
@@ -53,7 +53,7 @@ use builtin::Builtin;
 use crate::error::Error;
 use crate::snapshot::SnapshotComponents;
 use crate::spec::CommonParams;
-use types::{
+use crate::types::{
     header::{ExtendedHeader, Header},
     transaction::{self, SignedTransaction, UnverifiedTransaction},
     BlockNumber,
@@ -65,7 +65,7 @@ use bytes::Bytes;
 use crypto::publickey::Signature;
 use ethereum_types::{Address, H256, H512, H64, U256};
 use crate::machine::{self, AuxiliaryData, AuxiliaryRequest, Machine};
-use types::ancestry_action::AncestryAction;
+use crate::types::ancestry_action::AncestryAction;
 use unexpected::{Mismatch, OutOfBounds};
 
 /// Default EIP-210 contract code.
@@ -221,8 +221,8 @@ pub enum SystemOrCodeCallKind {
 
 /// Default SystemOrCodeCall implementation.
 pub fn default_system_or_code_call<'a>(
-    machine: &'a ::machine::EthereumMachine,
-    block: &'a mut ::block::ExecutedBlock,
+    machine: &'a crate::machine::EthereumMachine,
+    block: &'a mut crate::block::ExecutedBlock,
 ) -> impl FnMut(SystemOrCodeCallKind, Vec<u8>) -> Result<Vec<u8>, String> + 'a {
     move |to, data| {
         let result = match to {
@@ -604,7 +604,7 @@ pub fn total_difficulty_fork_choice(new: &ExtendedHeader, best: &ExtendedHeader)
 // TODO: make this a _trait_ alias when those exist.
 // fortunately the effect is largely the same since engines are mostly used
 // via trait objects.
-pub trait EthEngine: Engine<::machine::EthereumMachine> {
+pub trait EthEngine: Engine<crate::machine::EthereumMachine> {
     /// Get the general parameters of the chain.
     fn params(&self) -> &CommonParams {
         self.machine().params()
@@ -718,7 +718,7 @@ pub trait EthEngine: Engine<::machine::EthereumMachine> {
 }
 
 // convenience wrappers for existing functions.
-impl<T> EthEngine for T where T: Engine<::machine::EthereumMachine> {}
+impl<T> EthEngine for T where T: Engine<crate::machine::EthereumMachine> {}
 
 /// Verifier for all blocks within an epoch with self-contained state.
 pub trait EpochVerifier<M: machine::Machine>: Send + Sync {

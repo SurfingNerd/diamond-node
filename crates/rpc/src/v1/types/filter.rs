@@ -21,7 +21,7 @@ use serde::{
     Deserialize, Deserializer, Serialize, Serializer,
 };
 use serde_json::{from_value, Value};
-use types::{filter::Filter as EthFilter, ids::BlockId};
+use crate::types::{filter::Filter as EthFilter, ids::BlockId};
 
 use v1::{
     helpers::errors::invalid_params,
@@ -177,7 +177,7 @@ mod tests {
     use ethereum_types::H256;
     use serde_json;
     use std::str::FromStr;
-    use types::{filter::Filter as EthFilter, ids::BlockId};
+    use crate::types::{filter::Filter as EthFilter, ids::BlockId};
     use v1::types::BlockNumber;
 
     #[test]

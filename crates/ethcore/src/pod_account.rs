@@ -32,7 +32,7 @@ use crate::state::Account;
 use std::{collections::BTreeMap, fmt};
 use trie::TrieFactory;
 use triehash::sec_trie_root;
-use types::account_diff::*;
+use crate::types::account_diff::*;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 /// An account, expressed as Plain-Old-Data (hence the name).
@@ -219,7 +219,7 @@ mod test {
     use super::{diff_pod, PodAccount};
     use ethereum_types::H256;
     use std::collections::BTreeMap;
-    use types::account_diff::*;
+    use crate::types::account_diff::*;
 
     #[test]
     fn existence() {

@@ -18,7 +18,7 @@
 //! block reward contract.
 
 use crate::engines::{SystemOrCodeCall, SystemOrCodeCallKind};
-use error::Error;
+use crate::error::Error;
 use ethabi::FunctionOutputDecoder;
 use ethabi_contract::use_contract;
 use ethereum_types::Address;

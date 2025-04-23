@@ -22,7 +22,7 @@ use accounts::AccountProvider;
 use ethcore::client::TestBlockChainClient;
 use parity_runtime::Runtime;
 use parking_lot::Mutex;
-use types::transaction::{Action, SignedTransaction, Transaction, TypedTransaction};
+use crate::types::transaction::{Action, SignedTransaction, Transaction, TypedTransaction};
 
 use jsonrpc_core::IoHandler;
 use serde_json;

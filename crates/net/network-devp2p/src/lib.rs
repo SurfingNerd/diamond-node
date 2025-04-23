@@ -26,7 +26,7 @@
 //! use devp2p::NetworkService;
 //! use std::sync::Arc;
 //! use std::time::Duration;
-//! use types::U64;
+//! use crate::types::U64;
 //!
 //! struct MyHandler;
 //!

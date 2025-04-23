@@ -45,7 +45,7 @@ pub use self::types::{
 
 use ethereum_types::{Address, H256, U256};
 use kvdb::DBTransaction;
-use types::BlockNumber;
+use crate::types::BlockNumber;
 use vm::{ActionParams, Error as VmError};
 
 /// This trait is used by executive to build traces.

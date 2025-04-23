@@ -23,7 +23,7 @@ use ethereum_types::{H256, H264};
 use kvdb::DBTransaction;
 use parity_util_mem::MallocSizeOfExt;
 use parking_lot::RwLock;
-use types::BlockNumber;
+use crate::types::BlockNumber;
 
 use crate::trace::{
     flat::{FlatBlockTraces, FlatTrace, FlatTransactionTraces},
@@ -417,7 +417,7 @@ mod tests {
         AddressesFilter, Config, Database as TraceDatabase, DatabaseExtras, Filter, ImportRequest,
         LocalizedTrace, TraceDB, TraceError,
     };
-    use types::BlockNumber;
+    use crate::types::BlockNumber;
 
     struct NoopExtras;
 

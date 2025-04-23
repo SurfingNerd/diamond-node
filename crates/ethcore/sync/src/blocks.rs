@@ -23,7 +23,7 @@ use parity_util_mem::MallocSizeOf;
 use rlp::{DecoderError, Rlp, RlpStream};
 use std::collections::{hash_map, BTreeMap, HashMap, HashSet};
 use triehash_ethereum::ordered_trie_root;
-use types::{
+use crate::types::{
     header::Header as BlockHeader,
     transaction::{TypedTransaction, UnverifiedTransaction},
     BlockNumber,
@@ -626,7 +626,7 @@ mod test {
         verification::queue::kind::blocks::Unverified,
     };
     use rlp::*;
-    use types::BlockNumber;
+    use crate::types::BlockNumber;
 
     fn is_empty(bc: &BlockCollection) -> bool {
         bc.heads.is_empty()

@@ -23,7 +23,7 @@ use ethcore_miner::{
     service_transaction_checker::ServiceTransactionChecker,
 };
 use ethereum_types::{Address, H256, U256};
-use types::{
+use crate::types::{
     header::Header,
     transaction::{self, SignedTransaction, UnverifiedTransaction},
 };
@@ -32,7 +32,7 @@ use call_contract::CallContract;
 use crate::client::{Balance, BlockId, BlockInfo, Nonce, TransactionId};
 use crate::engines::EthEngine;
 use ethcore_miner::pool::client::BalanceClient;
-use miner::{
+use crate::miner::{
     self,
     cache::{Cache, CachedClient},
 };

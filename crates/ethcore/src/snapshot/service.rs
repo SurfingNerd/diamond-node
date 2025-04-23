@@ -40,7 +40,7 @@ use crate::engines::EthEngine;
 use crate::error::{Error, ErrorKind as SnapshotErrorKind};
 use hash::keccak;
 use crate::snapshot::Error as SnapshotError;
-use types::ids::BlockId;
+use crate::types::ids::BlockId;
 
 use crate::io::IoChannel;
 
@@ -126,7 +126,7 @@ impl Restoration {
         let components = params
             .engine
             .snapshot_components()
-            .ok_or_else(|| ::snapshot::Error::SnapshotsUnsupported)?;
+            .ok_or_else(|| crate::snapshot::Error::SnapshotsUnsupported)?;
 
         let secondary = components.rebuilder(chain, raw_db.clone(), &manifest)?;
 
@@ -152,7 +152,7 @@ impl Restoration {
             let expected_len = snappy::decompressed_len(chunk)?;
             if expected_len > MAX_CHUNK_SIZE {
                 trace!(target: "snapshot", "Discarding large chunk: {} vs {}", expected_len, MAX_CHUNK_SIZE);
-                return Err(::snapshot::Error::ChunkTooLarge.into());
+                return Err(crate::snapshot::Error::ChunkTooLarge.into());
             }
             let len = snappy::decompress_into(chunk, &mut self.snappy_buffer)?;
 
@@ -180,7 +180,7 @@ impl Restoration {
             let expected_len = snappy::decompressed_len(chunk)?;
             if expected_len > MAX_CHUNK_SIZE {
                 trace!(target: "snapshot", "Discarding large chunk: {} vs {}", expected_len, MAX_CHUNK_SIZE);
-                return Err(::snapshot::Error::ChunkTooLarge.into());
+                return Err(crate::snapshot::Error::ChunkTooLarge.into());
             }
             let len = snappy::decompress_into(chunk, &mut self.snappy_buffer)?;
 
@@ -444,7 +444,7 @@ impl Service {
             let block = self
                 .client
                 .block(BlockId::Hash(parent_hash))
-                .ok_or(::snapshot::error::Error::UnlinkedAncientBlockChain)?;
+                .ok_or(crate::snapshot::error::Error::UnlinkedAncientBlockChain)?;
             parent_hash = block.parent_hash();
 
             let block_number = block.number();
@@ -490,7 +490,7 @@ impl Service {
 
         // We couldn't reach the targeted hash
         if parent_hash != target_hash {
-            return Err(::snapshot::error::Error::UnlinkedAncientBlockChain.into());
+            return Err(crate::snapshot::error::Error::UnlinkedAncientBlockChain.into());
         }
 
         // Update best ancient block in the Next Chain

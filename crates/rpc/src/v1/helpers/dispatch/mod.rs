@@ -91,7 +91,7 @@ use ethcore::{client::BlockChainClient, miner::MinerService};
 use ethereum_types::{Address, H256, H520, U256};
 use ethkey::Password;
 use hash::keccak;
-use types::{
+use crate::types::{
     transaction::{PendingTransaction, SignedTransaction},
     BlockNumber,
 };

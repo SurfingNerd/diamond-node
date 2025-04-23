@@ -1,7 +1,7 @@
 use rand::{self, distributions::Standard, Rng};
 use rlp::RlpStream;
 use std::time::UNIX_EPOCH;
-use types::transaction::SignedTransaction;
+use crate::types::transaction::SignedTransaction;
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash, Serialize, Deserialize)]
 pub(crate) struct Contribution {
@@ -59,7 +59,7 @@ mod tests {
     use crypto::publickey::{Generator, Random};
     use crate::engines::hbbft::test::create_transactions::create_transaction;
     use ethereum_types::U256;
-    use types::transaction::{SignedTransaction, TypedTransaction};
+    use crate::types::transaction::{SignedTransaction, TypedTransaction};
 
     #[test]
     fn test_contribution_serialization() {

@@ -37,10 +37,10 @@ use bytes::Bytes;
 use ethereum_types::{Address, Bloom, H256, U256};
 
 use crate::engines::EthEngine;
-use error::{BlockError, Error};
+use crate::error::{BlockError, Error};
 use crate::factory::Factories;
 use crate::state::State;
-use state_db::StateDB;
+use crate::state_db::StateDB;
 use crate::trace::Tracing;
 use triehash::ordered_trie_root;
 use unexpected::{Mismatch, OutOfBounds};
@@ -49,7 +49,7 @@ use vm::{EnvInfo, LastHashes};
 
 use hash::keccak;
 use rlp::{encode_list, RlpStream};
-use types::{
+use crate::types::{
     header::{ExtendedHeader, Header},
     receipt::{TransactionOutcome, TypedReceipt},
     transaction::{Error as TransactionError, SignedTransaction},
@@ -634,7 +634,7 @@ mod tests {
     use state_db::StateDB;
     use std::sync::Arc;
     use test_helpers::get_temp_state_db;
-    use types::{header::Header, transaction::SignedTransaction, view, views::BlockView};
+    use crate::types::{header::Header, transaction::SignedTransaction, view, views::BlockView};
     use crate::verification::queue::kind::blocks::Unverified;
     use vm::LastHashes;
 

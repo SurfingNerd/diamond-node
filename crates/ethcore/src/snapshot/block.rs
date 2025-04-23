@@ -21,7 +21,7 @@ use ethereum_types::{H256, U256};
 use hash::keccak;
 use rlp::{DecoderError, Rlp, RlpStream};
 use triehash::ordered_trie_root;
-use types::{
+use crate::types::{
     block::Block, header::Header, transaction::TypedTransaction, views::BlockView, BlockNumber,
 };
 
@@ -158,7 +158,7 @@ mod tests {
 
     use bytes::Bytes;
     use ethereum_types::{Address, H256, U256};
-    use types::{
+    use crate::types::{
         block::Block,
         transaction::{Action, Transaction, TypedTransaction},
         view,

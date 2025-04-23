@@ -21,7 +21,7 @@ use std::sync::Weak;
 use bytes::Bytes;
 use ethereum_types::{Address, H256};
 use parking_lot::RwLock;
-use types::{header::Header, ids::BlockId, BlockNumber};
+use crate::types::{header::Header, ids::BlockId, BlockNumber};
 
 use super::{SystemCall, ValidatorSet};
 use crate::client::EngineClient;
@@ -149,7 +149,7 @@ impl ValidatorSet for Multi {
         machine: &EthereumMachine,
         number: BlockNumber,
         proof: &[u8],
-    ) -> Result<(super::SimpleList, Option<H256>), ::error::Error> {
+    ) -> Result<(super::SimpleList, Option<H256>), crate::error::Error> {
         let (set_block, set) = self.correct_set_by_number(number);
         let first = set_block == number;
 
@@ -219,7 +219,7 @@ mod tests {
     use crate::spec::Spec;
     use std::{collections::BTreeMap, sync::Arc};
     use test_helpers::generate_dummy_client_with_spec;
-    use types::{header::Header, ids::BlockId};
+    use crate::types::{header::Header, ids::BlockId};
     use crate::verification::queue::kind::blocks::Unverified;
 
     use super::Multi;

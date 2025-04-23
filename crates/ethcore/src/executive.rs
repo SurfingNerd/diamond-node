@@ -28,7 +28,7 @@ use crate::state::{Backend as StateBackend, CleanupMode, State, Substate};
 use std::{cmp, convert::TryFrom, sync::Arc};
 use crate::trace::{self, Tracer, VMTracer};
 use crate::transaction_ext::Transaction;
-use types::transaction::{Action, SignedTransaction, TypedTransaction};
+use crate::types::transaction::{Action, SignedTransaction, TypedTransaction};
 use vm::{
     self, AccessList, ActionParams, ActionValue, CleanDustMode, CreateContractAddress, EnvInfo,
     ResumeCall, ResumeCreate, ReturnData, Schedule, TrapError,
@@ -1640,7 +1640,7 @@ mod tests {
         trace, ExecutiveTracer, ExecutiveVMTracer, FlatTrace, MemoryDiff, NoopTracer, NoopVMTracer,
         StorageDiff, Tracer, VMExecutedOperation, VMOperation, VMTrace, VMTracer,
     };
-    use types::transaction::{
+    use crate::types::transaction::{
         AccessListTx, Action, EIP1559TransactionTx, Transaction, TypedTransaction,
     };
     use vm::{ActionParams, ActionValue, CallType, CreateContractAddress, EnvInfo};

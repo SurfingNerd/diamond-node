@@ -127,7 +127,7 @@ mod tests {
     use ethereum_types::H160;
     use parking_lot::Mutex;
     use txpool::Listener;
-    use types::transaction;
+    use crate::types::transaction;
 
     #[test]
     fn should_notify_listeners() {

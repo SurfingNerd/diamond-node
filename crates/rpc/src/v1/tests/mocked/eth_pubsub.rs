@@ -116,7 +116,7 @@ fn should_subscribe_to_new_heads() {
 #[test]
 fn should_subscribe_to_logs() {
     use ethcore::client::BlockInfo;
-    use types::{
+    use crate::types::{
         ids::BlockId,
         log_entry::{LocalizedLogEntry, LogEntry},
     };

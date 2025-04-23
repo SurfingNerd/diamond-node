@@ -41,7 +41,7 @@ use test_helpers::{
     get_good_dummy_block, get_good_dummy_block_seq, get_test_client_with_blocks,
     push_blocks_to_client,
 };
-use types::{
+use crate::types::{
     data_format::DataFormat,
     filter::Filter,
     ids::BlockId,

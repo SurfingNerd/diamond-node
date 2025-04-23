@@ -32,7 +32,7 @@ use state_db;
 use std::{fmt, sync::Arc};
 use crate::trace;
 use trie;
-use types::{log_entry, receipt, transaction};
+use crate::types::{log_entry, receipt, transaction};
 use vm::{self, ActionParams};
 
 /// EVM test Error.
@@ -403,7 +403,7 @@ pub struct TransactErr {
     /// State root
     pub state_root: H256,
     /// Execution error
-    pub error: ::error::Error,
+    pub error: crate::error::Error,
     /// end state if needed
     pub end_state: Option<pod_state::PodState>,
 }

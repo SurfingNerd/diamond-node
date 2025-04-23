@@ -31,7 +31,7 @@ use hash::{keccak, KECCAK_NULL_RLP};
 use parking_lot::RwLock;
 use rlp::{Rlp, RlpStream};
 use rustc_hex::FromHex;
-use types::{header::Header, BlockNumber};
+use crate::types::{header::Header, BlockNumber};
 use vm::{AccessList, ActionParams, ActionValue, CallType, EnvInfo, ParamsType};
 
 use builtin::Builtin;
@@ -39,12 +39,12 @@ use crate::engines::{
     AuthorityRound, BasicAuthority, Clique, EthEngine, HoneyBadgerBFT, InstantSeal,
     InstantSealParams, NullEngine, DEFAULT_BLOCKHASH_CONTRACT,
 };
-use error::Error;
+use crate::error::Error;
 use crate::executive::Executive;
 use crate::factory::Factories;
 use crate::machine::EthereumMachine;
 use maplit::btreeset;
-use pod_state::PodState;
+use crate::pod_state::PodState;
 use crate::spec::{seal::Generic as GenericSeal, Genesis};
 use crate::state::{backend::Basic as BasicBackend, Backend, State, Substate};
 use crate::trace::{NoopTracer, NoopVMTracer};
@@ -791,7 +791,7 @@ impl Spec {
                     }
                 }
 
-                Arc::new(::ethereum::Ethash::new(
+                Arc::new(crate::ethereum::Ethash::new(
                     spec_params.cache_dir,
                     ethash.params.into(),
                     machine,
@@ -1061,7 +1061,7 @@ impl Spec {
     /// initialize genesis epoch data, using in-memory database for
     /// constructor.
     pub fn genesis_epoch_data(&self) -> Result<Vec<u8>, String> {
-        use types::transaction::{Action, Transaction, TypedTransaction};
+        use crate::types::transaction::{Action, Transaction, TypedTransaction};
 
         let genesis = self.genesis_header();
 
@@ -1099,7 +1099,7 @@ impl Spec {
             })
             .fake_sign(from);
 
-            let res = ::state::prove_transaction_virtual(
+            let res = crate::state::prove_transaction_virtual(
                 db.as_hash_db_mut(),
                 *genesis.state_root(),
                 &tx,
@@ -1241,7 +1241,7 @@ mod tests {
     use std::str::FromStr;
     use tempdir::TempDir;
     use test_helpers::get_temp_state_db;
-    use types::{view, views::BlockView};
+    use crate::types::{view, views::BlockView};
 
     #[test]
     fn test_load_empty() {

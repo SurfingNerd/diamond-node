@@ -23,7 +23,7 @@ use ethcore::client::{
     TransactionId,
 };
 use ethereum_types::H256;
-use types::transaction::{SignedTransaction, TypedTransaction};
+use crate::types::transaction::{SignedTransaction, TypedTransaction};
 
 use jsonrpc_core::Result;
 use v1::{

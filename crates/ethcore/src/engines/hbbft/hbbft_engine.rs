@@ -16,7 +16,7 @@ use crate::engines::{
     default_system_or_code_call, signer::EngineSigner, Engine, EngineError, ForkChoice, Seal,
     SealingState,
 };
-use error::{BlockError, Error};
+use crate::error::{BlockError, Error};
 use ethereum_types::{Address, Public, H256, H512, U256};
 use ethjson::spec::HbbftParams;
 use hbbft::{NetworkInfo, Target};
@@ -36,7 +36,7 @@ use std::{
     sync::{atomic::AtomicBool, Arc, Weak},
     time::{Duration, Instant},
 };
-use types::{
+use crate::types::{
     header::{ExtendedHeader, Header},
     ids::BlockId,
     transaction::{SignedTransaction, TypedTransaction},
@@ -1719,7 +1719,7 @@ mod tests {
     };
     use rand;
     use std::sync::Arc;
-    use types::transaction::SignedTransaction;
+    use crate::types::transaction::SignedTransaction;
 
     #[test]
     fn test_single_contribution() {

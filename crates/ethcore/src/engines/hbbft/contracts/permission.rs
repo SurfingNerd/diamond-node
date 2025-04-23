@@ -5,7 +5,7 @@ use crate::{
     client::EngineClient,
     engines::hbbft::utils::bound_contract::{BoundContract, CallError},
 };
-use types::ids::BlockId;
+use crate::types::ids::BlockId;
 
 use_contract!(permission_contract, "res/contracts/permission_hbbft.json");
 

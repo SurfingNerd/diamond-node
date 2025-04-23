@@ -25,7 +25,7 @@ use ethereum_types::{H256, H64, U256};
 use ethjson::{self, uint::Uint};
 use hash::KECCAK_EMPTY_LIST_RLP;
 use rlp::Rlp;
-use types::{
+use crate::types::{
     header::{ExtendedHeader, Header},
     BlockNumber,
 };
@@ -37,7 +37,7 @@ use crate::engines::{
     block_reward::{self, BlockRewardContract, RewardKind},
     Engine,
 };
-use error::{BlockError, Error};
+use crate::error::{BlockError, Error};
 use ethash::{self, quick_get_difficulty, slow_hash_block_number, EthashManager, OptimizeFor};
 use crate::machine::EthereumMachine;
 
@@ -449,7 +449,7 @@ impl Engine<EthereumMachine> for Arc<Ethash> {
     }
 
     fn snapshot_components(&self) -> Option<Box<dyn crate::snapshot::SnapshotComponents>> {
-        Some(Box::new(::snapshot::PowSnapshot::new(
+        Some(Box::new(crate::snapshot::PowSnapshot::new(
             SNAPSHOT_BLOCKS,
             MAX_SNAPSHOT_BLOCKS,
         )))
@@ -572,7 +572,7 @@ mod tests {
     use std::{collections::BTreeMap, str::FromStr, sync::Arc};
     use tempdir::TempDir;
     use test_helpers::get_temp_state_db;
-    use types::header::Header;
+    use crate::types::header::Header;
 
     fn test_spec() -> Spec {
         let tempdir = TempDir::new("").unwrap();

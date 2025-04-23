@@ -22,12 +22,12 @@ use ethereum_types::{Address, H160, U256};
 
 use super::{SystemOrCodeCall, SystemOrCodeCallKind};
 use crate::block::ExecutedBlock;
-use error::Error;
+use crate::error::Error;
 use hash::keccak;
 use crate::machine::Machine;
 use std::sync::Arc;
 use crate::trace::{self, ExecutiveTracer, Tracer, Tracing};
-use types::BlockNumber;
+use crate::types::BlockNumber;
 
 use_contract!(block_reward_contract, "res/contracts/block_reward.json");
 

@@ -15,7 +15,7 @@
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
 use ethereum_types::{H160, H256, U256};
-use types::log_entry::{LocalizedLogEntry, LogEntry};
+use crate::types::log_entry::{LocalizedLogEntry, LogEntry};
 use v1::types::Bytes;
 
 /// Log

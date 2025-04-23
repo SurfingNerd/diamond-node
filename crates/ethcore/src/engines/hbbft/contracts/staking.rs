@@ -5,7 +5,7 @@ use std::{
     net::{Ipv4Addr, Ipv6Addr, SocketAddr, SocketAddrV4, SocketAddrV6},
     str::FromStr,
 };
-use types::ids::BlockId;
+use crate::types::ids::BlockId;
 
 use_contract!(staking_contract, "res/contracts/staking_contract.json");
 

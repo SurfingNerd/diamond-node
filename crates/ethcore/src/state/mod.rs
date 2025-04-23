@@ -36,7 +36,7 @@ use crate::pod_account::*;
 use crate::pod_state::{self, PodState};
 use crate::state_db::StateDB;
 use crate::trace::{self, FlatTrace, VMTrace};
-use types::{
+use crate::types::{
     basic_account::BasicAccount,
     receipt::{LegacyReceipt, TransactionOutcome, TypedReceipt},
     state_diff::StateDiff,
@@ -1584,7 +1584,7 @@ mod tests {
     use std::{str::FromStr, sync::Arc};
     use test_helpers::{get_temp_state, get_temp_state_db};
     use crate::trace::{trace, FlatTrace, TraceError};
-    use types::transaction::*;
+    use crate::types::transaction::*;
     use vm::EnvInfo;
 
     fn secret() -> Secret {

@@ -4,7 +4,7 @@ use ethjson::{self, blockchain::Block};
 use log::warn;
 use rlp::RlpStream;
 use std::path::Path;
-use types::{
+use crate::types::{
     transaction::{TypedTransaction, TypedTxId, UnverifiedTransaction},
     BlockNumber,
 };

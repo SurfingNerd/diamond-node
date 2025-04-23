@@ -15,7 +15,7 @@
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
 use std::cmp::min;
-use types::transaction::{
+use crate::types::transaction::{
     AccessListTx, Action, EIP1559TransactionTx, SignedTransaction, Transaction, TypedTransaction,
     TypedTxId,
 };

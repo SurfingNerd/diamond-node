@@ -20,8 +20,8 @@ use super::{verification, Verifier};
 use call_contract::CallContract;
 use crate::client::BlockInfo;
 use crate::engines::EthEngine;
-use error::Error;
-use types::header::Header;
+use crate::error::Error;
+use crate::types::header::Header;
 
 /// A canonial verifier -- this does full verification.
 pub struct CanonVerifier;

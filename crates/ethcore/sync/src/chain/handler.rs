@@ -30,7 +30,7 @@ use rlp::Rlp;
 use crate::snapshot::ChunkType;
 use std::{cmp, mem, time::Instant};
 use sync_io::SyncIo;
-use types::{block_status::BlockStatus, ids::BlockId, BlockNumber};
+use crate::types::{block_status::BlockStatus, ids::BlockId, BlockNumber};
 
 use super::{
     request_id::strip_request_id,

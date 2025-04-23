@@ -22,7 +22,7 @@ use itertools::Itertools;
 use crate::pod_account::{self, PodAccount};
 use std::{collections::BTreeMap, fmt};
 use triehash::sec_trie_root;
-use types::state_diff::StateDiff;
+use crate::types::state_diff::StateDiff;
 
 /// State of all accounts in the system expressed in Plain Old Data.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize)]
@@ -106,7 +106,7 @@ mod test {
     use ethereum_types::H160;
     use crate::pod_account::PodAccount;
     use std::collections::BTreeMap;
-    use types::{account_diff::*, state_diff::*};
+    use crate::types::{account_diff::*, state_diff::*};
 
     #[test]
     fn create_delete() {
