@@ -126,7 +126,7 @@ impl BlockRewardContract {
 
         let output = caller(self.kind.clone(), input)
             .map_err(Into::into)
-            .map_err(::engines::EngineError::FailedSystemCall)?;
+            .map_err(crate::engines::EngineError::FailedSystemCall)?;
 
         // since this is a non-constant call we can't use ethabi's function output
         // deserialization, sadness ensues.
@@ -137,7 +137,7 @@ impl BlockRewardContract {
 
         let tokens = ethabi::decode(types, &output)
             .map_err(|err| err.to_string())
-            .map_err(::engines::EngineError::FailedSystemCall)?;
+            .map_err(crate::engines::EngineError::FailedSystemCall)?;
 
         assert!(tokens.len() == 2);
 
@@ -151,7 +151,7 @@ impl BlockRewardContract {
             .expect("type checked by ethabi::decode; qed");
 
         if addresses.len() != rewards.len() {
-            return Err(::engines::EngineError::FailedSystemCall(
+            return Err(crate::engines::EngineError::FailedSystemCall(
                 "invalid data returned by reward contract: both arrays must have the same size"
                     .into(),
             )

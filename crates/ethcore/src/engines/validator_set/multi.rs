@@ -136,7 +136,7 @@ impl ValidatorSet for Multi {
         _first: bool,
         header: &Header,
         aux: AuxiliaryData,
-    ) -> ::engines::EpochChange<EthereumMachine> {
+    ) -> crate::engines::EpochChange<EthereumMachine> {
         let (set_block, set) = self.correct_set_by_number(header.number());
         let first = set_block == header.number();
 

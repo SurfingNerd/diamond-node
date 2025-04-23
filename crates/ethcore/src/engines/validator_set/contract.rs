@@ -163,7 +163,7 @@ impl ValidatorSet for ValidatorContract {
         first: bool,
         header: &Header,
         aux: AuxiliaryData,
-    ) -> ::engines::EpochChange<EthereumMachine> {
+    ) -> crate::engines::EpochChange<EthereumMachine> {
         self.validators.signals_epoch_end(first, header, aux)
     }
 

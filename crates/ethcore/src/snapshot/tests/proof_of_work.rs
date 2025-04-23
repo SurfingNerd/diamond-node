@@ -66,7 +66,7 @@ fn chunk_and_restore(amount: u64) {
             block.encoded(),
             vec![],
             ExtrasInsert {
-                fork_choice: ::engines::ForkChoice::New,
+                fork_choice: crate::engines::ForkChoice::New,
                 is_finalized: false,
             },
         );

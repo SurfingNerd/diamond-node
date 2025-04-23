@@ -889,7 +889,7 @@ impl<'a> CallCreateExecutive<'a> {
 						Some((_, exec)) => {
 							let second_last = callstack.last_mut();
 							let parent_substate = match second_last {
-								Some((_, ref mut second_last)) => second_last.unconfirmed_substate().expect("Current stack value is created from second last item; second last item must be call or create; qed"),
+								Some((_, second_last)) => second_last.unconfirmed_substate().expect("Current stack value is created from second last item; second last item must be call or create; qed"),
 								None => top_substate,
 							};
 
@@ -926,7 +926,7 @@ impl<'a> CallCreateExecutive<'a> {
 
 								let second_last = callstack.last_mut();
 								let parent_substate = match second_last {
-									Some((_, ref mut second_last)) => second_last.unconfirmed_substate().expect("Current stack value is created from second last item; second last item must be call or create; qed"),
+									Some((_, second_last)) => second_last.unconfirmed_substate().expect("Current stack value is created from second last item; second last item must be call or create; qed"),
 									None => top_substate,
 								};
 
@@ -958,7 +958,7 @@ impl<'a> CallCreateExecutive<'a> {
 
 								let second_last = callstack.last_mut();
 								let parent_substate = match second_last {
-									Some((_, ref mut second_last)) => second_last.unconfirmed_substate().expect("Current stack value is created from second last item; second last item must be call or create; qed"),
+									Some((_, second_last)) => second_last.unconfirmed_substate().expect("Current stack value is created from second last item; second last item must be call or create; qed"),
 									None => top_substate,
 								};
 

@@ -102,7 +102,7 @@ impl StateProducer {
             let address_hash = H256(rng.r#gen());
             let balance: usize = rng.r#gen();
             let nonce: usize = rng.r#gen();
-            let acc = ::state::Account::new_basic(balance.into(), nonce.into()).rlp();
+            let acc = crate::state::Account::new_basic(balance.into(), nonce.into()).rlp();
             trie.insert(&address_hash[..], &acc).unwrap();
         }
     }

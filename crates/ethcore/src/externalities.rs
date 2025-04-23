@@ -214,7 +214,7 @@ where
                 self.vm_tracer,
             );
             let output = match &r {
-                Ok(ref r) => H256::from_slice(&r.return_data[..32]),
+                Ok(r) => H256::from_slice(&r.return_data[..32]),
                 _ => H256::default(),
             };
             trace!(

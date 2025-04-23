@@ -90,8 +90,8 @@ impl ValidatorSet for SimpleList {
         _: bool,
         _: &Header,
         _: AuxiliaryData,
-    ) -> ::engines::EpochChange<EthereumMachine> {
-        ::engines::EpochChange::No
+    ) -> crate::engines::EpochChange<EthereumMachine> {
+        crate::engines::EpochChange::No
     }
 
     fn epoch_set(

@@ -565,7 +565,7 @@ impl Importer {
                             warn!(target: "client", "Service tx checker error: {:?}", e);
                             bail!(e);
                         }
-                        Some(ref checker) => match checker.check(client, &t) {
+                        Some(checker) => match checker.check(client, &t) {
                             Ok(true) => {}
                             Ok(false) => {
                                 let e = format!(
@@ -3821,7 +3821,7 @@ mod tests {
                     encoded::Block::new(new_block),
                     Vec::new(),
                     ExtrasInsert {
-                        fork_choice: ::engines::ForkChoice::New,
+                        fork_choice: crate::engines::ForkChoice::New,
                         is_finalized: false,
                     },
                 );

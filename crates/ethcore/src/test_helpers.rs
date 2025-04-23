@@ -525,7 +525,7 @@ pub fn generate_dummy_blockchain(block_number: u32) -> BlockChain {
             encoded::Block::new(create_unverifiable_block(block_order, bc.best_block_hash())),
             vec![],
             ExtrasInsert {
-                fork_choice: ::engines::ForkChoice::New,
+                fork_choice: crate::engines::ForkChoice::New,
                 is_finalized: false,
             },
         );
@@ -557,7 +557,7 @@ pub fn generate_dummy_blockchain_with_extra(block_number: u32) -> BlockChain {
             )),
             vec![],
             ExtrasInsert {
-                fork_choice: ::engines::ForkChoice::New,
+                fork_choice: crate::engines::ForkChoice::New,
                 is_finalized: false,
             },
         );

@@ -64,7 +64,7 @@ struct StateProof {
     header: Header,
 }
 
-impl ::engines::StateDependentProof<EthereumMachine> for StateProof {
+impl crate::engines::StateDependentProof<EthereumMachine> for StateProof {
     fn generate_proof(&self, caller: &Call) -> Result<Vec<u8>, String> {
         prove_initial(self.contract_address, &self.header, caller)
     }
@@ -148,7 +148,7 @@ fn check_first_proof(
     })
     .fake_sign(from);
 
-    let res = ::state::check_proof(
+    let res = crate::state::check_proof(
         state_items,
         *old_header.state_root(),
         &tx,
@@ -157,9 +157,9 @@ fn check_first_proof(
     );
 
     match res {
-        ::state::ProvedExecution::BadProof => Err("Bad proof".into()),
-        ::state::ProvedExecution::Failed(e) => Err(format!("Failed call: {}", e)),
-        ::state::ProvedExecution::Complete(e) => {
+        crate::state::ProvedExecution::BadProof => Err("Bad proof".into()),
+        crate::state::ProvedExecution::Failed(e) => Err(format!("Failed call: {}", e)),
+        crate::state::ProvedExecution::Complete(e) => {
             decoder.decode(&e.output).map_err(|e| e.to_string())
         }
     }
@@ -409,7 +409,7 @@ impl ValidatorSet for ValidatorSafeContract {
                     .decode(&x)
                     .map_err(|x| format!("chain spec bug: could not decode: {:?}", x))
             })
-            .map_err(::engines::EngineError::FailedSystemCall)?;
+            .map_err(crate::engines::EngineError::FailedSystemCall)?;
         if !emit_initiate_change_callable {
             trace!(target: "engine", "New block #{} issued ― no need to call emitInitiateChange()", header.number());
         } else {
@@ -498,7 +498,7 @@ impl ValidatorSet for ValidatorSafeContract {
         let data = validator_set::functions::finalize_change::encode_input();
         caller(self.contract_address, data)
             .map(|_| ())
-            .map_err(::engines::EngineError::FailedSystemCall)
+            .map_err(crate::engines::EngineError::FailedSystemCall)
             .map_err(Into::into)
     }
 
@@ -515,7 +515,7 @@ impl ValidatorSet for ValidatorSafeContract {
         first: bool,
         header: &Header,
         aux: AuxiliaryData,
-    ) -> ::engines::EpochChange<EthereumMachine> {
+    ) -> crate::engines::EpochChange<EthereumMachine> {
         let receipts = aux.receipts;
 
         // transition to the first block of a contract requires finality but has no log event.
@@ -525,7 +525,7 @@ impl ValidatorSet for ValidatorSafeContract {
                 contract_address: self.contract_address,
                 header: header.clone(),
             });
-            return ::engines::EpochChange::Yes(::engines::Proof::WithState(state_proof as Arc<_>));
+            return crate::engines::EpochChange::Yes(crate::engines::Proof::WithState(state_proof as Arc<_>));
         }
 
         // otherwise, we're checking for logs.
@@ -533,21 +533,21 @@ impl ValidatorSet for ValidatorSafeContract {
         let header_bloom = header.log_bloom();
 
         if &bloom & header_bloom != bloom {
-            return ::engines::EpochChange::No;
+            return crate::engines::EpochChange::No;
         }
 
         trace!(target: "engine", "detected epoch change event bloom");
 
         match receipts {
-            None => ::engines::EpochChange::Unsure(AuxiliaryRequest::Receipts),
+            None => crate::engines::EpochChange::Unsure(AuxiliaryRequest::Receipts),
             Some(receipts) => match self.extract_from_event(bloom, header, receipts) {
-                None => ::engines::EpochChange::No,
+                None => crate::engines::EpochChange::No,
                 Some(list) => {
                     info!(target: "engine", "Signal for transition within contract. New list: {:?}",
 						&*list);
 
                     let proof = encode_proof(&header, receipts);
-                    ::engines::EpochChange::Yes(::engines::Proof::Known(proof))
+                    crate::engines::EpochChange::Yes(crate::engines::Proof::Known(proof))
                 }
             },
         }
@@ -571,7 +571,7 @@ impl ValidatorSet for ValidatorSafeContract {
             let old_hash = old_header.hash();
             let addresses =
                 check_first_proof(machine, self.contract_address, old_header, &state_items)
-                    .map_err(::engines::EngineError::InsufficientProof)?;
+                    .map_err(crate::engines::EngineError::InsufficientProof)?;
 
             trace!(target: "engine", "extracted epoch set at #{}: {} addresses",
 				number, addresses.len());
@@ -584,7 +584,7 @@ impl ValidatorSet for ValidatorSafeContract {
             // TODO: optimize? these were just decoded.
             let found_root = ::triehash::ordered_trie_root(receipts.iter().map(|r| r.encode()));
             if found_root != *old_header.receipts_root() {
-                return Err(::error::BlockError::InvalidReceiptsRoot(Mismatch {
+                return Err(crate::error::BlockError::InvalidReceiptsRoot(Mismatch {
                     expected: *old_header.receipts_root(),
                     found: found_root,
                 })
@@ -595,7 +595,7 @@ impl ValidatorSet for ValidatorSafeContract {
 
             match self.extract_from_event(bloom, &old_header, &receipts) {
                 Some(list) => Ok((list, Some(old_header.hash()))),
-                None => Err(::engines::EngineError::InsufficientProof(
+                None => Err(crate::engines::EngineError::InsufficientProof(
                     "No log event in proof.".into(),
                 )
                 .into()),

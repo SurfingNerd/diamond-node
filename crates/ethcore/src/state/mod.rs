@@ -640,7 +640,7 @@ impl<B: Backend> State<B> {
                 match checkpoint.get(address) {
                     // The account exists at this checkpoint.
                     Some(Some(AccountEntry {
-                        account: Some(ref account),
+                        account: Some(account),
                         ..
                     })) => {
                         if let Some(value) = account.cached_storage_at(key) {

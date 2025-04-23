@@ -156,7 +156,7 @@ pub trait ValidatorSet: Send + Sync + 'static {
         first: bool,
         header: &Header,
         aux: AuxiliaryData,
-    ) -> ::engines::EpochChange<EthereumMachine>;
+    ) -> crate::engines::EpochChange<EthereumMachine>;
 
     /// Recover the validator set from the given proof, the block number, and
     /// whether this header is first in its set.

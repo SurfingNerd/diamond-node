@@ -252,7 +252,7 @@ impl Account {
             return Ok(value);
         }
         match &self.original_storage_cache {
-            Some((ref original_storage_root, ref original_storage_cache)) => {
+            Some((original_storage_root, original_storage_cache)) => {
                 Self::get_and_cache_storage(
                     original_storage_root,
                     &mut original_storage_cache.borrow_mut(),
@@ -298,7 +298,7 @@ impl Account {
     /// Get cached original storage value after last state commitment. Returns `None` if the key is not in the cache.
     pub fn cached_original_storage_at(&self, key: &H256) -> Option<H256> {
         match &self.original_storage_cache {
-            Some((_, ref original_storage_cache)) => original_storage_cache
+            Some((_, original_storage_cache)) => original_storage_cache
                 .borrow_mut()
                 .get_mut(key)
                 .map(|value| value.clone()),
