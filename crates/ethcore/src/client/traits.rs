@@ -664,7 +664,7 @@ pub trait EngineClient: Sync + Send + ChainInfo {
     /// This will give the epoch that any children of this parent belong to.
     ///
     /// The block corresponding the the parent hash must be stored already.
-    fn epoch_transition_for(&self, parent_hash: H256) -> Option<::engines::EpochTransition>;
+    fn epoch_transition_for(&self, parent_hash: H256) -> Option<crate::engines::EpochTransition>;
 
     /// Attempt to cast the engine client to a full client.
     fn as_full_client(&self) -> Option<&dyn BlockChainClient>;

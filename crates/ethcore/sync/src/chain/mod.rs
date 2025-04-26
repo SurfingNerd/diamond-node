@@ -475,7 +475,7 @@ impl ChainSyncApi {
     }
 
     /// Returns new transactions propagation statistics
-    pub fn new_transactions_stats(&self) -> BTreeMap<H256, ::TransactionStats> {
+    pub fn new_transactions_stats(&self) -> BTreeMap<H256, crate::TransactionStats> {
         self.sync
             .read()
             .new_transactions_stats()
@@ -530,7 +530,7 @@ impl ChainSyncApi {
         }
 
         // deadline to get the task from the queue
-        let deadline = Instant::now() + ::api::PRIORITY_TIMER_INTERVAL;
+        let deadline = Instant::now() + crate::api::PRIORITY_TIMER_INTERVAL;
         let mut work = || {
             let task = {
                 let tasks = self.priority_tasks.try_lock_until(deadline)?;

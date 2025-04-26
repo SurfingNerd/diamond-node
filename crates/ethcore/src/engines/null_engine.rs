@@ -118,7 +118,7 @@ impl<M: Machine> Engine<M> for NullEngine<M> {
     }
 
     fn snapshot_components(&self) -> Option<Box<dyn crate::snapshot::SnapshotComponents>> {
-        Some(Box::new(::snapshot::PowSnapshot::new(10000, 10000)))
+        Some(Box::new(crate::snapshot::PowSnapshot::new(10000, 10000)))
     }
 
     fn fork_choice(&self, new: &ExtendedHeader, current: &ExtendedHeader) -> super::ForkChoice {

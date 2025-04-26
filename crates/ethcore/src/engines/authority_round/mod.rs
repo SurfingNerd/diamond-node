@@ -2312,7 +2312,7 @@ impl Engine<EthereumMachine> for AuthorityRound {
         if self.immediate_transitions {
             None
         } else {
-            Some(Box::new(::snapshot::PoaSnapshot))
+            Some(Box::new(crate::snapshot::PoaSnapshot))
         }
     }
 

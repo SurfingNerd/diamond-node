@@ -27,10 +27,10 @@ use std::{
     time::{Duration, Instant},
 };
 
-use crate::blockchain::{
+use crate::{blockchain::{
     BlockChain, BlockChainDB, BlockNumberKey, BlockProvider, BlockReceipts, ExtrasInsert,
     ImportRoute, TransactionAddress, TreeRoute,
-};
+}, miner::Miner};
 use bytes::{Bytes, ToPretty};
 use call_contract::CallContract;
 use db::{DBTransaction, DBValue, KeyValueDB};
@@ -58,7 +58,7 @@ use crate::types::{
     BlockNumber,
 };
 use vm::{EnvInfo, LastHashes};
-
+use crate::miner::MinerService;
 use ansi_term::Colour;
 use crate::block::{enact_verified, ClosedBlock, Drain, LockedBlock, OpenBlock, SealedBlock};
 use call_contract::RegistryInfo;
@@ -3292,7 +3292,7 @@ impl super::traits::EngineClient for Client {
         self.notify(|notify| notify.send(ChainMessageType::Consensus(message.clone()), node_id));
     }
 
-    fn epoch_transition_for(&self, parent_hash: H256) -> Option<::engines::EpochTransition> {
+    fn epoch_transition_for(&self, parent_hash: H256) -> Option<crate::engines::EpochTransition> {
         self.chain.read().epoch_transition_for(parent_hash)
     }
 
