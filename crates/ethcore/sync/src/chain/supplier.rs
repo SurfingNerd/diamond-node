@@ -29,7 +29,7 @@ use rlp::{Rlp, RlpStream};
 use std::cmp;
 use crate::types::{ids::BlockId, BlockNumber};
 
-use sync_io::SyncIo;
+use crate::sync_io::SyncIo;
 
 use super::{
     request_id::{prepend_request_id, strip_request_id, RequestId},
@@ -40,7 +40,7 @@ use super::{
     ChainSync, PacketProcessError, RlpResponseResult, SyncHandler, MAX_BODIES_TO_SEND,
     MAX_HEADERS_TO_SEND, MAX_RECEIPTS_HEADERS_TO_SEND,
 };
-use chain::MAX_NODE_DATA_TO_SEND;
+use crate::chain::MAX_NODE_DATA_TO_SEND;
 use std::borrow::Borrow;
 
 /// The Chain Sync Supplier: answers requests from peers with available data

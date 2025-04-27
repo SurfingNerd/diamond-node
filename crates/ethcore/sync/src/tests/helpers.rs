@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
-use api::PAR_PROTOCOL;
+use crate::api::PAR_PROTOCOL;
 use bytes::Bytes;
-use chain::{
+use crate::chain::{
     sync_packet::{PacketInfo, SyncPacket},
     ChainSync, ForkFilterApi, SyncSupplier, ETH_PROTOCOL_VERSION_66, PAR_PROTOCOL_VERSION_2,
 };
@@ -40,7 +40,7 @@ use std::{
     collections::{HashMap, HashSet, VecDeque},
     sync::Arc,
 };
-use sync_io::SyncIo;
+use crate::sync_io::SyncIo;
 use tests::snapshot::*;
 
 use crate::types::BlockNumber;

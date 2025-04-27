@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
-use api::{ETH_PROTOCOL, PAR_PROTOCOL};
+use crate::api::{ETH_PROTOCOL, PAR_PROTOCOL};
 use crate::block_sync::{BlockDownloaderImportError as DownloaderImportError, DownloadAction};
 use bytes::Bytes;
 use enum_primitive::FromPrimitive;
@@ -29,7 +29,7 @@ use network::{client_version::ClientVersion, PeerId};
 use rlp::Rlp;
 use crate::snapshot::ChunkType;
 use std::{cmp, mem, time::Instant};
-use sync_io::SyncIo;
+use crate::sync_io::SyncIo;
 use crate::types::{block_status::BlockStatus, ids::BlockId, BlockNumber};
 
 use super::{

@@ -30,26 +30,26 @@ use std::{
     time::Duration,
 };
 
-use chain::{
+use crate::chain::{
     fork_filter::ForkFilterApi, ChainSyncApi, SyncState, SyncStatus as EthSyncStatus,
     ETH_PROTOCOL_VERSION_63, ETH_PROTOCOL_VERSION_64, ETH_PROTOCOL_VERSION_65,
     ETH_PROTOCOL_VERSION_66, PAR_PROTOCOL_VERSION_1, PAR_PROTOCOL_VERSION_2,
 };
-use ethcore::{
+use crate::ethcore::{
     client::{BlockChainClient, ChainMessageType, ChainNotify, NewBlocks},
     snapshot::SnapshotService,
 };
 use ethereum_types::{H256, H512, U256, U64};
 use crate::io::TimerToken;
-use network::IpFilter;
+use crate::network::IpFilter;
 use parking_lot::{Mutex, RwLock};
-use stats::{PrometheusMetrics, PrometheusRegistry};
+use crate::stats::{PrometheusMetrics, PrometheusRegistry};
 
 use std::{
     net::{AddrParseError, SocketAddr},
     str::FromStr,
 };
-use sync_io::{NetSyncIo, SyncIo};
+use crate::sync_io::{NetSyncIo, SyncIo};
 use crate::types::{
     creation_status::CreationStatus, restoration_status::RestorationStatus,
     transaction::UnverifiedTransaction, BlockNumber,

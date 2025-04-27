@@ -15,7 +15,7 @@
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
 use super::helpers::*;
-use chain::SyncState;
+use crate::chain::SyncState;
 use ethcore::client::{
     BlockChainClient, BlockId, BlockInfo, ChainInfo, EachBlockWith, TestBlockChainClient,
 };

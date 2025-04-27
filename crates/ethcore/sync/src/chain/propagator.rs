@@ -26,7 +26,7 @@ use fastmap::H256FastSet;
 use network::{client_version::ClientCapabilities, PeerId};
 use rand::RngCore;
 use rlp::RlpStream;
-use sync_io::SyncIo;
+use crate::sync_io::SyncIo;
 use crate::types::{blockchain_info::BlockChainInfo, transaction::SignedTransaction, BlockNumber};
 
 use crate::chain::propagator_statistics::SyncPropagatorStatistics;

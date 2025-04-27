@@ -16,7 +16,7 @@
 
 // use std::backtrace::Backtrace;
 use crate::blocks::{BlockCollection, SyncBody, SyncHeader};
-use chain::BlockSet;
+use crate::chain::BlockSet;
 use ethcore::{
     client::{BlockId, BlockStatus},
     error::{
@@ -32,7 +32,7 @@ use std::cmp;
 /// Blockchain downloader
 ///
 use std::collections::{BTreeMap, HashSet, VecDeque};
-use sync_io::SyncIo;
+use crate::sync_io::SyncIo;
 use crate::types::BlockNumber;
 
 const MAX_HEADERS_TO_REQUEST: usize = 128;

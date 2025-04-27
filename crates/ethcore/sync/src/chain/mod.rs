@@ -103,7 +103,7 @@ use self::{
     propagator_statistics::SyncPropagatorStatistics,
 };
 use super::{SyncConfig, WarpSync};
-use api::{EthProtocolInfo as PeerInfoDigest, PriorityTask, ETH_PROTOCOL, PAR_PROTOCOL};
+use crate::api::{EthProtocolInfo as PeerInfoDigest, PriorityTask, ETH_PROTOCOL, PAR_PROTOCOL};
 use crate::block_sync::{BlockDownloader, DownloadAction};
 use bytes::Bytes;
 use derive_more::Display;
@@ -126,8 +126,8 @@ use std::{
     sync::mpsc,
     time::{Duration, Instant},
 };
-use sync_io::SyncIo;
-use transactions_stats::{Stats as TransactionStats, TransactionsStats};
+use crate::sync_io::SyncIo;
+use crate::transactions_stats::{Stats as TransactionStats, TransactionsStats};
 use crate::types::{block_status, transaction::UnverifiedTransaction, BlockNumber};
 
 use self::{
@@ -465,7 +465,7 @@ impl ChainSyncApi {
     }
 
     /// Returns pending transactions propagation statistics
-    pub fn pending_transactions_stats(&self) -> BTreeMap<H256, ::TransactionStats> {
+    pub fn pending_transactions_stats(&self) -> BTreeMap<H256, crate::TransactionStats> {
         self.sync
             .read()
             .pending_transactions_stats()

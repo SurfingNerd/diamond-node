@@ -15,7 +15,7 @@
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
 use bytes::Bytes;
-use chain::sync_packet::{PacketInfo, SyncPacket};
+use crate::chain::sync_packet::{PacketInfo, SyncPacket};
 use ethcore::{client::BlockChainClient, snapshot::SnapshotService};
 use network::{
     client_version::ClientVersion, Error, NetworkContext, PacketId, PeerId, ProtocolId, SessionInfo,

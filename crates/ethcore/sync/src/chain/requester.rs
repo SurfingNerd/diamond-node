@@ -21,7 +21,7 @@ use fastmap::H256FastSet;
 use network::PeerId;
 use rlp::RlpStream;
 use std::time::Instant;
-use sync_io::SyncIo;
+use crate::sync_io::SyncIo;
 use crate::types::BlockNumber;
 
 use super::{

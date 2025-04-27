@@ -1,5 +1,5 @@
 use bytes::Bytes;
-use chain::{
+use crate::chain::{
     sync_packet::{PacketInfo, SyncPacket},
     ChainSync, PeerInfo,
 };
