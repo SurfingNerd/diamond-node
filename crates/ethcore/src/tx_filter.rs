@@ -292,7 +292,7 @@ mod test {
     };
     use crypto::publickey::{KeyPair, Secret};
     use ethereum_types::{Address, U256};
-    use miner::Miner;
+    use crate::miner::Miner;
     use std::{str::FromStr, sync::Arc};
     use tempdir::TempDir;
     use test_helpers;

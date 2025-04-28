@@ -637,7 +637,7 @@ mod tests {
     };
     use error::Error;
     use ethereum_types::Address;
-    use state_db::StateDB;
+    use crate::state_db::StateDB;
     use std::sync::Arc;
     use test_helpers::get_temp_state_db;
     use vm::LastHashes;

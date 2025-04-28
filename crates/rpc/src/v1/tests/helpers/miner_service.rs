@@ -42,7 +42,7 @@ use ethcore::{
     miner::{self, AuthoringParams, MinerService, TransactionFilter},
 };
 use ethereum_types::{Address, H256, U256};
-use miner::pool::{
+use crate::miner::pool::{
     QueueStatus, VerifiedTransaction, local_transactions::Status as LocalTransactionStatus,
     verifier,
 };

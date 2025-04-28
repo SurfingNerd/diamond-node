@@ -29,10 +29,10 @@ use crate::{
 use ethereum_types::{H256, U256};
 use ethjson;
 use log::warn;
-use miner::Miner;
+use crate::miner::Miner;
 use rustc_hex::ToHex;
 use std::{path::Path, sync::Arc};
-use test_helpers;
+use crate::test_helpers;
 
 fn check_poststate(
     client: &Arc<Client>,

@@ -10,7 +10,7 @@ use crate::{
 };
 use crypto::publickey::{Generator, KeyPair, Random};
 use ethereum_types::{Address, U256};
-use miner::{Miner, MinerService};
+use crate::miner::{Miner, MinerService};
 use parking_lot::RwLock;
 use std::{ops::Deref, sync::Arc};
 use test_helpers::{TestNotify, generate_dummy_client_with_spec};

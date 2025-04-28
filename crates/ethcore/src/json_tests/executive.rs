@@ -30,7 +30,7 @@ use evm::Finalize;
 use hash::keccak;
 use rlp::RlpStream;
 use std::{path::Path, sync::Arc};
-use test_helpers::get_temp_state;
+use crate::test_helpers::get_temp_state;
 use vm::{
     self, ActionParams, CallType, ContractCreateResult, CreateContractAddress, EnvInfo, Ext,
     MessageCallResult, ReturnData, Schedule,
@@ -313,7 +313,7 @@ pub fn json_executive_test<H: FnMut(&str, HookType)>(
         state.populate_from(From::from(vm.pre_state.clone()));
         let info: EnvInfo = From::from(vm.env);
         let machine = {
-            let mut machine = ::ethereum::new_frontier_test_machine();
+            let mut machine = crate::ethereum::new_frontier_test_machine();
             machine.set_schedule_creation_rules(Box::new(move |s, _| s.max_depth = 1));
             machine
         };

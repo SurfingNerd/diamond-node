@@ -25,7 +25,7 @@ use crate::{
 };
 use ethcore::{CreateContractAddress, contract_address};
 use ethereum_types::{H160, H256, H512, U64, U256};
-use miner;
+use crate::miner;
 use serde::{Serialize, Serializer, ser::SerializeStruct};
 
 /// Transaction
@@ -342,7 +342,7 @@ impl LocalTransactionStatus {
         let convert = |tx: Arc<miner::pool::VerifiedTransaction>| {
             Transaction::from_signed(tx.signed().clone())
         };
-        use miner::pool::local_transactions::Status::*;
+        use crate::miner::pool::local_transactions::Status::*;
         match s {
             Pending(_) => LocalTransactionStatus::Pending,
             Mined(tx) => LocalTransactionStatus::Mined(convert(tx)),

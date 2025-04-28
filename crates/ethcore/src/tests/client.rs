@@ -45,7 +45,7 @@ use crypto::publickey::KeyPair;
 use ethereum;
 use ethereum_types::{Address, U256};
 use hash::keccak;
-use miner::{Miner, MinerService, PendingOrdering};
+use crate::miner::{Miner, MinerService, PendingOrdering};
 use rustc_hex::ToHex;
 use tempdir::TempDir;
 use test_helpers::{

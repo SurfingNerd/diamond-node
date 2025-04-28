@@ -70,7 +70,7 @@ pub fn json_transaction_test<H: FnMut(&str, HookType)>(
 
             let rlp: Vec<u8> = test.rlp.clone().into();
             let res = TypedTransaction::decode(&rlp)
-                .map_err(::error::Error::from)
+                .map_err(crate::error::Error::from)
                 .and_then(|t: UnverifiedTransaction| {
                     let mut header: Header = Default::default();
                     // Use high enough number to activate all required features.

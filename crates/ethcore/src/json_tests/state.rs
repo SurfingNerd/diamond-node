@@ -20,7 +20,7 @@ use crate::{
     trace,
 };
 use ethjson::{self, spec::ForkSpec};
-use pod_state::PodState;
+use crate::pod_state::PodState;
 use std::path::Path;
 use vm::EnvInfo;
 

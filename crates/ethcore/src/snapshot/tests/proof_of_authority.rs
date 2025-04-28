@@ -106,7 +106,7 @@ fn make_chain(
     {
         // push a block with given number, signed by one of the signers, with given transactions.
         let push_block = |signers: &[Address], n, txs: Vec<SignedTransaction>| {
-            use miner::{self, MinerService};
+            use crate::miner::{self, MinerService};
 
             let idx = n as usize % signers.len();
             trace!(target: "snapshot", "Pushing block #{}, {} txs, author={}",

@@ -28,9 +28,9 @@ use ethtrie;
 use evm::{FinalizationResult, VMType};
 use journaldb;
 use kvdb::{self, KeyValueDB};
-use pod_state;
-use state;
-use state_db;
+use crate::pod_state;
+use crate::state;
+use crate::state_db;
 use std::{fmt, sync::Arc};
 use trie;
 use vm::{self, ActionParams};
@@ -43,12 +43,12 @@ pub enum EvmTestError {
     /// EVM error.
     Evm(vm::Error),
     /// Initialization error.
-    ClientError(::error::Error),
+    ClientError(crate::error::Error),
     /// Post-condition failure,
     PostCondition(String),
 }
 
-impl<E: Into<::error::Error>> From<E> for EvmTestError {
+impl<E: Into<crate::error::Error>> From<E> for EvmTestError {
     fn from(err: E) -> Self {
         EvmTestError::ClientError(err.into())
     }
@@ -67,7 +67,7 @@ impl fmt::Display for EvmTestError {
     }
 }
 
-use ethereum::{self};
+use crate::ethereum::{self};
 use ethjson::spec::ForkSpec;
 
 /// Simplified, single-block EVM test client.

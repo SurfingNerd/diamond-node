@@ -56,8 +56,8 @@ use crate::{
     verification::queue::kind::blocks::Unverified,
 };
 use ethjson::crypto::publickey::{Public, Signature};
-use miner::Miner;
-use state_db::StateDB;
+use crate::miner::Miner;
+use crate::state_db::StateDB;
 
 use crate::exit::ShutdownManager;
 
@@ -583,13 +583,13 @@ pub fn generate_dummy_empty_blockchain() -> BlockChain {
 }
 
 /// Returns temp state
-pub fn get_temp_state() -> State<::state_db::StateDB> {
+pub fn get_temp_state() -> State<crate::state_db::StateDB> {
     let journal_db = get_temp_state_db();
     State::new(journal_db, U256::from(0), Default::default())
 }
 
 /// Returns temp state using coresponding factory
-pub fn get_temp_state_with_factory(factory: EvmFactory) -> State<::state_db::StateDB> {
+pub fn get_temp_state_with_factory(factory: EvmFactory) -> State<crate::state_db::StateDB> {
     let journal_db = get_temp_state_db();
     let mut factories = Factories::default();
     factories.vm = factory.into();

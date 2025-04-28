@@ -1840,7 +1840,7 @@ mod tests {
         client::{ChainInfo, EachBlockWith, ImportSealedBlock, TestBlockChainClient},
         types::transaction::{Transaction, TypedTransaction},
     };
-    use miner::{MinerService, PendingOrdering};
+    use crate::miner::{MinerService, PendingOrdering};
     use test_helpers::{
         dummy_engine_signer_with_address, generate_dummy_client, generate_dummy_client_with_spec,
     };

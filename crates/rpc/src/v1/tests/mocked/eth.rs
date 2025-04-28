@@ -33,7 +33,7 @@ use ethcore::{
     miner::{self, MinerService},
 };
 use ethereum_types::{Address, Bloom, H160, H256, U256};
-use miner::external::ExternalMiner;
+use crate::miner::external::ExternalMiner;
 use parity_runtime::Runtime;
 use parking_lot::Mutex;
 use rustc_hex::{FromHex, ToHex};

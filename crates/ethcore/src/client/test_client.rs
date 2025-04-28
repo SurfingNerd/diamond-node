@@ -77,10 +77,10 @@ use crate::{
     verification::queue::{QueueInfo, kind::blocks::Unverified},
 };
 use call_contract::{CallContract, RegistryInfo};
-use error::{Error, EthcoreResult};
+use crate::error::{Error, EthcoreResult};
 use journaldb;
-use miner::{self, Miner, MinerService};
-use state_db::StateDB;
+use crate::miner::{self, Miner, MinerService};
+use crate::state_db::StateDB;
 use stats::{PrometheusMetrics, PrometheusRegistry};
 
 use super::ReservedPeersManagement;
@@ -1222,7 +1222,7 @@ impl super::traits::EngineClient for TestBlockChainClient {
         // TODO: allow test to intercept the message to relay it to other test clients
     }
 
-    fn epoch_transition_for(&self, _block_hash: H256) -> Option<::engines::EpochTransition> {
+    fn epoch_transition_for(&self, _block_hash: H256) -> Option<crate::engines::EpochTransition> {
         None
     }
 

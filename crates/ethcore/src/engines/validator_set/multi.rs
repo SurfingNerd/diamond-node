@@ -222,7 +222,7 @@ mod tests {
     use crypto::publickey::Secret;
     use ethereum_types::Address;
     use hash::keccak;
-    use miner::{self, MinerService};
+    use crate::miner::{self, MinerService};
     use std::{collections::BTreeMap, sync::Arc};
     use test_helpers::generate_dummy_client_with_spec;
 
