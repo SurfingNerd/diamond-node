@@ -33,7 +33,7 @@ use jsonrpc_core::{
 };
 use jsonrpc_pubsub::SubscriptionId;
 
-use v1::{helpers::Subscribers, metadata::Metadata};
+use crate::v1::{helpers::Subscribers, metadata::Metadata};
 
 #[derive(Debug)]
 struct Subscription {

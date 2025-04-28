@@ -41,7 +41,7 @@ use std::{
     sync::Arc,
 };
 use crate::sync_io::SyncIo;
-use tests::snapshot::*;
+use crate::tests::snapshot::*;
 
 use crate::types::BlockNumber;
 use SyncConfig;

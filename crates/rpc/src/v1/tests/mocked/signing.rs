@@ -17,7 +17,7 @@
 use std::{str::FromStr, sync::Arc, thread, time::Duration};
 
 use jsonrpc_core::{futures::Future, IoHandler, Success};
-use v1::{
+use crate::v1::{
     helpers::{
         dispatch,
         external_signer::{SignerService, SigningQueue},

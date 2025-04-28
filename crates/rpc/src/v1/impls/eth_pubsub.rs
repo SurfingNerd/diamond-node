@@ -30,7 +30,7 @@ use jsonrpc_pubsub::{
     SubscriptionId,
 };
 
-use v1::{
+use crate::v1::{
     helpers::{errors, limit_logs, Subscribers},
     metadata::Metadata,
     traits::EthPubSub,

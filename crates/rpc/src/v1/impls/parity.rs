@@ -32,7 +32,7 @@ use jsonrpc_core::{futures::future, BoxFuture, Result};
 use stats::PrometheusMetrics;
 use sync::{ManageNetwork, SyncProvider};
 use crate::types::ids::BlockId;
-use v1::{
+use crate::v1::{
     helpers::{
         self,
         block_import::is_major_importing,
@@ -48,7 +48,7 @@ use v1::{
     },
 };
 use version::version_data;
-use Host;
+use crate::Host;
 
 /// Parity implementation.
 pub struct ParityClient<C, M>
@@ -352,8 +352,8 @@ where
         Ok(ChainStatus { block_gap: gap })
     }
 
-    fn node_kind(&self) -> Result<::v1::types::NodeKind> {
-        use v1::types::{Availability, Capability, NodeKind};
+    fn node_kind(&self) -> Result<crate::v1::types::NodeKind> {
+        use crate::v1::types::{Availability, Capability, NodeKind};
 
         Ok(NodeKind {
             availability: Availability::Personal,

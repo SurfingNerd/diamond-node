@@ -24,7 +24,7 @@ mod signing;
 #[cfg(not(any(test, feature = "accounts")))]
 mod signing {
     use super::*;
-    use v1::helpers::errors;
+    use crate::v1::helpers::errors;
 
     /// Dummy signer implementation
     #[derive(Debug, Clone)]
@@ -81,7 +81,7 @@ mod signing {
 }
 
 pub use self::{full::FullDispatcher, signing::Signer};
-pub use v1::helpers::nonce::Reservations;
+pub use crate::v1::helpers::nonce::Reservations;
 
 use std::{fmt::Debug, ops::Deref, sync::Arc};
 
@@ -100,7 +100,7 @@ use jsonrpc_core::{
     futures::{future, Future, IntoFuture},
     BoxFuture, Error, Result,
 };
-use v1::{
+use crate::v1::{
     helpers::{ConfirmationPayload, FilledTransactionRequest, TransactionRequest},
     types::{
         Bytes as RpcBytes, ConfirmationPayload as RpcConfirmationPayload, ConfirmationResponse,

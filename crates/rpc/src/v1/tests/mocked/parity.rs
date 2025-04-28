@@ -28,7 +28,7 @@ use crate::types::{
 
 use super::manage_network::TestManageNetwork;
 use jsonrpc_core::IoHandler;
-use v1::{
+use crate::v1::{
     helpers::{external_signer::SignerService, NetworkSettings},
     metadata::Metadata,
     tests::helpers::{Config, TestMinerService, TestSyncProvider},

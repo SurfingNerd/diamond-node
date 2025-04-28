@@ -22,7 +22,7 @@ use crate::types::transaction::{
 
 use ethereum_types::U256;
 use jsonrpc_core::{Error, ErrorCode};
-use v1::helpers::CallRequest;
+use crate::v1::helpers::CallRequest;
 
 pub fn sign_call(request: CallRequest) -> Result<SignedTransaction, Error> {
     let max_gas = U256::from(500_000_000);

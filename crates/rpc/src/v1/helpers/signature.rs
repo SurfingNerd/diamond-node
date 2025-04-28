@@ -18,7 +18,7 @@ use crypto::publickey::{public_to_address, recover, Signature};
 use ethereum_types::{H256, U64};
 use hash::keccak;
 use jsonrpc_core::Result;
-use v1::{
+use crate::v1::{
     helpers::{dispatch::eth_data_hash, errors},
     types::{Bytes, RecoveredAccount},
 };

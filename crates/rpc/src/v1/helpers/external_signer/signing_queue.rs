@@ -19,7 +19,7 @@ use std::collections::BTreeMap;
 use super::oneshot;
 use ethereum_types::U256;
 use parking_lot::{Mutex, RwLock};
-use v1::{
+use crate::v1::{
     helpers::{
         errors,
         requests::{ConfirmationPayload, ConfirmationRequest},
@@ -246,7 +246,7 @@ mod test {
     use jsonrpc_core::futures::Future;
     use parking_lot::Mutex;
     use std::sync::Arc;
-    use v1::{
+    use crate::v1::{
         helpers::{
             external_signer::{ConfirmationsQueue, QueueEvent, SigningQueue},
             ConfirmationPayload, FilledTransactionRequest,

@@ -954,7 +954,7 @@ mod tests {
     use parking_lot::RwLock;
     use rlp::Rlp;
     use std::collections::VecDeque;
-    use tests::{helpers::TestIo, snapshot::TestSnapshotService};
+    use crate::tests::{helpers::TestIo, snapshot::TestSnapshotService};
 
     use super::{
         super::tests::{dummy_sync_with_peer, get_dummy_block, get_dummy_blocks, get_dummy_hashes},

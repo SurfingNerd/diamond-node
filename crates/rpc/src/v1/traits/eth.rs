@@ -19,7 +19,7 @@ use ethereum_types::{H160, H256, H64, U256, U64};
 use jsonrpc_core::{BoxFuture, Result};
 use jsonrpc_derive::rpc;
 
-use v1::types::{
+use crate::v1::types::{
     BlockNumber, Bytes, CallRequest, EthAccount, EthFeeHistory, Filter, FilterChanges, Index, Log,
     Receipt, RichBlock, SyncStatus, Transaction, Work,
 };

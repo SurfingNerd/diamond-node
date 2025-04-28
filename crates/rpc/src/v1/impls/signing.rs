@@ -27,7 +27,7 @@ use jsonrpc_core::{
     BoxFuture, Error, Result,
 };
 
-use v1::{
+use crate::v1::{
     helpers::{
         deprecated::{self, DeprecationNotice},
         dispatch::{self, Dispatcher},

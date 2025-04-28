@@ -23,7 +23,7 @@ use jsonrpc_core::{BoxFuture, Result};
 use jsonrpc_derive::rpc;
 
 use ethcore::miner::TransactionFilter;
-use v1::types::{
+use crate::v1::types::{
     BlockNumber, Bytes, CallRequest, ChainStatus, Histogram, LocalTransactionStatus, Peers,
     Receipt, RecoveredAccount, RichHeader, RpcSettings, Transaction, TransactionStats,
 };
@@ -199,7 +199,7 @@ pub trait Parity {
 
     /// Get node kind info.
     #[rpc(name = "parity_nodeKind")]
-    fn node_kind(&self) -> Result<::v1::types::NodeKind>;
+    fn node_kind(&self) -> Result<crate::v1::types::NodeKind>;
 
     /// Get block header.
     /// Same as `eth_getBlockByNumber` but without uncles and transactions.

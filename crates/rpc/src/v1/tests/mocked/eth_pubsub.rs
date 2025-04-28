@@ -24,7 +24,7 @@ use jsonrpc_pubsub::Session;
 
 use std::time::Duration;
 
-use v1::{EthPubSub, EthPubSubClient, Metadata};
+use crate::v1::{EthPubSub, EthPubSubClient, Metadata};
 
 use ethcore::client::{
     ChainNotify, ChainRoute, ChainRouteType, EachBlockWith, NewBlocks, TestBlockChainClient,

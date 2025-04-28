@@ -33,7 +33,7 @@ use jsonrpc_core::{
     futures::{future, future::Either, Future},
     BoxFuture, Result,
 };
-use v1::{
+use crate::v1::{
     helpers::{errors, limit_logs, PollFilter, PollManager, SyncPollFilter},
     impls::eth::pending_logs,
     traits::EthFilter,

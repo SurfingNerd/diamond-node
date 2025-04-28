@@ -35,7 +35,7 @@ use ethcore::{
     snapshot::SnapshotService,
 };
 use hash::keccak;
-use miner::external::ExternalMinerService;
+use crate::miner::external::ExternalMinerService;
 use sync::SyncProvider;
 use crate::types::{
     encoded,
@@ -47,7 +47,7 @@ use crate::types::{
 
 use jsonrpc_core::{futures::future, BoxFuture, Result};
 
-use v1::{
+use crate::v1::{
     helpers::{
         self,
         block_import::is_major_importing,

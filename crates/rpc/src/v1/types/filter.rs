@@ -23,7 +23,7 @@ use serde::{
 use serde_json::{from_value, Value};
 use crate::types::{filter::Filter as EthFilter, ids::BlockId};
 
-use v1::{
+use crate::v1::{
     helpers::errors::invalid_params,
     types::{BlockNumber, Log},
 };
@@ -178,7 +178,7 @@ mod tests {
     use serde_json;
     use std::str::FromStr;
     use crate::types::{filter::Filter as EthFilter, ids::BlockId};
-    use v1::types::BlockNumber;
+    use crate::v1::types::BlockNumber;
 
     #[test]
     fn topic_deserialization() {

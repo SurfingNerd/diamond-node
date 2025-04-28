@@ -28,7 +28,7 @@ use hash::keccak_buffer;
 use sync::ManageNetwork;
 
 use jsonrpc_core::{futures::Future, BoxFuture, Result};
-use v1::{
+use crate::v1::{
     helpers::errors,
     traits::ParitySet,
     types::{Bytes, Transaction},
@@ -37,8 +37,8 @@ use v1::{
 #[cfg(any(test, feature = "accounts"))]
 pub mod accounts {
     use super::*;
-    use accounts::AccountProvider;
-    use v1::{
+    use crate::accounts::AccountProvider;
+    use crate::v1::{
         helpers::{deprecated::DeprecationNotice, engine_signer::EngineSigner},
         traits::ParitySetAccounts,
     };

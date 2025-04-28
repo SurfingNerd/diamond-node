@@ -21,7 +21,7 @@ use rpc::signer::{ConfirmationRequest, TransactionCondition, TransactionModifica
 use serde;
 use serde_json::{to_value, Value as JsonValue};
 use std::path::PathBuf;
-use BoxFuture;
+use crate::BoxFuture;
 
 pub struct SignerRpc {
     rpc: Rpc,

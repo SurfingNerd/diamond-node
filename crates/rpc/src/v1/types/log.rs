@@ -16,7 +16,7 @@
 
 use ethereum_types::{H160, H256, U256};
 use crate::types::log_entry::{LocalizedLogEntry, LogEntry};
-use v1::types::Bytes;
+use crate::v1::types::Bytes;
 
 /// Log
 #[derive(Debug, Serialize, PartialEq, Eq, Hash, Clone)]
@@ -89,7 +89,7 @@ mod tests {
     use ethereum_types::{H160, H256, U256};
     use serde_json;
     use std::str::FromStr;
-    use v1::types::Log;
+    use crate::v1::types::Log;
 
     #[test]
     fn log_serialization() {

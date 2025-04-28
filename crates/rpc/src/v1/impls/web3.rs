@@ -18,7 +18,7 @@
 use ethereum_types::H256;
 use hash::keccak;
 use jsonrpc_core::Result;
-use v1::{traits::Web3, types::Bytes};
+use crate::v1::{traits::Web3, types::Bytes};
 use version::version;
 
 /// Web3 rpc implementation.

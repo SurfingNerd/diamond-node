@@ -21,7 +21,7 @@ use hash::keccak;
 use jsonrpc_core::Error;
 use serde_json::{from_value, Value};
 use std::fmt::Display;
-use v1::{
+use crate::v1::{
     helpers::{dispatch::eth_data_hash, errors},
     types::{Bytes, EIP191Version, PresignedTransaction},
 };

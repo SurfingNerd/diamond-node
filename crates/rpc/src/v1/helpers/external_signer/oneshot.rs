@@ -18,7 +18,7 @@ use jsonrpc_core::{
     futures::{self, sync::oneshot, Future},
     Error,
 };
-use v1::helpers::errors;
+use crate::v1::helpers::errors;
 
 pub type Res<T> = Result<T, Error>;
 

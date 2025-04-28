@@ -24,7 +24,7 @@ use crate::types::transaction::{
     Action, LocalizedTransaction, PendingTransaction, SignedTransaction, TypedTransaction,
     TypedTxId,
 };
-use v1::types::{AccessList, Bytes, TransactionCondition};
+use crate::v1::types::{AccessList, Bytes, TransactionCondition};
 
 /// Transaction
 #[derive(Debug, Default, Clone, PartialEq, Serialize)]

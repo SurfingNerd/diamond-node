@@ -35,7 +35,7 @@ use parking_lot::Mutex;
 use crate::types::ids::BlockId;
 
 use jsonrpc_core::IoHandler;
-use v1::{
+use crate::v1::{
     helpers::{
         dispatch::{self, FullDispatcher},
         nonce,

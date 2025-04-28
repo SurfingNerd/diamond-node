@@ -23,7 +23,7 @@ use std::{
     sync::Arc,
 };
 use crate::types::filter::Filter;
-use v1::types::Log;
+use crate::v1::types::Log;
 
 pub type BlockNumber = u64;
 
@@ -68,7 +68,7 @@ pub enum PollFilter {
 }
 
 impl PollFilter {
-    pub(in v1) const MAX_BLOCK_HISTORY_SIZE: usize = 32;
+    pub(in crate::v1) const MAX_BLOCK_HISTORY_SIZE: usize = 32;
 }
 
 /// Returns only last `n` logs

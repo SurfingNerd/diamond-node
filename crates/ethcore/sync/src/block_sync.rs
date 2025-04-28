@@ -802,7 +802,7 @@ mod tests {
     use hash::keccak;
     use parking_lot::RwLock;
     use rlp::{encode_list, RlpStream};
-    use tests::{helpers::TestIo, snapshot::TestSnapshotService};
+    use crate::tests::{helpers::TestIo, snapshot::TestSnapshotService};
     use triehash_ethereum::ordered_trie_root;
     use crate::types::{
         header::Header as BlockHeader,

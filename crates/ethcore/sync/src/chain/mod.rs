@@ -1873,7 +1873,7 @@ pub mod tests {
     use parking_lot::RwLock;
     use rlp::{Rlp, RlpStream};
     use std::collections::VecDeque;
-    use tests::{helpers::TestIo, snapshot::TestSnapshotService};
+    use crate::tests::{helpers::TestIo, snapshot::TestSnapshotService};
     use crate::types::header::Header;
     use SyncConfig;
 

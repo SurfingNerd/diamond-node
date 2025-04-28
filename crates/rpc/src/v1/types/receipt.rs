@@ -16,7 +16,7 @@
 
 use ethereum_types::{Bloom as H2048, H160, H256, U256, U64};
 use crate::types::receipt::{LocalizedReceipt, RichReceipt, TransactionOutcome, TypedReceipt};
-use v1::types::Log;
+use crate::v1::types::Log;
 
 /// Receipt
 #[derive(Debug, Serialize)]
@@ -148,7 +148,7 @@ mod tests {
     use ethereum_types::{Bloom, H256};
     use serde_json;
     use crate::types::transaction::TypedTxId;
-    use v1::types::{Log, Receipt};
+    use crate::v1::types::{Log, Receipt};
 
     #[test]
     fn receipt_serialization() {

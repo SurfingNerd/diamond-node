@@ -521,7 +521,7 @@ mod test {
     use parking_lot::RwLock;
     use rlp::{Rlp, RlpStream};
     use std::{collections::VecDeque, str::FromStr};
-    use tests::{helpers::TestIo, snapshot::TestSnapshotService};
+    use crate::tests::{helpers::TestIo, snapshot::TestSnapshotService};
 
     #[test]
     fn return_block_headers() {

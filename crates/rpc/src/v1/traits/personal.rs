@@ -19,7 +19,7 @@ use eip_712::EIP712;
 use ethereum_types::{H160, H256, H520, U128};
 use jsonrpc_core::{types::Value, BoxFuture, Result};
 use jsonrpc_derive::rpc;
-use v1::types::{
+use crate::v1::types::{
     Bytes, EIP191Version, RichRawTransaction as RpcRichRawTransaction, TransactionRequest,
 };
 

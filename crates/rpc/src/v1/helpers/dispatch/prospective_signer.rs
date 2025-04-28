@@ -24,7 +24,7 @@ use jsonrpc_core::{
 use crate::types::transaction::SignedTransaction;
 
 use super::{Accounts, PostSign, SignWith, WithToken};
-use v1::helpers::{errors, nonce, FilledTransactionRequest};
+use crate::v1::helpers::{errors, nonce, FilledTransactionRequest};
 
 #[derive(Debug, Clone, Copy)]
 enum ProspectiveSignerState {

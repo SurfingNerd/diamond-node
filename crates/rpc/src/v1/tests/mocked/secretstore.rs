@@ -25,7 +25,7 @@ use ethereum_types::H256;
 
 use jsonrpc_core::{IoHandler, Success};
 use serde_json;
-use v1::{
+use crate::v1::{
     helpers::secretstore::ordered_servers_keccak, metadata::Metadata,
     traits::secretstore::SecretStore, types::EncryptedDocumentKey, SecretStoreClient,
 };

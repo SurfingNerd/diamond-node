@@ -21,7 +21,7 @@ use std::{
     sync::Arc,
 };
 
-use authcodes;
+use crate::authcodes;
 use ethereum_types::H256;
 use http::hyper;
 use ipc;
@@ -30,7 +30,7 @@ use jsonrpc_core::futures::future::Either;
 use jsonrpc_pubsub::Session;
 use ws;
 
-use v1::{informant::RpcStats, Metadata, Origin};
+use crate::v1::{informant::RpcStats, Metadata, Origin};
 
 /// Common HTTP & IPC metadata extractor.
 pub struct RpcExtractor;

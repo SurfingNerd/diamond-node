@@ -24,7 +24,7 @@ use jsonrpc_core::{
 use jsonrpc_pubsub::Session;
 
 use parity_runtime::Runtime;
-use v1::{Metadata, PubSub, PubSubClient};
+use crate::v1::{Metadata, PubSub, PubSubClient};
 
 fn rpc() -> MetaIoHandler<Metadata, core::NoopMiddleware> {
     let mut io = MetaIoHandler::default();

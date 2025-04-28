@@ -21,7 +21,7 @@ use jsonrpc_core::Error;
 use rand::{rngs::OsRng, RngCore};
 use std::collections::BTreeSet;
 use tiny_keccak::Keccak;
-use v1::{helpers::errors, types::EncryptedDocumentKey};
+use crate::v1::{helpers::errors, types::EncryptedDocumentKey};
 
 /// Initialization vector length.
 const INIT_VEC_LEN: usize = 16;

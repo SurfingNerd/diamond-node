@@ -40,7 +40,7 @@ use crate::types::{
 };
 
 use jsonrpc_core::IoHandler;
-use v1::{
+use crate::v1::{
     metadata::Metadata,
     tests::helpers::{Config, TestMinerService, TestSnapshotService, TestSyncProvider},
     Eth, EthClient, EthClientOptions, EthFilter, EthFilterClient,

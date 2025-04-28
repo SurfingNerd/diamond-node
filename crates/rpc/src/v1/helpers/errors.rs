@@ -25,7 +25,7 @@ use ethcore::{
 use jsonrpc_core::{Error, ErrorCode, Result as RpcResult, Value};
 use rlp::DecoderError;
 use crate::types::{blockchain_info::BlockChainInfo, transaction::Error as TransactionError};
-use v1::{impls::EthClientOptions, types::BlockNumber};
+use crate::v1::{impls::EthClientOptions, types::BlockNumber};
 use vm::Error as VMError;
 
 mod codes {

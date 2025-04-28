@@ -517,7 +517,7 @@ mod tests {
     use parking_lot::RwLock;
     use rlp::Rlp;
     use std::collections::VecDeque;
-    use tests::{helpers::TestIo, snapshot::TestSnapshotService};
+    use crate::tests::{helpers::TestIo, snapshot::TestSnapshotService};
     use crate::types::transaction::TypedTransaction;
 
     use super::{

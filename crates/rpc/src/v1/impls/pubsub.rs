@@ -28,7 +28,7 @@ use jsonrpc_pubsub::{typed::Subscriber, SubscriptionId};
 use tokio_timer;
 
 use parity_runtime::Executor;
-use v1::{helpers::GenericPollManager, metadata::Metadata, traits::PubSub};
+use crate::v1::{helpers::GenericPollManager, metadata::Metadata, traits::PubSub};
 
 /// Parity PubSub implementation.
 pub struct PubSubClient<S: core::Middleware<Metadata>> {

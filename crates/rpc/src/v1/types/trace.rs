@@ -26,7 +26,7 @@ use serde::{ser::SerializeStruct, Serialize, Serializer};
 use crate::types::{account_diff, state_diff};
 use vm;
 
-use v1::types::Bytes;
+use crate::v1::types::Bytes;
 
 #[derive(Debug, Serialize)]
 /// A diff of some chunk of memory.
@@ -682,7 +682,7 @@ mod tests {
     use ethereum_types::{Address, H256};
     use serde_json;
     use std::collections::BTreeMap;
-    use v1::types::Bytes;
+    use crate::v1::types::Bytes;
 
     #[test]
     fn should_serialize_trace_results() {

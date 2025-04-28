@@ -26,7 +26,7 @@ use crate::types::transaction::{Action, SignedTransaction, Transaction, TypedTra
 
 use jsonrpc_core::IoHandler;
 use serde_json;
-use v1::{
+use crate::v1::{
     helpers::{
         dispatch::{self, eth_data_hash, FullDispatcher},
         external_signer::{SignerService, SigningQueue},

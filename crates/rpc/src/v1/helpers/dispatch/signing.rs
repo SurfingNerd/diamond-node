@@ -27,7 +27,7 @@ use crate::types::transaction::{
 };
 
 use jsonrpc_core::Result;
-use v1::helpers::{errors, FilledTransactionRequest};
+use crate::v1::helpers::{errors, FilledTransactionRequest};
 
 use super::{eth_data_hash, SignMessage, SignWith, WithToken};
 

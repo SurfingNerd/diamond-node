@@ -30,7 +30,7 @@ use parking_lot::Mutex;
 use std::{fs::File, path::PathBuf};
 use url::Url;
 
-use ws::ws::{
+use crate::ws::ws::{
     self, Error as WsError, ErrorKind as WsErrorKind, Handler, Handshake, Message, Request,
     Result as WsResult, Sender,
 };
@@ -46,7 +46,7 @@ use jsonrpc_core::{
     Error as JsonRpcError, Id, Params, Version,
 };
 
-use BoxFuture;
+use crate::BoxFuture;
 
 /// The actual websocket connection handler, passed into the
 /// event loop of ws-rs
