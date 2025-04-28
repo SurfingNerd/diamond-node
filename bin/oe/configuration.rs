@@ -1277,8 +1277,6 @@ mod tests {
 
     use super::*;
 
-    use crate::NODE_SOFTWARE_NAME;
-
     lazy_static! {
         static ref ITERATIONS: NonZeroU32 = NonZeroU32::new(10240).expect("10240 > 0; qed");
     }
