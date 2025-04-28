@@ -165,7 +165,7 @@ impl<Trace: Writer, Out: Writer> vm::Informant for Informant<Trace, Out> {
     }
     fn finish(
         result: vm::RunResult<<Self as trace::VMTracer>::Output>,
-        (ref mut trace_sink, ref mut out_sink, _): &mut Self::Sink,
+        ( trace_sink,  out_sink, _): &mut Self::Sink,
     ) {
         match result {
             Ok(success) => {
