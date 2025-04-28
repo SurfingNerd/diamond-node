@@ -20,12 +20,30 @@ use std::{
     collections::{BTreeMap, HashMap},
     str::FromStr,
     sync::{
-        atomic::{AtomicBool, AtomicUsize, Ordering as AtomicOrder},
         Arc,
+        atomic::{AtomicBool, AtomicUsize, Ordering as AtomicOrder},
     },
 };
 
-use crate::blockchain::{BlockReceipts, TreeRoute};
+use crate::{
+    blockchain::{BlockReceipts, TreeRoute},
+    types::{
+        BlockNumber,
+        basic_account::BasicAccount,
+        encoded,
+        filter::Filter,
+        header::Header,
+        log_entry::LocalizedLogEntry,
+        pruning_info::PruningInfo,
+        receipt::{LegacyReceipt, LocalizedReceipt, TransactionOutcome, TypedReceipt},
+        transaction::{
+            self, Action, LocalizedTransaction, SignedTransaction, Transaction, TypedTransaction,
+            TypedTxId,
+        },
+        view,
+        views::BlockView,
+    },
+};
 use bytes::Bytes;
 use crypto::publickey::{Generator, Random};
 use db::{COL_STATE, NUM_COLUMNS};
@@ -38,46 +56,32 @@ use kvdb::DBValue;
 use parking_lot::{Mutex, RwLock};
 use rlp::RlpStream;
 use rustc_hex::FromHex;
-use crate::types::{
-    basic_account::BasicAccount,
-    encoded,
-    filter::Filter,
-    header::Header,
-    log_entry::LocalizedLogEntry,
-    pruning_info::PruningInfo,
-    receipt::{LegacyReceipt, LocalizedReceipt, TransactionOutcome, TypedReceipt},
-    transaction::{
-        self, Action, LocalizedTransaction, SignedTransaction, Transaction, TypedTransaction,
-        TypedTxId,
-    },
-    view,
-    views::BlockView,
-    BlockNumber,
-};
 use vm::Schedule;
 
-use crate::block::{ClosedBlock, OpenBlock, SealedBlock};
-use call_contract::{CallContract, RegistryInfo};
-use crate::client::{
-    traits::{ForceUpdateSealing, TransactionRequest},
-    AccountData, BadBlocks, Balance, BlockChain, BlockChainClient, BlockChainInfo, BlockId,
-    BlockInfo, BlockProducer, BlockStatus, BroadcastProposalBlock, Call, CallAnalytics, ChainInfo,
-    EngineInfo, ImportBlock, ImportSealedBlock, IoClient, LastHashes, Mode, Nonce,
-    PrepareOpenBlock, ProvingBlockChainClient, ReopenBlock, ScheduleInfo, SealedBlockImporter,
-    StateClient, StateOrBlock, TraceFilter, TraceId, TransactionId, TransactionInfo, UncleId,
+use crate::{
+    block::{ClosedBlock, OpenBlock, SealedBlock},
+    client::{
+        AccountData, BadBlocks, Balance, BlockChain, BlockChainClient, BlockChainInfo, BlockId,
+        BlockInfo, BlockProducer, BlockStatus, BroadcastProposalBlock, Call, CallAnalytics,
+        ChainInfo, EngineInfo, ImportBlock, ImportSealedBlock, IoClient, LastHashes, Mode, Nonce,
+        PrepareOpenBlock, ProvingBlockChainClient, ReopenBlock, ScheduleInfo, SealedBlockImporter,
+        StateClient, StateOrBlock, TraceFilter, TraceId, TransactionId, TransactionInfo, UncleId,
+        traits::{ForceUpdateSealing, TransactionRequest},
+    },
+    engines::EthEngine,
+    executed::CallError,
+    executive::Executed,
+    spec::Spec,
+    state::StateInfo,
+    trace::LocalizedTrace,
+    verification::queue::{QueueInfo, kind::blocks::Unverified},
 };
-use crate::engines::EthEngine;
+use call_contract::{CallContract, RegistryInfo};
 use error::{Error, EthcoreResult};
-use crate::executed::CallError;
-use crate::executive::Executed;
 use journaldb;
 use miner::{self, Miner, MinerService};
-use crate::spec::Spec;
-use crate::state::StateInfo;
 use state_db::StateDB;
 use stats::{PrometheusMetrics, PrometheusRegistry};
-use crate::trace::LocalizedTrace;
-use crate::verification::queue::{kind::blocks::Unverified, QueueInfo};
 
 use super::ReservedPeersManagement;
 
@@ -954,11 +958,7 @@ impl BlockChainClient for TestBlockChainClient {
                         blocks.push(hash.clone());
                     }
                 }
-                if adding {
-                    Vec::new()
-                } else {
-                    blocks
-                }
+                if adding { Vec::new() } else { blocks }
             },
             is_from_route_finalized: false,
         })

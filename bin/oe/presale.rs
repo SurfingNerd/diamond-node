@@ -51,7 +51,7 @@ pub fn execute(cmd: ImportWallet) -> Result<String, String> {
 
 pub fn import_account(cmd: &ImportWallet, kp: publickey::KeyPair, password: Password) {
     use crate::accounts::{AccountProvider, AccountProviderSettings};
-    use ethstore::{accounts_dir::RootDiskDirectory, EthStore};
+    use ethstore::{EthStore, accounts_dir::RootDiskDirectory};
 
     let dir = Box::new(RootDiskDirectory::create(cmd.path.clone()).unwrap());
     let secret_store = Box::new(EthStore::open_with_iterations(dir, cmd.iterations).unwrap());

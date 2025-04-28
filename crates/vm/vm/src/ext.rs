@@ -16,13 +16,15 @@
 
 //! Interface for Evm externalities.
 
+use crate::{
+    call_type::CallType,
+    env_info::EnvInfo,
+    error::{Result, TrapKind},
+    return_data::ReturnData,
+    schedule::Schedule,
+};
 use bytes::Bytes;
-use crate::call_type::CallType;
-use crate::env_info::EnvInfo;
-use crate::error::{Result, TrapKind};
 use ethereum_types::{Address, H256, U256};
-use crate::return_data::ReturnData;
-use crate::schedule::Schedule;
 use std::sync::Arc;
 
 #[derive(Debug)]

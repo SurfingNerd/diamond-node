@@ -18,17 +18,19 @@
 /// It can also report validators for misbehaviour with two levels: `reportMalicious` and `reportBenign`.
 use std::sync::Weak;
 
+use crate::{
+    machine::{AuxiliaryData, Call, EthereumMachine},
+    types::{BlockNumber, header::Header, ids::BlockId, transaction},
+};
 use bytes::Bytes;
 use ethereum_types::{Address, H256, U256};
-use crate::machine::{AuxiliaryData, Call, EthereumMachine};
 use parking_lot::RwLock;
-use crate::types::{header::Header, ids::BlockId, transaction, BlockNumber};
 
-use crate::client::{traits::TransactionRequest, EngineClient};
+use crate::client::{EngineClient, traits::TransactionRequest};
 
 use crate::error::Error as EthcoreError;
 
-use super::{safe_contract::ValidatorSafeContract, SimpleList, SystemCall, ValidatorSet};
+use super::{SimpleList, SystemCall, ValidatorSet, safe_contract::ValidatorSafeContract};
 
 use_contract!(validator_report, "res/contracts/validator_report.json");
 
@@ -216,20 +218,22 @@ impl ValidatorSet for ValidatorContract {
 #[cfg(test)]
 mod tests {
     use super::{super::ValidatorSet, ValidatorContract};
+    use crate::{
+        client::{BlockChainClient, BlockInfo, ChainInfo, traits::TransactionRequest},
+        spec::Spec,
+        types::{header::Header, ids::BlockId},
+    };
     use accounts::AccountProvider;
     use bytes::ToPretty;
     use call_contract::CallContract;
-    use crate::client::{traits::TransactionRequest, BlockChainClient, BlockInfo, ChainInfo};
     use ethabi::FunctionOutputDecoder;
     use ethereum_types::{Address, H520};
     use hash::keccak;
     use miner::{self, MinerService};
     use rlp::encode;
     use rustc_hex::FromHex;
-    use crate::spec::Spec;
     use std::sync::Arc;
     use test_helpers::generate_dummy_client_with_spec;
-    use crate::types::{header::Header, ids::BlockId};
 
     #[test]
     fn fetches_validators() {
@@ -238,18 +242,22 @@ mod tests {
         let vc = Arc::new(ValidatorContract::new(addr, None));
         vc.register_client(Arc::downgrade(&client) as _);
         let last_hash = client.best_block_header().hash();
-        assert!(vc.contains(
-            &last_hash,
-            &"7d577a597b2742b498cb5cf0c26cdcd726d39e6e"
-                .parse::<Address>()
-                .unwrap()
-        ));
-        assert!(vc.contains(
-            &last_hash,
-            &"82a978b3f5962a5b0957d9ee9eef472ee55b42f1"
-                .parse::<Address>()
-                .unwrap()
-        ));
+        assert!(
+            vc.contains(
+                &last_hash,
+                &"7d577a597b2742b498cb5cf0c26cdcd726d39e6e"
+                    .parse::<Address>()
+                    .unwrap()
+            )
+        );
+        assert!(
+            vc.contains(
+                &last_hash,
+                &"82a978b3f5962a5b0957d9ee9eef472ee55b42f1"
+                    .parse::<Address>()
+                    .unwrap()
+            )
+        );
     }
 
     #[test]
@@ -310,10 +318,12 @@ mod tests {
         );
         // Simulate a misbehaving validator by handling a double proposal.
         let header = client.best_block_header();
-        assert!(client
-            .engine()
-            .verify_block_family(&header, &header)
-            .is_err());
+        assert!(
+            client
+                .engine()
+                .verify_block_family(&header, &header)
+                .is_err()
+        );
         // Seal a block.
         client.engine().step();
         client.engine().step();

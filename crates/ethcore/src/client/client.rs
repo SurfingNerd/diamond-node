@@ -19,20 +19,75 @@ use std::{
     collections::{BTreeMap, HashSet, VecDeque},
     convert::TryFrom,
     io::{BufRead, BufReader},
-    str::{from_utf8, FromStr},
+    str::{FromStr, from_utf8},
     sync::{
-        atomic::{AtomicBool, AtomicI64, AtomicU64, Ordering as AtomicOrdering},
         Arc, Weak,
+        atomic::{AtomicBool, AtomicI64, AtomicU64, Ordering as AtomicOrdering},
     },
     time::{Duration, Instant},
 };
 
-use crate::{blockchain::{
-    BlockChain, BlockChainDB, BlockNumberKey, BlockProvider, BlockReceipts, ExtrasInsert,
-    ImportRoute, TransactionAddress, TreeRoute,
-}, miner::Miner};
+use crate::{
+    block::{ClosedBlock, Drain, LockedBlock, OpenBlock, SealedBlock, enact_verified},
+    blockchain::{
+        BlockChain, BlockChainDB, BlockNumberKey, BlockProvider, BlockReceipts, ExtrasInsert,
+        ImportRoute, TransactionAddress, TreeRoute,
+    },
+    client::{
+        AccountData, BadBlocks, Balance, BlockChain as BlockChainTrait, BlockChainClient,
+        BlockChainReset, BlockId, BlockInfo, BlockProducer, BroadcastProposalBlock, Call,
+        CallAnalytics, ChainInfo, ChainMessageType, ChainNotify, ChainRoute, ClientConfig,
+        ClientIoMessage, EngineInfo, ImportBlock, ImportExportBlocks, ImportSealedBlock, IoClient,
+        Mode, NewBlocks, Nonce, PrepareOpenBlock, ProvingBlockChainClient, PruningInfo,
+        ReopenBlock, ScheduleInfo, SealedBlockImporter, StateClient, StateInfo, StateOrBlock,
+        TraceFilter, TraceId, TransactionId, TransactionInfo, UncleId,
+        ancient_import::AncientVerifier,
+        bad_blocks,
+        traits::{ChainSyncing, ForceUpdateSealing, ReservedPeersManagement, TransactionRequest},
+    },
+    engines::{
+        EngineError, EpochTransition, EthEngine, ForkChoice, MAX_UNCLE_AGE, SealingState,
+        epoch::PendingTransition,
+    },
+    error::{
+        BlockError, CallError, Error, Error as EthcoreError, ErrorKind as EthcoreErrorKind,
+        EthcoreResult, ExecutionError, ImportErrorKind, QueueErrorKind,
+    },
+    executive::{Executed, Executive, TransactOptions, contract_address},
+    factory::{Factories, VmFactory},
+    io::IoChannel,
+    miner::{Miner, MinerService},
+    snapshot::{self, SnapshotClient, io as snapshot_io},
+    spec::Spec,
+    state::{self, State},
+    state_db::StateDB,
+    trace::{
+        self, Database as TraceDatabase, ImportRequest as TraceImportRequest, LocalizedTrace,
+        TraceDB,
+    },
+    transaction_ext::Transaction,
+    types::{
+        BlockNumber,
+        ancestry_action::AncestryAction,
+        data_format::DataFormat,
+        encoded,
+        filter::Filter,
+        header::{ExtendedHeader, Header},
+        log_entry::LocalizedLogEntry,
+        receipt::{LocalizedReceipt, TypedReceipt},
+        transaction::{
+            self, Action, LocalizedTransaction, SignedTransaction, TypedTransaction,
+            UnverifiedTransaction,
+        },
+    },
+    verification::{
+        self, BlockQueue, PreverifiedBlock, Verifier,
+        queue::kind::{BlockLike, blocks::Unverified},
+    },
+};
+use ansi_term::Colour;
 use bytes::{Bytes, ToPretty};
-use call_contract::CallContract;
+use call_contract::{CallContract, RegistryInfo};
 use db::{DBTransaction, DBValue, KeyValueDB};
 use ethcore_miner::pool::VerifiedTransaction;
 use ethereum_types::{Address, H256, H264, H512, U256};
@@ -42,70 +97,17 @@ use parking_lot::{Mutex, RwLock};
 use rand::rngs::OsRng;
 use rlp::{PayloadInfo, Rlp};
 use rustc_hex::FromHex;
-use trie::{Trie, TrieFactory, TrieSpec};
-use crate::types::{
-    ancestry_action::AncestryAction,
-    data_format::DataFormat,
-    encoded,
-    filter::Filter,
-    header::{ExtendedHeader, Header},
-    log_entry::LocalizedLogEntry,
-    receipt::{LocalizedReceipt, TypedReceipt},
-    transaction::{
-        self, Action, LocalizedTransaction, SignedTransaction, TypedTransaction,
-        UnverifiedTransaction,
-    },
-    BlockNumber,
-};
-use vm::{EnvInfo, LastHashes};
-use crate::miner::MinerService;
-use ansi_term::Colour;
-use crate::block::{enact_verified, ClosedBlock, Drain, LockedBlock, OpenBlock, SealedBlock};
-use call_contract::RegistryInfo;
-use crate::client::{
-    ancient_import::AncientVerifier,
-    bad_blocks,
-    traits::{ChainSyncing, ForceUpdateSealing, ReservedPeersManagement, TransactionRequest},
-    AccountData, BadBlocks, Balance, BlockChain as BlockChainTrait, BlockChainClient,
-    BlockChainReset, BlockId, BlockInfo, BlockProducer, BroadcastProposalBlock, Call,
-    CallAnalytics, ChainInfo, ChainMessageType, ChainNotify, ChainRoute, ClientConfig,
-    ClientIoMessage, EngineInfo, ImportBlock, ImportExportBlocks, ImportSealedBlock, IoClient,
-    Mode, NewBlocks, Nonce, PrepareOpenBlock, ProvingBlockChainClient, PruningInfo, ReopenBlock,
-    ScheduleInfo, SealedBlockImporter, StateClient, StateInfo, StateOrBlock, TraceFilter, TraceId,
-    TransactionId, TransactionInfo, UncleId,
-};
-use crate::engines::{
-    epoch::PendingTransition, EngineError, EpochTransition, EthEngine, ForkChoice, SealingState,
-    MAX_UNCLE_AGE,
-};
-use crate::error::{
-    BlockError, CallError, Error, Error as EthcoreError, ErrorKind as EthcoreErrorKind,
-    EthcoreResult, ExecutionError, ImportErrorKind, QueueErrorKind,
-};
-use crate::executive::{contract_address, Executed, Executive, TransactOptions};
-use crate::factory::{Factories, VmFactory};
-use crate::io::IoChannel;
-use crate::snapshot::{self, io as snapshot_io, SnapshotClient};
-use crate::spec::Spec;
-use crate::state::{self, State};
-use crate::state_db::StateDB;
 use stats::{PrometheusMetrics, PrometheusRegistry};
-use crate::trace::{
-    self, Database as TraceDatabase, ImportRequest as TraceImportRequest, LocalizedTrace, TraceDB,
-};
-use crate::transaction_ext::Transaction;
-use crate::verification::{
-    self,
-    queue::kind::{blocks::Unverified, BlockLike},
-    BlockQueue, PreverifiedBlock, Verifier,
-};
-use vm::Schedule;
+use trie::{Trie, TrieFactory, TrieSpec};
+use vm::{EnvInfo, LastHashes, Schedule};
 // re-export
-pub use crate::blockchain::CacheSize as BlockChainCacheSize;
-use db::{keys::BlockDetails, Readable, Writable};
+pub use crate::{
+    blockchain::CacheSize as BlockChainCacheSize,
+    types::{block_status::BlockStatus, blockchain_info::BlockChainInfo},
+    verification::QueueInfo as BlockQueueInfo,
+};
+use db::{Readable, Writable, keys::BlockDetails};
 pub use reth_util::queue::ExecutionQueue;
-pub use crate::types::{block_status::BlockStatus, blockchain_info::BlockChainInfo};
-pub use crate::verification::QueueInfo as BlockQueueInfo;
 
 use crate::exit::ShutdownManager;
 use_contract!(registry, "res/contracts/registrar.json");
@@ -881,7 +883,8 @@ impl Importer {
 
                         let call = move |addr, data| {
                             let mut state_db = state_db.boxed_clone();
-                            let backend = crate::state::backend::Proving::new(state_db.as_hash_db_mut());
+                            let backend =
+                                crate::state::backend::Proving::new(state_db.as_hash_db_mut());
 
                             let transaction = client.contract_call_tx(
                                 BlockId::Hash(*header.parent_hash()),
@@ -1970,11 +1973,7 @@ impl RegistryInfo for Client {
         let value = decoder
             .decode(&self.call_contract(block, address, data).ok()?)
             .ok()?;
-        if value.is_zero() {
-            None
-        } else {
-            Some(value)
-        }
+        if value.is_zero() { None } else { Some(value) }
     }
 }
 
@@ -2772,9 +2771,11 @@ impl BlockChainClient for Client {
                 .as_u64() as usize,
             )
         };
-        self.importer
-            .miner
-            .ready_transactions(self, max_len, crate::miner::PendingOrdering::Priority)
+        self.importer.miner.ready_transactions(
+            self,
+            max_len,
+            crate::miner::PendingOrdering::Priority,
+        )
     }
 
     fn transaction(&self, tx_hash: &H256) -> Option<Arc<VerifiedTransaction>> {
@@ -3784,9 +3785,11 @@ impl PrometheusMetrics for Client {
 
 #[cfg(test)]
 mod tests {
-    use crate::blockchain::{BlockProvider, ExtrasInsert};
+    use crate::{
+        blockchain::{BlockProvider, ExtrasInsert},
+        spec::Spec,
+    };
     use ethereum_types::{H160, H256};
-    use crate::spec::Spec;
     use test_helpers::generate_dummy_client_with_spec_and_data;
 
     #[test]
@@ -3794,16 +3797,16 @@ mod tests {
         use crate::client::{BlockChainClient, ChainInfo};
         use test_helpers::{generate_dummy_client, get_good_dummy_block_hash};
 
+        use crate::types::encoded;
         use kvdb::DBTransaction;
         use std::{
             sync::{
-                atomic::{AtomicBool, Ordering},
                 Arc,
+                atomic::{AtomicBool, Ordering},
             },
             thread,
             time::Duration,
         };
-        use crate::types::encoded;
 
         let client = generate_dummy_client(0);
         let genesis = client.chain_info().best_block_hash;
@@ -3866,13 +3869,13 @@ mod tests {
     #[test]
     fn should_return_correct_log_index() {
         use super::transaction_receipt;
-        use crypto::publickey::KeyPair;
-        use hash::keccak;
         use crate::types::{
             log_entry::{LocalizedLogEntry, LogEntry},
             receipt::{LegacyReceipt, LocalizedReceipt, TransactionOutcome, TypedReceipt},
             transaction::{Action, LocalizedTransaction, Transaction, TypedTransaction},
         };
+        use crypto::publickey::KeyPair;
+        use hash::keccak;
 
         // given
         let key = KeyPair::from_secret_slice(keccak("test").as_bytes()).unwrap();

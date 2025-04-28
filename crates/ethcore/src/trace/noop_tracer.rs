@@ -16,11 +16,11 @@
 
 //! Nonoperative tracer.
 
-use ethereum_types::{Address, U256};
 use crate::trace::{
-    trace::{RewardType, VMTrace},
     FlatTrace, Tracer, VMTracer,
+    trace::{RewardType, VMTrace},
 };
+use ethereum_types::{Address, U256};
 use vm::{ActionParams, Error as VmError};
 
 /// Nonoperative tracer. Does not trace anything.

@@ -17,8 +17,10 @@
 //! Types for declaring block rewards and a client interface for interacting with a
 //! block reward contract.
 
-use crate::engines::{SystemOrCodeCall, SystemOrCodeCallKind};
-use crate::error::Error;
+use crate::{
+    engines::{SystemOrCodeCall, SystemOrCodeCallKind},
+    error::Error,
+};
 use ethabi::FunctionOutputDecoder;
 use ethabi_contract::use_contract;
 use ethereum_types::Address;

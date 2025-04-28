@@ -18,7 +18,7 @@
 
 use jsonrpc_core::Result;
 use jsonrpc_derive::rpc;
-use jsonrpc_pubsub::{typed, SubscriptionId};
+use jsonrpc_pubsub::{SubscriptionId, typed};
 
 use crate::v1::types::pubsub;
 

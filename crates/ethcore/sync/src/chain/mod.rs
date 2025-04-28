@@ -103,8 +103,14 @@ use self::{
     propagator_statistics::SyncPropagatorStatistics,
 };
 use super::{SyncConfig, WarpSync};
-use crate::api::{EthProtocolInfo as PeerInfoDigest, PriorityTask, ETH_PROTOCOL, PAR_PROTOCOL};
-use crate::block_sync::{BlockDownloader, DownloadAction};
+use crate::{
+    api::{ETH_PROTOCOL, EthProtocolInfo as PeerInfoDigest, PAR_PROTOCOL, PriorityTask},
+    block_sync::{BlockDownloader, DownloadAction},
+    snapshot::Snapshot,
+    sync_io::SyncIo,
+    transactions_stats::{Stats as TransactionStats, TransactionsStats},
+    types::{BlockNumber, block_status, transaction::UnverifiedTransaction},
+};
 use bytes::Bytes;
 use derive_more::Display;
 use ethcore::{
@@ -114,11 +120,10 @@ use ethcore::{
 use ethereum_types::{H256, H512, U256};
 use fastmap::{H256FastMap, H256FastSet};
 use hash::keccak;
-use network::{self, client_version::ClientVersion, PeerId};
+use network::{self, PeerId, client_version::ClientVersion};
 use parking_lot::{Mutex, RwLock, RwLockWriteGuard};
-use rand::{seq::SliceRandom, Rng};
+use rand::{Rng, seq::SliceRandom};
 use rlp::{DecoderError, RlpStream};
-use crate::snapshot::Snapshot;
 use stats::PrometheusMetrics;
 use std::{
     cmp,
@@ -126,9 +131,6 @@ use std::{
     sync::mpsc,
     time::{Duration, Instant},
 };
-use crate::sync_io::SyncIo;
-use crate::transactions_stats::{Stats as TransactionStats, TransactionsStats};
-use crate::types::{block_status, transaction::UnverifiedTransaction, BlockNumber};
 
 use self::{
     handler::SyncHandler,
@@ -1212,7 +1214,7 @@ impl ChainSync {
                 );
 
                 peers.shuffle(&mut random::new()); // TODO (#646): sort by rating
-                                                   // prefer peers with higher protocol version
+                // prefer peers with higher protocol version
 
                 peers.sort_by(|&(_, ref v1), &(_, ref v2)| v1.cmp(v2));
 
@@ -1863,6 +1865,11 @@ impl PrometheusMetrics for ChainSync {
 #[cfg(test)]
 pub mod tests {
     use super::{PeerAsking, PeerInfo, *};
+    use crate::{
+        tests::{helpers::TestIo, snapshot::TestSnapshotService},
+        types::header::Header,
+    };
+    use SyncConfig;
     use bytes::Bytes;
     use ethcore::{
         client::{BlockChainClient, BlockInfo, ChainInfo, EachBlockWith, TestBlockChainClient},
@@ -1873,9 +1880,6 @@ pub mod tests {
     use parking_lot::RwLock;
     use rlp::{Rlp, RlpStream};
     use std::collections::VecDeque;
-    use crate::tests::{helpers::TestIo, snapshot::TestSnapshotService};
-    use crate::types::header::Header;
-    use SyncConfig;
 
     pub fn get_dummy_block(order: u32, parent_hash: H256) -> Bytes {
         let mut header = Header::new();

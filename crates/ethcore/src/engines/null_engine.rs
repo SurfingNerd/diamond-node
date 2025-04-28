@@ -14,18 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
-use crate::block::ExecutedBlock;
-use crate::engines::{
-    block_reward::{self, RewardKind},
-    Engine,
+use crate::{
+    block::ExecutedBlock,
+    engines::{
+        Engine,
+        block_reward::{self, RewardKind},
+    },
+    machine::Machine,
+    types::{
+        BlockNumber,
+        ancestry_action::AncestryAction,
+        header::{ExtendedHeader, Header},
+    },
 };
 use ethereum_types::U256;
-use crate::machine::Machine;
-use crate::types::{
-    ancestry_action::AncestryAction,
-    header::{ExtendedHeader, Header},
-    BlockNumber,
-};
 
 /// Params for a null engine.
 #[derive(Clone, Default)]

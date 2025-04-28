@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
+use crate::mio::{deprecated::EventLoop, tcp::*, udp::*, *};
 use crypto::publickey::{Generator, KeyPair, Random, Secret};
 use ethereum_types::H256;
 use hash::keccak;
-use crate::mio::{deprecated::EventLoop, tcp::*, udp::*, *};
 use rlp::{Encodable, RlpStream};
 use std::{
     cmp::{max, min},
@@ -29,26 +29,29 @@ use std::{
     path::{Path, PathBuf},
     str::FromStr,
     sync::{
-        atomic::{AtomicBool, AtomicU64, Ordering as AtomicOrdering},
         Arc,
+        atomic::{AtomicBool, AtomicU64, Ordering as AtomicOrdering},
     },
     time::Duration,
 };
 
-use crate::discovery::{Discovery, NodeEntry, TableUpdates, MAX_DATAGRAM_SIZE};
-use crate::io::*;
-use crate::ip_utils::{map_external_address, select_public_address};
-use network::{
-    client_version::ClientVersion, ConnectionDirection, ConnectionFilter, DisconnectReason, Error,
-    ErrorKind, NetworkConfiguration, NetworkContext as NetworkContextTrait, NetworkIoMessage,
-    NetworkProtocolHandler, NonReservedPeerMode, PacketId, PeerId, ProtocolId, SessionInfo,
+use crate::{
+    PROTOCOL_VERSION,
+    discovery::{Discovery, MAX_DATAGRAM_SIZE, NodeEntry, TableUpdates},
+    io::*,
+    ip_utils::{map_external_address, select_public_address},
+    node_table::*,
+    session::{Session, SessionData},
 };
-use crate::node_table::*;
+use network::{
+    ConnectionDirection, ConnectionFilter, DisconnectReason, Error, ErrorKind,
+    NetworkConfiguration, NetworkContext as NetworkContextTrait, NetworkIoMessage,
+    NetworkProtocolHandler, NonReservedPeerMode, PacketId, PeerId, ProtocolId, SessionInfo,
+    client_version::ClientVersion,
+};
 use parity_path::restrict_permissions_owner;
 use parking_lot::{Mutex, RwLock};
-use crate::session::{Session, SessionData};
 use stats::{PrometheusMetrics, PrometheusRegistry};
-use crate::PROTOCOL_VERSION;
 
 type Slab<T> = ::slab::Slab<T, usize>;
 
@@ -183,7 +186,12 @@ impl<'s> NetworkContext<'s> {
 }
 
 impl<'s> NetworkContextTrait for NetworkContext<'s> {
-    fn send(&self, peer: PeerId, packet_id: PacketId, data: Vec<u8>) -> std::result::Result<(), network::Error> {
+    fn send(
+        &self,
+        peer: PeerId,
+        packet_id: PacketId,
+        data: Vec<u8>,
+    ) -> std::result::Result<(), network::Error> {
         self.send_protocol(self.protocol, peer, packet_id, data)
     }
 
@@ -219,7 +227,11 @@ impl<'s> NetworkContextTrait for NetworkContext<'s> {
         Ok(())
     }
 
-    fn respond(&self, packet_id: PacketId, data: Vec<u8>) -> std::result::Result<(), network::Error> {
+    fn respond(
+        &self,
+        packet_id: PacketId,
+        data: Vec<u8>,
+    ) -> std::result::Result<(), network::Error> {
         assert!(
             self.session.is_some(),
             "Respond called without network context"

@@ -1,8 +1,8 @@
-use bytes::Bytes;
 use crate::chain::{
-    sync_packet::{PacketInfo, SyncPacket},
     ChainSync, PeerInfo,
+    sync_packet::{PacketInfo, SyncPacket},
 };
+use bytes::Bytes;
 use network::PeerId;
 use rlp::{DecoderError, Rlp, RlpStream};
 

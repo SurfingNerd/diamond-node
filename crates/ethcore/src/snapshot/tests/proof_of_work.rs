@@ -20,14 +20,15 @@ use error::{Error, ErrorKind};
 use std::sync::atomic::AtomicBool;
 use tempdir::TempDir;
 
-use crate::blockchain::{
-    generator::{BlockBuilder, BlockGenerator},
-    BlockChain, ExtrasInsert,
-};
-use crate::snapshot::{
-    chunk_secondary,
-    io::{PackedReader, PackedWriter, SnapshotReader, SnapshotWriter},
-    Error as SnapshotError, Progress, SnapshotComponents,
+use crate::{
+    blockchain::{
+        BlockChain, ExtrasInsert,
+        generator::{BlockBuilder, BlockGenerator},
+    },
+    snapshot::{
+        Error as SnapshotError, Progress, SnapshotComponents, chunk_secondary,
+        io::{PackedReader, PackedWriter, SnapshotReader, SnapshotWriter},
+    },
 };
 
 use kvdb::DBTransaction;

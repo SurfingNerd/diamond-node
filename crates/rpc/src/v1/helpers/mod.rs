@@ -41,7 +41,7 @@ mod work;
 
 pub use self::{
     network_settings::NetworkSettings,
-    poll_filter::{limit_logs, PollFilter, SyncPollFilter},
+    poll_filter::{PollFilter, SyncPollFilter, limit_logs},
     poll_manager::PollManager,
     requests::{
         CallRequest, ConfirmationPayload, ConfirmationRequest, FilledTransactionRequest,

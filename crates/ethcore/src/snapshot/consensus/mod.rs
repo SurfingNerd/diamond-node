@@ -17,12 +17,14 @@
 //! Secondary chunk creation and restoration, implementations for different consensus
 //! engines.
 
-use std::sync::{atomic::AtomicBool, Arc};
+use std::sync::{Arc, atomic::AtomicBool};
 
-use crate::blockchain::{BlockChain, BlockChainDB};
-use crate::engines::EthEngine;
-use crate::snapshot::{Error, ManifestData, Progress};
-use crate::types::BlockNumber;
+use crate::{
+    blockchain::{BlockChain, BlockChainDB},
+    engines::EthEngine,
+    snapshot::{Error, ManifestData, Progress},
+    types::BlockNumber,
+};
 
 use ethereum_types::H256;
 

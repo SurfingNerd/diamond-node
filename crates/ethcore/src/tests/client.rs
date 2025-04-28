@@ -15,41 +15,44 @@
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
 use std::{
-    str::{from_utf8, FromStr},
+    str::{FromStr, from_utf8},
     sync::Arc,
 };
 
-use crate::client::{
-    traits::{
-        BlockChainClient, BlockChainReset, BlockInfo, ChainInfo, ImportBlock, ImportExportBlocks,
+use crate::{
+    client::{
+        Client, ClientConfig, ImportSealedBlock, PrepareOpenBlock,
+        traits::{
+            BlockChainClient, BlockChainReset, BlockInfo, ChainInfo, ImportBlock,
+            ImportExportBlocks,
+        },
     },
-    Client, ClientConfig, ImportSealedBlock, PrepareOpenBlock,
+    executive::{Executive, TransactOptions},
+    io::IoChannel,
+    spec::Spec,
+    state::{self, CleanupMode, State, StateInfo},
+    types::{
+        data_format::DataFormat,
+        filter::Filter,
+        ids::BlockId,
+        transaction::{Action, Condition, PendingTransaction, Transaction, TypedTransaction},
+        view,
+        views::BlockView,
+    },
+    verification::queue::kind::blocks::Unverified,
 };
 use crypto::publickey::KeyPair;
 use ethereum;
 use ethereum_types::{Address, U256};
-use crate::executive::{Executive, TransactOptions};
 use hash::keccak;
-use crate::io::IoChannel;
 use miner::{Miner, MinerService, PendingOrdering};
 use rustc_hex::ToHex;
-use crate::spec::Spec;
-use crate::state::{self, CleanupMode, State, StateInfo};
 use tempdir::TempDir;
 use test_helpers::{
     self, generate_dummy_client, generate_dummy_client_with_data, get_bad_state_dummy_block,
     get_good_dummy_block, get_good_dummy_block_seq, get_test_client_with_blocks,
     push_blocks_to_client,
 };
-use crate::types::{
-    data_format::DataFormat,
-    filter::Filter,
-    ids::BlockId,
-    transaction::{Action, Condition, PendingTransaction, Transaction, TypedTransaction},
-    view,
-    views::BlockView,
-};
-use crate::verification::queue::kind::blocks::Unverified;
 
 use crate::exit::ShutdownManager;
 

@@ -22,8 +22,8 @@
 
 use std::fmt;
 
-use ethereum_types::{H160 as Address, H256, U256};
 use crate::types::transaction;
+use ethereum_types::{H160 as Address, H256, U256};
 
 /// Account Details
 #[derive(Debug, Clone)]

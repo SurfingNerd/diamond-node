@@ -16,12 +16,9 @@
 
 //! Canonical verifier.
 
-use super::{verification, Verifier};
+use super::{Verifier, verification};
+use crate::{client::BlockInfo, engines::EthEngine, error::Error, types::header::Header};
 use call_contract::CallContract;
-use crate::client::BlockInfo;
-use crate::engines::EthEngine;
-use crate::error::Error;
-use crate::types::header::Header;
 
 /// A canonial verifier -- this does full verification.
 pub struct CanonVerifier;

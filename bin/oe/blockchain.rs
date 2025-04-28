@@ -20,10 +20,10 @@ use crate::{
     bytes::ToPretty,
     cache::CacheConfig,
     db,
-    hash::{keccak, KECCAK_NULL_RLP},
+    hash::{KECCAK_NULL_RLP, keccak},
     helpers::{execute_upgrades, to_client_config},
     informant::{FullNodeInformantData, Informant, MillisecondDuration},
-    params::{fatdb_switch_to_bool, tracing_switch_to_bool, Pruning, SpecType, Switch},
+    params::{Pruning, SpecType, Switch, fatdb_switch_to_bool, tracing_switch_to_bool},
     types::data_format::DataFormat,
     user_defaults::UserDefaults,
 };
@@ -256,15 +256,16 @@ fn execute_import(cmd: ImportBlockchain) -> Result<(), String> {
     let report = client.report();
 
     let ms = timer.elapsed().as_milliseconds();
-    info!("Import completed in {} seconds, {} blocks, {} blk/s, {} transactions, {} tx/s, {} Mgas, {} Mgas/s",
-		ms / 1000,
-		report.blocks_imported,
-		(report.blocks_imported * 1000) as u64 / ms,
-		report.transactions_applied,
-		(report.transactions_applied * 1000) as u64 / ms,
-		report.gas_processed / 1_000_000,
-		(report.gas_processed / (ms * 1000)).low_u64(),
-	);
+    info!(
+        "Import completed in {} seconds, {} blocks, {} blk/s, {} transactions, {} tx/s, {} Mgas, {} Mgas/s",
+        ms / 1000,
+        report.blocks_imported,
+        (report.blocks_imported * 1000) as u64 / ms,
+        report.transactions_applied,
+        (report.transactions_applied * 1000) as u64 / ms,
+        report.gas_processed / 1_000_000,
+        (report.gas_processed / (ms * 1000)).low_u64(),
+    );
     Ok(())
 }
 

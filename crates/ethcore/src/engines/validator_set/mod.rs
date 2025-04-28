@@ -25,11 +25,13 @@ mod test;
 
 use std::sync::Weak;
 
+use crate::{
+    machine::{AuxiliaryData, Call, EthereumMachine},
+    types::{BlockNumber, header::Header, ids::BlockId},
+};
 use bytes::Bytes;
 use ethereum_types::{Address, H256};
 use ethjson::spec::ValidatorSet as ValidatorSpec;
-use crate::machine::{AuxiliaryData, Call, EthereumMachine};
-use crate::types::{header::Header, ids::BlockId, BlockNumber};
 
 use crate::client::EngineClient;
 

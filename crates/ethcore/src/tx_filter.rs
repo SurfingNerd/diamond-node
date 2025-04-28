@@ -20,18 +20,20 @@ use std::num::NonZeroUsize;
 
 use ethabi::FunctionOutputDecoder;
 use ethereum_types::{Address, H256, U256};
-use fastmap::{new_h256_fast_lru_map, H256FastLruMap};
+use fastmap::{H256FastLruMap, new_h256_fast_lru_map};
 use lru_cache::LruCache;
 
+use crate::{
+    client::{BlockId, BlockInfo},
+    spec::CommonParams,
+    types::{
+        BlockNumber,
+        transaction::{Action, SignedTransaction},
+    },
+};
 use call_contract::CallContract;
-use crate::client::{BlockId, BlockInfo};
 use hash::KECCAK_EMPTY;
 use parking_lot::Mutex;
-use crate::spec::CommonParams;
-use crate::types::{
-    transaction::{Action, SignedTransaction},
-    BlockNumber,
-};
 
 use_contract!(
     transact_acl_deprecated,
@@ -280,18 +282,20 @@ mod test {
     use crate::exit::ShutdownManager;
 
     use super::TransactionFilter;
-    use crate::client::{BlockChainClient, BlockId, Client, ClientConfig};
+    use crate::{
+        client::{BlockChainClient, BlockId, Client, ClientConfig},
+        io::IoChannel,
+        spec::Spec,
+        types::transaction::{
+            AccessListTx, Action, EIP1559TransactionTx, Transaction, TypedTransaction,
+        },
+    };
     use crypto::publickey::{KeyPair, Secret};
     use ethereum_types::{Address, U256};
-    use crate::io::IoChannel;
     use miner::Miner;
-    use crate::spec::Spec;
     use std::{str::FromStr, sync::Arc};
     use tempdir::TempDir;
     use test_helpers;
-    use crate::types::transaction::{
-        AccessListTx, Action, EIP1559TransactionTx, Transaction, TypedTransaction,
-    };
 
     /// Contract code: https://gist.github.com/VladLupashevskyi/84f18eabb1e4afadf572cf92af3e7e7f
     #[test]
@@ -485,14 +489,16 @@ mod test {
             &*client
         ));
 
-        assert!(!filter.transaction_allowed(
-            &genesis,
-            block_number,
-            &basic_tx_with_ether_and_to_key7
-                .clone()
-                .sign(key5.secret(), None),
-            &*client
-        ));
+        assert!(
+            !filter.transaction_allowed(
+                &genesis,
+                block_number,
+                &basic_tx_with_ether_and_to_key7
+                    .clone()
+                    .sign(key5.secret(), None),
+                &*client
+            )
+        );
         assert!(!filter.transaction_allowed(
             &genesis,
             block_number,
@@ -505,28 +511,32 @@ mod test {
             &basic_tx.clone().sign(key6.secret(), None),
             &*client
         ));
-        assert!(filter.transaction_allowed(
-            &genesis,
-            block_number,
-            &basic_tx_with_ether_and_to_key7
-                .clone()
-                .sign(key6.secret(), None),
-            &*client
-        ));
+        assert!(
+            filter.transaction_allowed(
+                &genesis,
+                block_number,
+                &basic_tx_with_ether_and_to_key7
+                    .clone()
+                    .sign(key6.secret(), None),
+                &*client
+            )
+        );
         assert!(filter.transaction_allowed(
             &genesis,
             block_number,
             &basic_tx_to_key6.clone().sign(key7.secret(), None),
             &*client
         ));
-        assert!(!filter.transaction_allowed(
-            &genesis,
-            block_number,
-            &basic_tx_with_ether_and_to_key6
-                .clone()
-                .sign(key7.secret(), None),
-            &*client
-        ));
+        assert!(
+            !filter.transaction_allowed(
+                &genesis,
+                block_number,
+                &basic_tx_with_ether_and_to_key6
+                    .clone()
+                    .sign(key7.secret(), None),
+                &*client
+            )
+        );
     }
 
     /// Contract code: res/chainspec/test/contract_ver_3.sol

@@ -16,14 +16,13 @@
 
 //! Helper type with all filter state data.
 
+use crate::{types::filter::Filter, v1::types::Log};
 use ethereum_types::H256;
 use parking_lot::Mutex;
 use std::{
     collections::{BTreeSet, HashSet, VecDeque},
     sync::Arc,
 };
-use crate::types::filter::Filter;
-use crate::v1::types::Log;
 
 pub type BlockNumber = u64;
 

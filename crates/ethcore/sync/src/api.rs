@@ -18,41 +18,45 @@ use bytes::Bytes;
 use crypto::publickey::Secret;
 use devp2p::NetworkService;
 use network::{
-    client_version::ClientVersion, ConnectionFilter, Error, ErrorKind,
-    NetworkConfiguration as BasicNetworkConfiguration, NetworkContext, NetworkProtocolHandler,
-    NodeId, NonReservedPeerMode, PeerId, ProtocolId,
+    ConnectionFilter, Error, ErrorKind, NetworkConfiguration as BasicNetworkConfiguration,
+    NetworkContext, NetworkProtocolHandler, NodeId, NonReservedPeerMode, PeerId, ProtocolId,
+    client_version::ClientVersion,
 };
 use std::{
     collections::{BTreeMap, BTreeSet, HashMap},
     io,
     ops::RangeInclusive,
-    sync::{atomic, mpsc, Arc},
+    sync::{Arc, atomic, mpsc},
     time::Duration,
 };
 
-use crate::chain::{
-    fork_filter::ForkFilterApi, ChainSyncApi, SyncState, SyncStatus as EthSyncStatus,
-    ETH_PROTOCOL_VERSION_63, ETH_PROTOCOL_VERSION_64, ETH_PROTOCOL_VERSION_65,
-    ETH_PROTOCOL_VERSION_66, PAR_PROTOCOL_VERSION_1, PAR_PROTOCOL_VERSION_2,
+use crate::{
+    chain::{
+        ChainSyncApi, ETH_PROTOCOL_VERSION_63, ETH_PROTOCOL_VERSION_64, ETH_PROTOCOL_VERSION_65,
+        ETH_PROTOCOL_VERSION_66, PAR_PROTOCOL_VERSION_1, PAR_PROTOCOL_VERSION_2, SyncState,
+        SyncStatus as EthSyncStatus, fork_filter::ForkFilterApi,
+    },
+    ethcore::{
+        client::{BlockChainClient, ChainMessageType, ChainNotify, NewBlocks},
+        snapshot::SnapshotService,
+    },
+    io::TimerToken,
+    network::IpFilter,
+    stats::{PrometheusMetrics, PrometheusRegistry},
 };
-use crate::ethcore::{
-    client::{BlockChainClient, ChainMessageType, ChainNotify, NewBlocks},
-    snapshot::SnapshotService,
-};
-use ethereum_types::{H256, H512, U256, U64};
-use crate::io::TimerToken;
-use crate::network::IpFilter;
+use ethereum_types::{H256, H512, U64, U256};
 use parking_lot::{Mutex, RwLock};
-use crate::stats::{PrometheusMetrics, PrometheusRegistry};
 
+use crate::{
+    sync_io::{NetSyncIo, SyncIo},
+    types::{
+        BlockNumber, creation_status::CreationStatus, restoration_status::RestorationStatus,
+        transaction::UnverifiedTransaction,
+    },
+};
 use std::{
     net::{AddrParseError, SocketAddr},
     str::FromStr,
-};
-use crate::sync_io::{NetSyncIo, SyncIo};
-use crate::types::{
-    creation_status::CreationStatus, restoration_status::RestorationStatus,
-    transaction::UnverifiedTransaction, BlockNumber,
 };
 
 /// OpenEthereum sync protocol
@@ -655,7 +659,10 @@ impl ChainNotify for EthSync {
         match self.network.start() {
             Err((err, listen_address)) => match err.into() {
                 ErrorKind::Io(ref e) if e.kind() == io::ErrorKind::AddrInUse => {
-                    warn!("Network port {:?} is already in use, make sure that another instance of an Ethereum client is not running or change the port using the --port option.", listen_address.expect("Listen address is not set."))
+                    warn!(
+                        "Network port {:?} is already in use, make sure that another instance of an Ethereum client is not running or change the port using the --port option.",
+                        listen_address.expect("Listen address is not set.")
+                    )
                 }
                 err => warn!("Error starting network: {}", err),
             },

@@ -16,12 +16,12 @@
 
 //! A service transactions contract checker.
 
+use crate::types::{ids::BlockId, transaction::SignedTransaction};
 use call_contract::{CallContract, RegistryInfo};
 use ethabi::FunctionOutputDecoder;
 use ethereum_types::Address;
 use parking_lot::RwLock;
 use std::{collections::HashMap, mem, str::FromStr, sync::Arc};
-use crate::types::{ids::BlockId, transaction::SignedTransaction};
 
 use_contract!(
     service_transaction,

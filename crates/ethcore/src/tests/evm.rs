@@ -16,14 +16,16 @@
 
 //! Tests of EVM integration with transaction execution.
 
+use crate::{
+    executive::Executive,
+    state::Substate,
+    trace::{NoopTracer, NoopVMTracer},
+    types::transaction::SYSTEM_ADDRESS,
+};
 use evm::{Factory, VMType};
-use crate::executive::Executive;
 use hash::keccak;
-use crate::state::Substate;
 use std::sync::Arc;
 use test_helpers::get_temp_state_with_factory;
-use crate::trace::{NoopTracer, NoopVMTracer};
-use crate::types::transaction::SYSTEM_ADDRESS;
 use vm::{AccessList, ActionParams, ActionValue, CallType, EnvInfo, ParamsType};
 
 use rustc_hex::FromHex;

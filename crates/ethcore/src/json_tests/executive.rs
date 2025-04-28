@@ -15,20 +15,22 @@
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
 use super::test_common::*;
+use crate::{
+    executive::*,
+    externalities::*,
+    machine::EthereumMachine as Machine,
+    state::{Backend as StateBackend, State, Substate},
+    trace::{NoopTracer, NoopVMTracer, Tracer, VMTracer},
+};
 use bytes::Bytes;
 use ethereum_types::BigEndianHash;
 use ethjson;
 use ethtrie;
 use evm::Finalize;
-use crate::executive::*;
-use crate::externalities::*;
 use hash::keccak;
-use crate::machine::EthereumMachine as Machine;
 use rlp::RlpStream;
-use crate::state::{Backend as StateBackend, State, Substate};
 use std::{path::Path, sync::Arc};
 use test_helpers::get_temp_state;
-use crate::trace::{NoopTracer, NoopVMTracer, Tracer, VMTracer};
 use vm::{
     self, ActionParams, CallType, ContractCreateResult, CreateContractAddress, EnvInfo, Ext,
     MessageCallResult, ReturnData, Schedule,

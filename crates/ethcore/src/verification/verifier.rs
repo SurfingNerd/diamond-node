@@ -17,11 +17,8 @@
 //! A generic verifier trait.
 
 use super::verification;
+use crate::{client::BlockInfo, engines::EthEngine, error::Error, types::header::Header};
 use call_contract::CallContract;
-use crate::client::BlockInfo;
-use crate::engines::EthEngine;
-use crate::error::Error;
-use crate::types::header::Header;
 
 /// Should be used to verify blocks.
 pub trait Verifier<C>: Send + Sync

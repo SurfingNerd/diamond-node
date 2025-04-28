@@ -14,10 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
+use crate::{client::Client, snapshot::ManifestData};
 use bytes::Bytes;
-use crate::client::Client;
 use ethereum_types::H256;
-use crate::snapshot::ManifestData;
 use std::fmt;
 
 /// Message type for external and internal events

@@ -18,13 +18,14 @@
 
 use std::sync::Arc;
 
-use crate::engines::{EpochVerifier, EthEngine};
-use crate::machine::EthereumMachine;
+use crate::{
+    engines::{EpochVerifier, EthEngine},
+    machine::EthereumMachine,
+};
 
-use crate::blockchain::BlockChain;
+use crate::{blockchain::BlockChain, types::header::Header};
 use parking_lot::RwLock;
 use rand::Rng;
-use crate::types::header::Header;
 
 // do "heavy" verification on ~1/50 blocks, randomly sampled.
 const HEAVY_VERIFY_RATE: f32 = 0.02;

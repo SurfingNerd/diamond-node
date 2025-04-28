@@ -18,14 +18,16 @@
 
 use std::{cell::RefCell, str::FromStr, sync::Arc};
 
+use crate::{
+    client::{BlockChainClient, ChainInfo, Client},
+    snapshot::tests::helpers as snapshot_helpers,
+    spec::Spec,
+    types::transaction::{Action, SignedTransaction, Transaction, TypedTransaction},
+};
 use accounts::AccountProvider;
-use crate::client::{BlockChainClient, ChainInfo, Client};
 use crypto::publickey::Secret;
-use crate::snapshot::tests::helpers as snapshot_helpers;
-use crate::spec::Spec;
 use tempdir::TempDir;
 use test_helpers::generate_dummy_client_with_spec;
-use crate::types::transaction::{Action, SignedTransaction, Transaction, TypedTransaction};
 
 use ethereum_types::Address;
 use test_helpers;

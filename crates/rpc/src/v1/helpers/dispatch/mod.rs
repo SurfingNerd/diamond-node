@@ -85,21 +85,17 @@ pub use crate::v1::helpers::nonce::Reservations;
 
 use std::{fmt::Debug, ops::Deref, sync::Arc};
 
+use crate::types::{
+    BlockNumber,
+    transaction::{PendingTransaction, SignedTransaction},
+};
 use bytes::Bytes;
 use crypto::publickey::Signature;
 use ethcore::{client::BlockChainClient, miner::MinerService};
 use ethereum_types::{Address, H256, H520, U256};
 use ethkey::Password;
 use hash::keccak;
-use crate::types::{
-    transaction::{PendingTransaction, SignedTransaction},
-    BlockNumber,
-};
 
-use jsonrpc_core::{
-    futures::{future, Future, IntoFuture},
-    BoxFuture, Error, Result,
-};
 use crate::v1::{
     helpers::{ConfirmationPayload, FilledTransactionRequest, TransactionRequest},
     types::{
@@ -107,6 +103,10 @@ use crate::v1::{
         DecryptRequest as RpcDecryptRequest, EIP191SignRequest as RpcSignRequest,
         EthSignRequest as RpcEthSignRequest, RichRawTransaction as RpcRichRawTransaction,
     },
+};
+use jsonrpc_core::{
+    BoxFuture, Error, Result,
+    futures::{Future, IntoFuture, future},
 };
 
 /// Has the capability to dispatch, sign, and decrypt.

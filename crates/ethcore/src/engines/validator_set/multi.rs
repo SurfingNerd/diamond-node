@@ -18,15 +18,17 @@
 use std::collections::BTreeMap;
 use std::sync::Weak;
 
+use crate::types::{BlockNumber, header::Header, ids::BlockId};
 use bytes::Bytes;
 use ethereum_types::{Address, H256};
 use parking_lot::RwLock;
-use crate::types::{header::Header, ids::BlockId, BlockNumber};
 
 use super::{SystemCall, ValidatorSet};
-use crate::client::EngineClient;
-use crate::error::Error as EthcoreError;
-use crate::machine::{AuxiliaryData, Call, EthereumMachine};
+use crate::{
+    client::EngineClient,
+    error::Error as EthcoreError,
+    machine::{AuxiliaryData, Call, EthereumMachine},
+};
 
 type BlockNumberLookup =
     Box<dyn Fn(BlockId) -> Result<BlockNumber, String> + Send + Sync + 'static>;
@@ -206,21 +208,23 @@ impl ValidatorSet for Multi {
 
 #[cfg(test)]
 mod tests {
-    use accounts::AccountProvider;
-    use crate::client::{
-        traits::{ForceUpdateSealing, TransactionRequest},
-        BlockChainClient, BlockInfo, ChainInfo, ImportBlock,
+    use crate::{
+        client::{
+            BlockChainClient, BlockInfo, ChainInfo, ImportBlock,
+            traits::{ForceUpdateSealing, TransactionRequest},
+        },
+        engines::{EpochChange, validator_set::ValidatorSet},
+        spec::Spec,
+        types::{header::Header, ids::BlockId},
+        verification::queue::kind::blocks::Unverified,
     };
+    use accounts::AccountProvider;
     use crypto::publickey::Secret;
-    use crate::engines::{validator_set::ValidatorSet, EpochChange};
     use ethereum_types::Address;
     use hash::keccak;
     use miner::{self, MinerService};
-    use crate::spec::Spec;
     use std::{collections::BTreeMap, sync::Arc};
     use test_helpers::generate_dummy_client_with_spec;
-    use crate::types::{header::Header, ids::BlockId};
-    use crate::verification::queue::kind::blocks::Unverified;
 
     use super::Multi;
 

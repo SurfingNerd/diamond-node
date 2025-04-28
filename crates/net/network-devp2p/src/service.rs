@@ -18,7 +18,6 @@ use ansi_term::Colour;
 
 use crate::io::*;
 
-
 use crate::network::{
     ConnectionFilter, Error, NetworkConfiguration, NetworkContext, NetworkIoMessage,
     NetworkProtocolHandler, NonReservedPeerMode, PeerId, ProtocolId,

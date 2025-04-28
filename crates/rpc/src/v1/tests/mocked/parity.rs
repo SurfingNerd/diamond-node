@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
+use crate::types::{
+    receipt::{LocalizedReceipt, TransactionOutcome},
+    transaction::TypedTxId,
+};
 use crypto::publickey::{Generator, Random};
 use ethcore::client::{Executed, TestBlockChainClient, TransactionId};
 use ethcore_logger::RotatingLogger;
@@ -21,20 +25,16 @@ use ethereum_types::{Address, BigEndianHash, Bloom, H256, U256};
 use miner::pool::local_transactions::Status as LocalTransactionStatus;
 use std::{str::FromStr, sync::Arc};
 use sync::ManageNetwork;
-use crate::types::{
-    receipt::{LocalizedReceipt, TransactionOutcome},
-    transaction::TypedTxId,
-};
 
 use super::manage_network::TestManageNetwork;
-use jsonrpc_core::IoHandler;
 use crate::v1::{
-    helpers::{external_signer::SignerService, NetworkSettings},
+    Parity, ParityClient,
+    helpers::{NetworkSettings, external_signer::SignerService},
     metadata::Metadata,
     tests::helpers::{Config, TestMinerService, TestSyncProvider},
-    Parity, ParityClient,
 };
 use Host;
+use jsonrpc_core::IoHandler;
 
 pub type TestParityClient = ParityClient<TestBlockChainClient, TestMinerService>;
 

@@ -32,10 +32,10 @@ use std::{collections::VecDeque, env, fmt, fs, io::Read, process};
 
 use docopt::Docopt;
 use ethstore::{
+    EthStore, PresaleWallet, SecretStore, SecretVaultRef, SimpleSecretStore, StoreAccountRef,
     accounts_dir::{KeyDirectory, RootDiskDirectory},
     ethkey::{Address, Password},
-    import_accounts, EthStore, PresaleWallet, SecretStore, SecretVaultRef, SimpleSecretStore,
-    StoreAccountRef,
+    import_accounts,
 };
 
 mod crack;

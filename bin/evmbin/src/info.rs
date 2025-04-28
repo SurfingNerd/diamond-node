@@ -16,14 +16,15 @@
 
 //! VM runner.
 
+use crate::types::transaction;
 use ethcore::{
+    TrieSpec,
     client::{self, EvmTestClient, EvmTestError, TransactErr, TransactSuccess},
-    pod_state, spec, state, state_db, trace, TrieSpec,
+    pod_state, spec, state, state_db, trace,
 };
 use ethereum_types::{H256, U256};
 use ethjson;
 use std::time::{Duration, Instant};
-use crate::types::transaction;
 use vm::ActionParams;
 
 /// VM execution informant

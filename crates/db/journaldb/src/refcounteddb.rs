@@ -22,18 +22,20 @@ use std::{
     sync::Arc,
 };
 
-use super::{traits::JournalDB, LATEST_ERA_KEY};
+use super::{LATEST_ERA_KEY, traits::JournalDB};
+use crate::{
+    DB_PREFIX_LEN,
+    overlaydb::OverlayDB,
+    util::{DatabaseKey, DatabaseValueRef, DatabaseValueView},
+};
 use bytes::Bytes;
 use ethcore_db::{DBTransaction, DBValue, KeyValueDB};
 use ethereum_types::H256;
 use hash_db::HashDB;
 use keccak_hasher::KeccakHasher;
 use memory_db::MemoryDB;
-use crate::overlaydb::OverlayDB;
-use parity_util_mem::{allocators::new_malloc_size_ops, MallocSizeOf};
+use parity_util_mem::{MallocSizeOf, allocators::new_malloc_size_ops};
 use rlp::{decode, encode};
-use crate::util::{DatabaseKey, DatabaseValueRef, DatabaseValueView};
-use crate::DB_PREFIX_LEN;
 
 /// Implementation of the `HashDB` trait for a disk-backed database with a memory overlay
 /// and latent-removal semantics.
@@ -259,9 +261,9 @@ impl JournalDB for RefCountedDB {
 mod tests {
 
     use super::*;
+    use JournalDB;
     use hash_db::HashDB;
     use keccak::keccak;
-    use JournalDB;
 
     fn new_db() -> RefCountedDB {
         let backing = Arc::new(ethcore_db::InMemoryWithMetrics::create(0));

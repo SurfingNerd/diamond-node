@@ -44,7 +44,7 @@ extern crate tempdir;
 
 use bytes::Bytes;
 use docopt::Docopt;
-use ethcore::{json_tests, spec, TrieSpec};
+use ethcore::{TrieSpec, json_tests, spec};
 use ethereum_types::{Address, U256};
 use ethjson::spec::ForkSpec;
 use evm::EnvInfo;

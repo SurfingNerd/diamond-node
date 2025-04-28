@@ -18,8 +18,8 @@
 // https://github.com/openethereum/openethereum/issues/10302
 #![allow(deprecated)]
 
-use ethcore;
 use crate::io;
+use ethcore;
 
 error_chain! {
     foreign_links {

@@ -21,25 +21,26 @@ use std::{
     sync::Arc,
 };
 
-use ethereum_types::{H256, H64, U256};
+use crate::types::{
+    BlockNumber,
+    header::{ExtendedHeader, Header},
+};
+use ethereum_types::{H64, H256, U256};
 use ethjson::{self, uint::Uint};
 use hash::KECCAK_EMPTY_LIST_RLP;
 use rlp::Rlp;
-use crate::types::{
-    header::{ExtendedHeader, Header},
-    BlockNumber,
-};
 use unexpected::{Mismatch, OutOfBounds};
 
-use crate::block::ExecutedBlock;
-use crate::engines::{
-    self,
-    block_reward::{self, BlockRewardContract, RewardKind},
-    Engine,
+use crate::{
+    block::ExecutedBlock,
+    engines::{
+        self, Engine,
+        block_reward::{self, BlockRewardContract, RewardKind},
+    },
+    error::{BlockError, Error},
+    machine::EthereumMachine,
 };
-use crate::error::{BlockError, Error};
-use ethash::{self, quick_get_difficulty, slow_hash_block_number, EthashManager, OptimizeFor};
-use crate::machine::EthereumMachine;
+use ethash::{self, EthashManager, OptimizeFor, quick_get_difficulty, slow_hash_block_number};
 
 /// Number of blocks in an ethash snapshot.
 // make dependent on difficulty incrment divisor?
@@ -561,18 +562,15 @@ fn ecip1017_eras_block_reward(era_rounds: u64, mut reward: U256, block_number: u
 mod tests {
     use super::{
         super::{new_homestead_test_machine, new_mcip3_test, new_morden},
-        ecip1017_eras_block_reward, Ethash, EthashParams,
+        Ethash, EthashParams, ecip1017_eras_block_reward,
     };
-    use crate::block::*;
-    use crate::engines::Engine;
+    use crate::{block::*, engines::Engine, spec::Spec, types::header::Header};
     use error::{BlockError, Error, ErrorKind};
-    use ethereum_types::{Address, H256, H64, U256};
+    use ethereum_types::{Address, H64, H256, U256};
     use rlp;
-    use crate::spec::Spec;
     use std::{collections::BTreeMap, str::FromStr, sync::Arc};
     use tempdir::TempDir;
     use test_helpers::get_temp_state_db;
-    use crate::types::header::Header;
 
     fn test_spec() -> Spec {
         let tempdir = TempDir::new("").unwrap();

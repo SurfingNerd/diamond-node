@@ -18,8 +18,18 @@
 
 use std::{fs, io, path::Path, sync::Arc};
 
-use crate::blockchain::{
-    BlockChain, BlockChainDB, BlockChainDBHandler, Config as BlockChainConfig, ExtrasInsert,
+use crate::{
+    blockchain::{
+        BlockChain, BlockChainDB, BlockChainDBHandler, Config as BlockChainConfig, ExtrasInsert,
+    },
+    io::IoChannel,
+    types::{
+        BlockNumber, encoded,
+        header::Header,
+        transaction::{Action, SignedTransaction, Transaction, TypedTransaction},
+        view,
+        views::BlockView,
+    },
 };
 use blooms_db;
 use bytes::Bytes;
@@ -28,33 +38,26 @@ use db::KeyValueDB;
 use ethereum_types::{Address, H256, H512, U256};
 use evm::Factory as EvmFactory;
 use hash::keccak;
-use crate::io::IoChannel;
 use kvdb_rocksdb::{self, Database, DatabaseConfig};
 use parking_lot::RwLock;
 use rlp::{self, RlpStream};
 use tempdir::TempDir;
-use crate::types::{
-    encoded,
-    header::Header,
-    transaction::{Action, SignedTransaction, Transaction, TypedTransaction},
-    view,
-    views::BlockView,
-    BlockNumber,
-};
 
-use crate::block::{Drain, OpenBlock};
-use crate::client::{
-    BlockInfo, ChainInfo, ChainMessageType, ChainNotify, Client, ClientConfig, ImportBlock,
-    PrepareOpenBlock,
+use crate::{
+    block::{Drain, OpenBlock},
+    client::{
+        BlockInfo, ChainInfo, ChainMessageType, ChainNotify, Client, ClientConfig, ImportBlock,
+        PrepareOpenBlock,
+    },
+    engines::{EngineSigner, Seal},
+    factory::Factories,
+    spec::Spec,
+    state::*,
+    verification::queue::kind::blocks::Unverified,
 };
-use crate::engines::{EngineSigner, Seal};
 use ethjson::crypto::publickey::{Public, Signature};
-use crate::factory::Factories;
 use miner::Miner;
-use crate::spec::Spec;
-use crate::state::*;
 use state_db::StateDB;
-use crate::verification::queue::kind::blocks::Unverified;
 
 use crate::exit::ShutdownManager;
 

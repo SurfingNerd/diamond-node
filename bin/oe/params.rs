@@ -356,7 +356,7 @@ pub fn mode_switch_to_bool(
 
 #[cfg(test)]
 mod tests {
-    use super::{tracing_switch_to_bool, Pruning, ResealPolicy, SpecType, Switch};
+    use super::{Pruning, ResealPolicy, SpecType, Switch, tracing_switch_to_bool};
     use crate::user_defaults::UserDefaults;
     use journaldb::Algorithm;
 

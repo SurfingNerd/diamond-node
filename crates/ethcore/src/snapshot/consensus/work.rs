@@ -25,20 +25,22 @@ use super::{ChunkSink, Rebuilder, SnapshotComponents};
 use std::{
     collections::VecDeque,
     sync::{
-        atomic::{AtomicBool, Ordering},
         Arc,
+        atomic::{AtomicBool, Ordering},
     },
 };
 
-use crate::blockchain::{BlockChain, BlockChainDB, BlockProvider};
+use crate::{
+    blockchain::{BlockChain, BlockChainDB, BlockProvider},
+    engines::EthEngine,
+    snapshot::{Error, ManifestData, Progress, block::AbridgedBlock},
+    types::{BlockNumber, encoded},
+};
 use bytes::Bytes;
 use db::KeyValueDB;
-use crate::engines::EthEngine;
 use ethereum_types::H256;
 use rand::rngs::OsRng;
 use rlp::{Rlp, RlpStream};
-use crate::snapshot::{block::AbridgedBlock, Error, ManifestData, Progress};
-use crate::types::{encoded, BlockNumber};
 
 /// Snapshot creation and restoration for PoW chains.
 /// This includes blocks from the head of the chain as a
@@ -88,7 +90,7 @@ impl SnapshotComponents for PowSnapshot {
         chain: BlockChain,
         db: Arc<dyn BlockChainDB>,
         manifest: &ManifestData,
-    ) -> Result<Box<dyn Rebuilder>,  crate::error::Error> {
+    ) -> Result<Box<dyn Rebuilder>, crate::error::Error> {
         PowRebuilder::new(
             chain,
             db.key_value().clone(),
@@ -268,8 +270,8 @@ impl Rebuilder for PowRebuilder {
         engine: &dyn EthEngine,
         abort_flag: &AtomicBool,
     ) -> Result<(), crate::error::Error> {
-        use ethereum_types::U256;
         use crate::snapshot::verify_old_block;
+        use ethereum_types::U256;
         use triehash::ordered_trie_root;
 
         let rlp = Rlp::new(chunk);

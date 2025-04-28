@@ -22,25 +22,27 @@
 use hash::{KECCAK_EMPTY, KECCAK_NULL_RLP};
 use std::{
     cell::{RefCell, RefMut},
-    collections::{hash_map::Entry, BTreeMap, BTreeSet, HashMap, HashSet},
+    collections::{BTreeMap, BTreeSet, HashMap, HashSet, hash_map::Entry},
     fmt,
     sync::Arc,
 };
 
-use crate::error::Error;
-use crate::executed::{Executed, ExecutionError};
-use crate::executive::{Executive, TransactOptions};
-use crate::factory::{Factories, VmFactory};
-use crate::machine::EthereumMachine as Machine;
-use crate::pod_account::*;
-use crate::pod_state::{self, PodState};
-use crate::state_db::StateDB;
-use crate::trace::{self, FlatTrace, VMTrace};
-use crate::types::{
-    basic_account::BasicAccount,
-    receipt::{LegacyReceipt, TransactionOutcome, TypedReceipt},
-    state_diff::StateDiff,
-    transaction::SignedTransaction,
+use crate::{
+    error::Error,
+    executed::{Executed, ExecutionError},
+    executive::{Executive, TransactOptions},
+    factory::{Factories, VmFactory},
+    machine::EthereumMachine as Machine,
+    pod_account::*,
+    pod_state::{self, PodState},
+    state_db::StateDB,
+    trace::{self, FlatTrace, VMTrace},
+    types::{
+        basic_account::BasicAccount,
+        receipt::{LegacyReceipt, TransactionOutcome, TypedReceipt},
+        state_diff::StateDiff,
+        transaction::SignedTransaction,
+    },
 };
 
 use vm::EnvInfo;
@@ -664,7 +666,7 @@ impl<B: Backend> State<B> {
                     }
                     // The account didn't exist at that point. Return empty value.
                     Some(Some(AccountEntry { account: None, .. })) => {
-                        return Ok(Some(H256::default()))
+                        return Ok(Some(H256::default()));
                     }
                     // The value was not cached at that checkpoint, meaning it was not modified at all.
                     Some(None) => {
@@ -1574,17 +1576,19 @@ impl Clone for State<StateDB> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::{
+        machine::EthereumMachine,
+        spec::*,
+        trace::{FlatTrace, TraceError, trace},
+        types::transaction::*,
+    };
     use crypto::publickey::Secret;
     use ethereum_types::{Address, BigEndianHash, H256, U256};
     use evm::CallType;
-    use hash::{keccak, KECCAK_NULL_RLP};
-    use crate::machine::EthereumMachine;
+    use hash::{KECCAK_NULL_RLP, keccak};
     use rustc_hex::FromHex;
-    use crate::spec::*;
     use std::{str::FromStr, sync::Arc};
     use test_helpers::{get_temp_state, get_temp_state_db};
-    use crate::trace::{trace, FlatTrace, TraceError};
-    use crate::types::transaction::*;
     use vm::EnvInfo;
 
     fn secret() -> Secret {

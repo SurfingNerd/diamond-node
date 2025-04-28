@@ -24,7 +24,7 @@ use rpc_servers::{HttpServer, MetaIoHandler};
 use crate::tests::{helpers::Server, http_client};
 
 #[cfg(any(test, feature = "test-helpers"))]
-use crate::v1::{extractors, Metadata};
+use crate::v1::{Metadata, extractors};
 
 #[cfg(any(test, feature = "test-helpers"))]
 fn serve(handler: Option<MetaIoHandler<Metadata>>) -> Server<HttpServer> {
@@ -58,9 +58,9 @@ fn request(server: Server<HttpServer>, request: &str) -> http_client::Response {
 
 #[cfg(test)]
 mod tests {
-    use super::{request, Server};
-    use jsonrpc_core::{MetaIoHandler, Value};
+    use super::{Server, request};
     use crate::v1::Metadata;
+    use jsonrpc_core::{MetaIoHandler, Value};
 
     fn serve() -> (Server<::HttpServer>, ::std::net::SocketAddr) {
         let mut io = MetaIoHandler::default();

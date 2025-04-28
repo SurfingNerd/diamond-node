@@ -148,6 +148,6 @@ pub mod test_helpers;
 #[cfg(test)]
 mod tests;
 
-pub use evm::CreateContractAddress;
 pub use crate::executive::contract_address;
+pub use evm::CreateContractAddress;
 pub use trie::TrieSpec;

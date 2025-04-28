@@ -19,8 +19,8 @@
 use jsonrpc_core::BoxFuture;
 use jsonrpc_derive::rpc;
 
-use ethereum_types::{H160, H256, H520};
 use crate::v1::types::{Bytes, RichRawTransaction, TransactionRequest};
+use ethereum_types::{H160, H256, H520};
 
 /// Signing methods implementation relying on unlocked accounts.
 #[rpc(server)]

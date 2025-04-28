@@ -17,9 +17,8 @@
 //! Consensus tests for `PoA Clique Engine`, see http://eips.ethereum.org/EIPS/eip-225 for more information
 
 use super::*;
-use crate::block::*;
+use crate::{block::*, engines::Engine};
 use crypto::publickey::{KeyPair, Secret};
-use crate::engines::Engine;
 use error::{Error, ErrorKind};
 use ethereum_types::{Address, H256};
 use state_db::StateDB;

@@ -126,20 +126,23 @@ pub mod v1;
 pub mod tests;
 
 pub use http::{
-    cors::AccessControlAllowHeaders, hyper, AccessControlAllowOrigin, DomainsValidation, Host,
-    RequestMiddleware, RequestMiddlewareAction,
+    AccessControlAllowOrigin, DomainsValidation, Host, RequestMiddleware, RequestMiddlewareAction,
+    cors::AccessControlAllowHeaders, hyper,
 };
 pub use ipc::{
     MetaExtractor as IpcMetaExtractor, RequestContext as IpcRequestContext, Server as IpcServer,
 };
 pub use jsonrpc_pubsub::Session as PubSubSession;
 
-pub use crate::authcodes::{AuthCodes, TimeProvider};
-pub use crate::v1::{
-    block_import::{is_major_importing, is_major_importing_or_waiting},
-    dispatch,
-    extractors::{RpcExtractor, WsDispatcher, WsExtractor, WsStats},
-    informant, signer, Metadata, NetworkSettings, Origin,
+pub use crate::{
+    authcodes::{AuthCodes, TimeProvider},
+    v1::{
+        Metadata, NetworkSettings, Origin,
+        block_import::{is_major_importing, is_major_importing_or_waiting},
+        dispatch,
+        extractors::{RpcExtractor, WsDispatcher, WsExtractor, WsStats},
+        informant, signer,
+    },
 };
 
 /// RPC HTTP Server instance

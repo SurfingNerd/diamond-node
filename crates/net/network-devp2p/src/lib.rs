@@ -118,6 +118,6 @@ pub use service::NetworkService;
 pub use connection::PAYLOAD_SOFT_LIMIT;
 
 pub use crate::io::TimerToken;
-pub use node_table::{validate_node_url, NodeId};
+pub use node_table::{NodeId, validate_node_url};
 
 const PROTOCOL_VERSION: u32 = 5;

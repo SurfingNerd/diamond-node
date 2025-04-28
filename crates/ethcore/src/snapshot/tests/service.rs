@@ -18,25 +18,25 @@
 
 use std::{fs, sync::Arc};
 
-use crate::blockchain::BlockProvider;
-use crate::client::{BlockInfo, Client, ClientConfig, ImportBlock};
-use crate::snapshot::{
-    chunk_secondary, chunk_state,
-    io::{PackedReader, PackedWriter, SnapshotReader, SnapshotWriter},
-    service::{Service, ServiceParams},
-    ManifestData, Progress, RestorationStatus, SnapshotService,
+use crate::{
+    blockchain::BlockProvider,
+    client::{BlockInfo, Client, ClientConfig, ImportBlock},
+    snapshot::{
+        ManifestData, Progress, RestorationStatus, SnapshotService, chunk_secondary, chunk_state,
+        io::{PackedReader, PackedWriter, SnapshotReader, SnapshotWriter},
+        service::{Service, ServiceParams},
+    },
+    spec::Spec,
+    types::ids::BlockId,
 };
-use crate::spec::Spec;
 use tempdir::TempDir;
 use test_helpers::{
     generate_dummy_client_with_spec_and_data, new_db, new_temp_db, restoration_db_handler,
 };
-use crate::types::ids::BlockId;
 
-use crate::io::IoChannel;
+use crate::{io::IoChannel, verification::queue::kind::blocks::Unverified};
 use kvdb_rocksdb::DatabaseConfig;
 use parking_lot::Mutex;
-use crate::verification::queue::kind::blocks::Unverified;
 
 use crate::exit::ShutdownManager;
 
@@ -292,9 +292,11 @@ fn keep_ancient_blocks() {
 
     // Check that we have blocks in [NUM_BLOCKS - NUM_SNAPSHOT_BLOCKS + 1 ; NUM_BLOCKS]
     // but none before
-    assert!(client2
-        .block(BlockId::Number(NUM_BLOCKS - NUM_SNAPSHOT_BLOCKS + 1))
-        .is_some());
+    assert!(
+        client2
+            .block(BlockId::Number(NUM_BLOCKS - NUM_SNAPSHOT_BLOCKS + 1))
+            .is_some()
+    );
     assert!(client2.block(BlockId::Number(100)).is_none());
 
     // Check that the first 50 blocks have been migrated

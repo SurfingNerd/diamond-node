@@ -17,13 +17,17 @@
 //! Disk-backed `HashDB` implementation.
 
 use std::{
-    collections::{hash_map::Entry, BTreeMap, HashMap},
+    collections::{BTreeMap, HashMap, hash_map::Entry},
     io,
     sync::Arc,
 };
 
 use super::{
-    error_key_already_exists, error_negatively_reference_hash, traits::JournalDB, LATEST_ERA_KEY,
+    LATEST_ERA_KEY, error_key_already_exists, error_negatively_reference_hash, traits::JournalDB,
+};
+use crate::{
+    DB_PREFIX_LEN,
+    util::{DatabaseKey, DatabaseValueRef, DatabaseValueView},
 };
 use bytes::Bytes;
 use ethcore_db::{DBTransaction, DBValue, KeyValueDB};
@@ -34,8 +38,6 @@ use memory_db::*;
 use parity_util_mem::MallocSizeOf;
 use parking_lot::RwLock;
 use rlp::{decode, encode};
-use crate::util::{DatabaseKey, DatabaseValueRef, DatabaseValueView};
-use crate::DB_PREFIX_LEN;
 
 #[derive(Debug, Clone, PartialEq, Eq, MallocSizeOf)]
 struct RefInfo {

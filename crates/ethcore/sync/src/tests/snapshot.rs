@@ -15,6 +15,9 @@
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
 use super::helpers::*;
+use crate::types::BlockNumber;
+use SyncConfig;
+use WarpSync;
 use bytes::Bytes;
 use ethcore::{
     client::EachBlockWith,
@@ -24,9 +27,6 @@ use ethereum_types::H256;
 use hash::keccak;
 use parking_lot::Mutex;
 use std::{collections::HashMap, sync::Arc};
-use crate::types::BlockNumber;
-use SyncConfig;
-use WarpSync;
 
 pub struct TestSnapshotService {
     manifest: Option<ManifestData>,

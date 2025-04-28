@@ -18,8 +18,8 @@ use std::sync::Arc;
 
 use ethcore::client::TestBlockChainClient;
 
-use jsonrpc_core::IoHandler;
 use crate::v1::{Debug, DebugClient};
+use jsonrpc_core::IoHandler;
 
 fn io() -> IoHandler {
     let client = Arc::new(TestBlockChainClient::new());

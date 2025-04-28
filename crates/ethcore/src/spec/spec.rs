@@ -24,30 +24,32 @@ use std::{
     sync::Arc,
 };
 
+use crate::types::{BlockNumber, header::Header};
 use bytes::Bytes;
 use ethereum_types::{Address, Bloom, H160, H256, U256};
 use ethjson;
-use hash::{keccak, KECCAK_NULL_RLP};
+use hash::{KECCAK_NULL_RLP, keccak};
 use parking_lot::RwLock;
 use rlp::{Rlp, RlpStream};
 use rustc_hex::FromHex;
-use crate::types::{header::Header, BlockNumber};
 use vm::{AccessList, ActionParams, ActionValue, CallType, EnvInfo, ParamsType};
 
-use builtin::Builtin;
-use crate::engines::{
-    AuthorityRound, BasicAuthority, Clique, EthEngine, HoneyBadgerBFT, InstantSeal,
-    InstantSealParams, NullEngine, DEFAULT_BLOCKHASH_CONTRACT,
+use crate::{
+    engines::{
+        AuthorityRound, BasicAuthority, Clique, DEFAULT_BLOCKHASH_CONTRACT, EthEngine,
+        HoneyBadgerBFT, InstantSeal, InstantSealParams, NullEngine,
+    },
+    error::Error,
+    executive::Executive,
+    factory::Factories,
+    machine::EthereumMachine,
+    pod_state::PodState,
+    spec::{Genesis, seal::Generic as GenericSeal},
+    state::{Backend, State, Substate, backend::Basic as BasicBackend},
+    trace::{NoopTracer, NoopVMTracer},
 };
-use crate::error::Error;
-use crate::executive::Executive;
-use crate::factory::Factories;
-use crate::machine::EthereumMachine;
+use builtin::Builtin;
 use maplit::btreeset;
-use crate::pod_state::PodState;
-use crate::spec::{seal::Generic as GenericSeal, Genesis};
-use crate::state::{backend::Basic as BasicBackend, Backend, State, Substate};
-use crate::trace::{NoopTracer, NoopVMTracer};
 
 pub use ethash::OptimizeFor;
 
@@ -1236,12 +1238,14 @@ impl Spec {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::{
+        state::State,
+        types::{view, views::BlockView},
+    };
     use ethereum_types::{H160, H256};
-    use crate::state::State;
     use std::str::FromStr;
     use tempdir::TempDir;
     use test_helpers::get_temp_state_db;
-    use crate::types::{view, views::BlockView};
 
     #[test]
     fn test_load_empty() {

@@ -17,18 +17,18 @@
 /// Used for Engine testing.
 use std::str::FromStr;
 use std::sync::{
-    atomic::{AtomicUsize, Ordering as AtomicOrdering},
     Arc,
+    atomic::{AtomicUsize, Ordering as AtomicOrdering},
 };
 
+use crate::types::{BlockNumber, header::Header};
 use bytes::Bytes;
 use ethereum_types::{Address, H256};
 use parity_util_mem::MallocSizeOf;
-use crate::types::{header::Header, BlockNumber};
 
 use super::{SimpleList, SystemCall, ValidatorSet};
-use error::Error as EthcoreError;
 use crate::machine::{AuxiliaryData, Call, EthereumMachine};
+use error::Error as EthcoreError;
 
 /// Set used for testing with a single validator.
 #[derive(Clone, MallocSizeOf)]
@@ -47,10 +47,9 @@ impl Default for TestSet {
 impl TestSet {
     pub fn new(last_malicious: Arc<AtomicUsize>, last_benign: Arc<AtomicUsize>) -> Self {
         TestSet {
-            validator: SimpleList::new(vec![Address::from_str(
-                "7d577a597b2742b498cb5cf0c26cdcd726d39e6e",
-            )
-            .unwrap()]),
+            validator: SimpleList::new(vec![
+                Address::from_str("7d577a597b2742b498cb5cf0c26cdcd726d39e6e").unwrap(),
+            ]),
             last_malicious,
             last_benign,
         }

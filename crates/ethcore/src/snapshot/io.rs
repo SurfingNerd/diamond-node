@@ -337,8 +337,8 @@ mod tests {
     use tempdir::TempDir;
 
     use super::{
-        LooseReader, LooseWriter, PackedReader, PackedWriter, SnapshotReader, SnapshotWriter,
-        SNAPSHOT_VERSION,
+        LooseReader, LooseWriter, PackedReader, PackedWriter, SNAPSHOT_VERSION, SnapshotReader,
+        SnapshotWriter,
     };
     use crate::snapshot::ManifestData;
 

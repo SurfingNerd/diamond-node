@@ -14,11 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
-use jsonrpc_core::{
-    futures::{self, sync::oneshot, Future},
-    Error,
-};
 use crate::v1::helpers::errors;
+use jsonrpc_core::{
+    Error,
+    futures::{self, Future, sync::oneshot},
+};
 
 pub type Res<T> = Result<T, Error>;
 

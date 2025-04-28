@@ -22,13 +22,15 @@
 
 use std::{error, fmt, time::SystemTime};
 
+use crate::{
+    snapshot::Error as SnapshotError,
+    types::{BlockNumber, transaction::Error as TransactionError},
+};
 use crypto::publickey::Error as EthkeyError;
 use ethereum_types::{Address, Bloom, H256, U256};
 use ethtrie::TrieError;
 use rlp;
 use snappy::InvalidInput;
-use crate::snapshot::Error as SnapshotError;
-use crate::types::{transaction::Error as TransactionError, BlockNumber};
 use unexpected::{Mismatch, OutOfBounds};
 
 use crate::engines::EngineError;

@@ -127,7 +127,7 @@ impl UserDefaults {
 
 mod algorithm_serde {
     use journaldb::Algorithm;
-    use serde::{de::Error, Deserialize, Deserializer, Serialize, Serializer};
+    use serde::{Deserialize, Deserializer, Serialize, Serializer, de::Error};
 
     pub fn serialize<S>(algorithm: &Algorithm, serializer: S) -> Result<S::Ok, S::Error>
     where

@@ -54,8 +54,7 @@ pub use crate::types::{
 pub use crate::executive::{Executed, Executive, TransactOptions};
 pub use vm::{EnvInfo, LastHashes};
 
-pub use crate::error::TransactionImportError;
-pub use crate::verification::VerifierType;
+pub use crate::{error::TransactionImportError, verification::VerifierType};
 
 pub mod traits;
 

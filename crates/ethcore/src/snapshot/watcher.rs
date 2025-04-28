@@ -16,12 +16,14 @@
 
 //! Watcher for snapshot-related chain events.
 
-use crate::client::{BlockInfo, ChainNotify, Client, ClientIoMessage, NewBlocks};
+use crate::{
+    client::{BlockInfo, ChainNotify, Client, ClientIoMessage, NewBlocks},
+    types::ids::BlockId,
+};
 use parking_lot::Mutex;
-use crate::types::ids::BlockId;
 
-use ethereum_types::H256;
 use crate::io::IoChannel;
+use ethereum_types::H256;
 
 use std::sync::Arc;
 

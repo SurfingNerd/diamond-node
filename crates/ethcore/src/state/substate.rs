@@ -16,10 +16,10 @@
 
 //! Execution environment substate.
 use super::CleanupMode;
+use crate::types::log_entry::LogEntry;
 use ethereum_types::Address;
 use evm::{CleanDustMode, Schedule};
 use std::collections::HashSet;
-use crate::types::log_entry::LogEntry;
 use vm::access_list::AccessList;
 
 /// State changes which should be applied in finalize,
@@ -88,8 +88,8 @@ impl Substate {
 #[cfg(test)]
 mod tests {
     use super::Substate;
-    use ethereum_types::Address;
     use crate::types::log_entry::LogEntry;
+    use ethereum_types::Address;
 
     #[test]
     fn created() {

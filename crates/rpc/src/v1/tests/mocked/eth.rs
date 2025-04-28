@@ -21,6 +21,12 @@ use std::{
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 
+use crate::types::{
+    ids::{BlockId, TransactionId},
+    log_entry::{LocalizedLogEntry, LogEntry},
+    receipt::{LocalizedReceipt, RichReceipt, TransactionOutcome},
+    transaction::{Action, Transaction, TypedTransaction, TypedTxId},
+};
 use accounts::AccountProvider;
 use ethcore::{
     client::{BlockChainClient, EachBlockWith, EvmTestClient, Executed, TestBlockChainClient},
@@ -32,19 +38,13 @@ use parity_runtime::Runtime;
 use parking_lot::Mutex;
 use rustc_hex::{FromHex, ToHex};
 use sync::SyncState;
-use crate::types::{
-    ids::{BlockId, TransactionId},
-    log_entry::{LocalizedLogEntry, LogEntry},
-    receipt::{LocalizedReceipt, RichReceipt, TransactionOutcome},
-    transaction::{Action, Transaction, TypedTransaction, TypedTxId},
-};
 
-use jsonrpc_core::IoHandler;
 use crate::v1::{
+    Eth, EthClient, EthClientOptions, EthFilter, EthFilterClient,
     metadata::Metadata,
     tests::helpers::{Config, TestMinerService, TestSnapshotService, TestSyncProvider},
-    Eth, EthClient, EthClientOptions, EthFilter, EthFilterClient,
 };
+use jsonrpc_core::IoHandler;
 
 fn blockchain_client() -> Arc<TestBlockChainClient> {
     let client = TestBlockChainClient::new();
@@ -750,8 +750,8 @@ fn rpc_eth_transaction_count_by_number_pending() {
 
 #[test]
 fn rpc_eth_pending_transaction_by_hash() {
-    use ethereum_types::H256;
     use crate::types::transaction::SignedTransaction;
+    use ethereum_types::H256;
 
     let tester = EthTester::default();
     {

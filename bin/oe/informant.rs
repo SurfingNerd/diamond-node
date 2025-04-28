@@ -23,8 +23,8 @@ use self::ansi_term::{
 
 use std::{
     sync::{
-        atomic::{AtomicBool, AtomicUsize, Ordering as AtomicOrdering},
         Arc,
+        atomic::{AtomicBool, AtomicUsize, Ordering as AtomicOrdering},
     },
     time::{Duration, Instant},
 };
@@ -40,9 +40,9 @@ use ethcore::{
         BlockChainClient, BlockChainInfo, BlockId, BlockInfo, BlockQueueInfo, ChainInfo,
         ChainNotify, Client, ClientIoMessage, ClientReport, NewBlocks,
     },
-    snapshot::{service::Service as SnapshotService, RestorationStatus, SnapshotService as SS},
+    snapshot::{RestorationStatus, SnapshotService as SS, service::Service as SnapshotService},
 };
-use number_prefix::{binary_prefix, Prefixed, Standalone};
+use number_prefix::{Prefixed, Standalone, binary_prefix};
 use parity_rpc::{informant::RpcStats, is_major_importing_or_waiting};
 use parking_lot::{Mutex, RwLock};
 

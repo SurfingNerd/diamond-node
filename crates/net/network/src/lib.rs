@@ -45,9 +45,9 @@ pub mod client_version;
 mod connection_filter;
 mod error;
 
+pub use crate::io::TimerToken;
 pub use connection_filter::{ConnectionDirection, ConnectionFilter};
 pub use error::{DisconnectReason, Error, ErrorKind};
-pub use crate::io::TimerToken;
 
 use crate::client_version::ClientVersion;
 use crypto::publickey::Secret;

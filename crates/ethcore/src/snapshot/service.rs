@@ -23,24 +23,26 @@ use std::{
     io::{self, ErrorKind, Read},
     path::PathBuf,
     sync::{
-        atomic::{AtomicBool, AtomicUsize, Ordering},
         Arc,
+        atomic::{AtomicBool, AtomicUsize, Ordering},
     },
 };
 
 use super::{
+    CreationStatus, MAX_CHUNK_SIZE, ManifestData, Rebuilder, RestorationStatus, SnapshotService,
+    StateRebuilder,
     io::{LooseReader, LooseWriter, SnapshotReader, SnapshotWriter},
-    CreationStatus, ManifestData, Rebuilder, RestorationStatus, SnapshotService, StateRebuilder,
-    MAX_CHUNK_SIZE,
 };
 
-use crate::blockchain::{BlockChain, BlockChainDB, BlockChainDBHandler};
-use crate::client::{BlockChainClient, BlockInfo, ChainInfo, Client, ClientIoMessage};
-use crate::engines::EthEngine;
-use crate::error::{Error, ErrorKind as SnapshotErrorKind};
+use crate::{
+    blockchain::{BlockChain, BlockChainDB, BlockChainDBHandler},
+    client::{BlockChainClient, BlockInfo, ChainInfo, Client, ClientIoMessage},
+    engines::EthEngine,
+    error::{Error, ErrorKind as SnapshotErrorKind},
+    snapshot::Error as SnapshotError,
+    types::ids::BlockId,
+};
 use hash::keccak;
-use crate::snapshot::Error as SnapshotError;
-use crate::types::ids::BlockId;
 
 use crate::io::IoChannel;
 
@@ -558,7 +560,9 @@ impl Service {
             if let Err(e) = res {
                 if client.chain_info().best_block_number >= num + client.pruning_history() {
                     // The state we were snapshotting was pruned before we could finish.
-                    info!("Periodic snapshot failed: block state pruned. Run with a longer `--pruning-history` or with `--no-periodic-snapshot`");
+                    info!(
+                        "Periodic snapshot failed: block state pruned. Run with a longer `--pruning-history` or with `--no-periodic-snapshot`"
+                    );
                     return Err(e);
                 } else {
                     return Err(e);
@@ -1011,11 +1015,13 @@ impl Drop for Service {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::client::ClientIoMessage;
-    use crate::io::IoService;
+    use crate::{
+        client::ClientIoMessage,
+        io::IoService,
+        snapshot::{ManifestData, RestorationStatus, SnapshotService},
+        spec::Spec,
+    };
     use journaldb::Algorithm;
-    use crate::snapshot::{ManifestData, RestorationStatus, SnapshotService};
-    use crate::spec::Spec;
     use tempdir::TempDir;
     use test_helpers::{generate_dummy_client_with_spec_and_data, restoration_db_handler};
 
@@ -1098,16 +1104,20 @@ mod tests {
         let definitely_bad_chunk = [1, 2, 3, 4, 5];
 
         for hash in state_hashes {
-            assert!(restoration
-                .feed_state(hash, &definitely_bad_chunk, &flag)
-                .is_err());
+            assert!(
+                restoration
+                    .feed_state(hash, &definitely_bad_chunk, &flag)
+                    .is_err()
+            );
             assert!(!restoration.is_done());
         }
 
         for hash in block_hashes {
-            assert!(restoration
-                .feed_blocks(hash, &definitely_bad_chunk, &*spec.engine, &flag)
-                .is_err());
+            assert!(
+                restoration
+                    .feed_blocks(hash, &definitely_bad_chunk, &*spec.engine, &flag)
+                    .is_err()
+            );
             assert!(!restoration.is_done());
         }
     }

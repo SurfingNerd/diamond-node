@@ -1,6 +1,6 @@
+use crate::types::ids::BlockId;
 use ethereum_types::Address;
 use stats::PrometheusMetrics;
-use crate::types::ids::BlockId;
 
 use crate::{
     client::{BlockChainClient, EngineClient},
@@ -13,9 +13,9 @@ use std::{
 };
 
 use super::{
+    NodeId,
     contracts::connectivity_tracker_hbbft::{is_connectivity_loss_reported, report_reconnect},
     hbbft_message_memorium::HbbftMessageMemorium,
-    NodeId,
 };
 
 pub(crate) struct HbbftEarlyEpochEndManager {

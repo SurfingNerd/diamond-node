@@ -22,7 +22,7 @@ use ethstore::{KeyFile, SafeAccount};
 use keygen_history_helpers::{enodes_to_pub_keys, generate_keygens, key_sync_history_data};
 use parity_crypto::publickey::{Address, Generator, KeyPair, Public, Random, Secret};
 use std::{convert::TryInto, fmt::Write, fs, num::NonZeroU32, str::FromStr};
-use toml::{map::Map, Value};
+use toml::{Value, map::Map};
 
 pub fn create_account() -> (Secret, Public, Address) {
     let acc = Random.generate();
@@ -494,7 +494,10 @@ fn main() {
         "max_nodes must be greater than nodes"
     );
 
-    println!("generating config files for {} nodes in total, with the first {} nodes as initial validator", num_nodes_total, num_nodes_validators);
+    println!(
+        "generating config files for {} nodes in total, with the first {} nodes as initial validator",
+        num_nodes_total, num_nodes_validators
+    );
 
     let config_type =
         value_t!(matches.value_of("configtype"), ConfigType).unwrap_or(ConfigType::PosdaoSetup);

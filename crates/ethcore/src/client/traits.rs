@@ -22,7 +22,26 @@ use std::{
     sync::Arc,
 };
 
-use crate::blockchain::{BlockReceipts, TreeRoute};
+use crate::{
+    blockchain::{BlockReceipts, TreeRoute},
+    types::{
+        BlockNumber,
+        basic_account::BasicAccount,
+        block_status::BlockStatus,
+        blockchain_info::BlockChainInfo,
+        call_analytics::CallAnalytics,
+        data_format::DataFormat,
+        encoded,
+        filter::Filter,
+        header::Header,
+        ids::*,
+        log_entry::LocalizedLogEntry,
+        pruning_info::PruningInfo,
+        receipt::LocalizedReceipt,
+        trace_filter::Filter as TraceFilter,
+        transaction::{self, Action, LocalizedTransaction, SignedTransaction, TypedTxId},
+    },
+};
 use bytes::Bytes;
 use call_contract::{CallContract, RegistryInfo};
 use ethcore_miner::pool::VerifiedTransaction;
@@ -31,34 +50,19 @@ use evm::Schedule;
 use itertools::Itertools;
 use kvdb::DBValue;
 use parking_lot::Mutex;
-use crate::types::{
-    basic_account::BasicAccount,
-    block_status::BlockStatus,
-    blockchain_info::BlockChainInfo,
-    call_analytics::CallAnalytics,
-    data_format::DataFormat,
-    encoded,
-    filter::Filter,
-    header::Header,
-    ids::*,
-    log_entry::LocalizedLogEntry,
-    pruning_info::PruningInfo,
-    receipt::LocalizedReceipt,
-    trace_filter::Filter as TraceFilter,
-    transaction::{self, Action, LocalizedTransaction, SignedTransaction, TypedTxId},
-    BlockNumber,
-};
 use vm::LastHashes;
 
-use crate::block::{ClosedBlock, OpenBlock, SealedBlock};
-use crate::client::Mode;
-use crate::engines::EthEngine;
-use crate::error::{Error, EthcoreResult};
-use crate::executed::CallError;
-use crate::executive::Executed;
-use crate::state::StateInfo;
-use crate::trace::LocalizedTrace;
-use crate::verification::queue::{kind::blocks::Unverified, QueueInfo as BlockQueueInfo};
+use crate::{
+    block::{ClosedBlock, OpenBlock, SealedBlock},
+    client::Mode,
+    engines::EthEngine,
+    error::{Error, EthcoreResult},
+    executed::CallError,
+    executive::Executed,
+    state::StateInfo,
+    trace::LocalizedTrace,
+    verification::queue::{QueueInfo as BlockQueueInfo, kind::blocks::Unverified},
+};
 
 /// State information to be used during client query
 pub enum StateOrBlock {

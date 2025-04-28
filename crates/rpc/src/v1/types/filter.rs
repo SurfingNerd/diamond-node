@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
+use crate::types::{filter::Filter as EthFilter, ids::BlockId};
 use ethereum_types::{H160, H256};
 use jsonrpc_core::Error as RpcError;
 use serde::{
-    de::{DeserializeOwned, Error},
     Deserialize, Deserializer, Serialize, Serializer,
+    de::{DeserializeOwned, Error},
 };
-use serde_json::{from_value, Value};
-use crate::types::{filter::Filter as EthFilter, ids::BlockId};
+use serde_json::{Value, from_value};
 
 use crate::v1::{
     helpers::errors::invalid_params,
@@ -174,11 +174,13 @@ impl Serialize for FilterChanges {
 #[cfg(test)]
 mod tests {
     use super::{Filter, Topic, VariadicValue};
+    use crate::{
+        types::{filter::Filter as EthFilter, ids::BlockId},
+        v1::types::BlockNumber,
+    };
     use ethereum_types::H256;
     use serde_json;
     use std::str::FromStr;
-    use crate::types::{filter::Filter as EthFilter, ids::BlockId};
-    use crate::v1::types::BlockNumber;
 
     #[test]
     fn topic_deserialization() {
@@ -257,10 +259,12 @@ mod tests {
                 address: Some(vec![]),
                 topics: vec![
                     None,
-                    Some(vec![H256::from_str(
-                        "000000000000000000000000a94f5374fce5edbc8e2a8697c15331677e6ebf0b"
-                    )
-                    .unwrap()]),
+                    Some(vec![
+                        H256::from_str(
+                            "000000000000000000000000a94f5374fce5edbc8e2a8697c15331677e6ebf0b"
+                        )
+                        .unwrap()
+                    ]),
                     None,
                     None,
                 ],

@@ -15,7 +15,7 @@
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
 //! Eth rpc interface.
-use ethereum_types::{H160, H256, H64, U256, U64};
+use ethereum_types::{H64, H160, H256, U64, U256};
 use jsonrpc_core::{BoxFuture, Result};
 use jsonrpc_derive::rpc;
 
@@ -64,7 +64,7 @@ pub trait Eth {
     /// Returns transaction fee history.
     #[rpc(name = "eth_feeHistory")]
     fn fee_history(&self, _: U256, _: BlockNumber, _: Option<Vec<f64>>)
-        -> BoxFuture<EthFeeHistory>;
+    -> BoxFuture<EthFeeHistory>;
 
     /// Returns accounts list.
     #[rpc(name = "eth_accounts")]

@@ -17,7 +17,7 @@
 //! Disk-backed `HashDB` implementation.
 
 use std::{
-    collections::{hash_map::Entry, HashMap},
+    collections::{HashMap, hash_map::Entry},
     io,
     sync::Arc,
 };
@@ -28,7 +28,7 @@ use ethereum_types::H256;
 use hash_db::HashDB;
 use keccak_hasher::KeccakHasher;
 use memory_db::*;
-use rlp::{decode, encode, Decodable, DecoderError, Encodable, Rlp, RlpStream};
+use rlp::{Decodable, DecoderError, Encodable, Rlp, RlpStream, decode, encode};
 
 /// Implementation of the `HashDB` trait for a disk-backed database with a memory overlay.
 ///

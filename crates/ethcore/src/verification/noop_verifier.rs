@@ -16,12 +16,9 @@
 
 //! No-op verifier.
 
-use super::{verification, Verifier};
+use super::{Verifier, verification};
+use crate::{client::BlockInfo, engines::EthEngine, error::Error, types::header::Header};
 use call_contract::CallContract;
-use crate::client::BlockInfo;
-use crate::engines::EthEngine;
-use crate::error::Error;
-use crate::types::header::Header;
 
 /// A no-op verifier -- this will verify everything it's given immediately.
 #[allow(dead_code)]

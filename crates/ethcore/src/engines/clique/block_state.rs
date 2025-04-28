@@ -20,18 +20,20 @@ use std::{
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
-use crate::engines::{
-    clique::{
-        util::{extract_signers, recover_creator},
-        VoteType, DIFF_INTURN, DIFF_NOTURN, NULL_AUTHOR, SIGNING_DELAY_NOTURN_MS,
+use crate::{
+    engines::{
+        EngineError,
+        clique::{
+            DIFF_INTURN, DIFF_NOTURN, NULL_AUTHOR, SIGNING_DELAY_NOTURN_MS, VoteType,
+            util::{extract_signers, recover_creator},
+        },
     },
-    EngineError,
+    error::{BlockError, Error},
+    types::{BlockNumber, header::Header},
 };
-use crate::error::{BlockError, Error};
 use ethereum_types::{Address, H64};
 use rand::Rng;
 use time_utils::CheckedSystemTime;
-use crate::types::{header::Header, BlockNumber};
 use unexpected::Mismatch;
 
 /// Type that keeps track of the state for a given vote

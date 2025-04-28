@@ -16,23 +16,23 @@
 
 //! Simple Client used for EVM tests.
 
-use crate::client;
+use crate::{
+    client, executive,
+    factory::{self, Factories},
+    spec, trace,
+    types::{log_entry, receipt, transaction},
+};
 use db;
 use ethereum_types::{H160, H256, U256};
 use ethtrie;
 use evm::{FinalizationResult, VMType};
-use crate::executive;
-use crate::factory::{self, Factories};
 use journaldb;
 use kvdb::{self, KeyValueDB};
 use pod_state;
-use crate::spec;
 use state;
 use state_db;
 use std::{fmt, sync::Arc};
-use crate::trace;
 use trie;
-use crate::types::{log_entry, receipt, transaction};
 use vm::{self, ActionParams};
 
 /// EVM test Error.

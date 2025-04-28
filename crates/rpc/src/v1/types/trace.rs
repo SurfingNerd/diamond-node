@@ -16,14 +16,14 @@
 
 use std::collections::BTreeMap;
 
+use crate::types::{account_diff, state_diff};
 use ethcore::{
     client::Executed,
     trace as et,
-    trace::{trace, FlatTrace, LocalizedTrace as EthLocalizedTrace, TraceError},
+    trace::{FlatTrace, LocalizedTrace as EthLocalizedTrace, TraceError, trace},
 };
 use ethereum_types::{H160, H256, U256};
-use serde::{ser::SerializeStruct, Serialize, Serializer};
-use crate::types::{account_diff, state_diff};
+use serde::{Serialize, Serializer, ser::SerializeStruct};
 use vm;
 
 use crate::v1::types::Bytes;
@@ -678,11 +678,11 @@ impl From<(H256, Executed)> for TraceResultsWithTransactionHash {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::v1::types::Bytes;
     use ethcore::trace::TraceError;
     use ethereum_types::{Address, H256};
     use serde_json;
     use std::collections::BTreeMap;
-    use crate::v1::types::Bytes;
 
     #[test]
     fn should_serialize_trace_results() {

@@ -29,7 +29,7 @@ pub mod stratum;
 pub use self::miner::{Author, AuthoringParams, Miner, MinerOptions, Penalization, PendingSet};
 pub use ethcore_miner::{
     local_accounts::LocalAccounts,
-    pool::{transaction_filter::TransactionFilter, PendingOrdering},
+    pool::{PendingOrdering, transaction_filter::TransactionFilter},
 };
 
 use std::{
@@ -37,25 +37,27 @@ use std::{
     sync::Arc,
 };
 
-use bytes::Bytes;
-use ethcore_miner::pool::{local_transactions, QueueStatus, VerifiedTransaction};
-use ethereum_types::{Address, H256, U256};
 use crate::types::{
+    BlockNumber,
     block::Block,
     header::Header,
     receipt::RichReceipt,
     transaction::{self, PendingTransaction, SignedTransaction, UnverifiedTransaction},
-    BlockNumber,
 };
+use bytes::Bytes;
+use ethcore_miner::pool::{QueueStatus, VerifiedTransaction, local_transactions};
+use ethereum_types::{Address, H256, U256};
 
-use crate::block::SealedBlock;
-use call_contract::{CallContract, RegistryInfo};
-use crate::client::{
-    traits::ForceUpdateSealing, AccountData, BlockChain, BlockProducer, Nonce, ScheduleInfo,
-    SealedBlockImporter,
+use crate::{
+    block::SealedBlock,
+    client::{
+        AccountData, BlockChain, BlockProducer, Nonce, ScheduleInfo, SealedBlockImporter,
+        traits::ForceUpdateSealing,
+    },
+    error::Error,
+    state::StateInfo,
 };
-use crate::error::Error;
-use crate::state::StateInfo;
+use call_contract::{CallContract, RegistryInfo};
 
 /// Provides methods to verify incoming external transactions
 pub trait TransactionVerifierClient: Send + Sync

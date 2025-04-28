@@ -22,24 +22,28 @@
 use super::{ChunkSink, Rebuilder, SnapshotComponents};
 
 use std::sync::{
-    atomic::{AtomicBool, Ordering},
     Arc,
+    atomic::{AtomicBool, Ordering},
 };
 
-use crate::engines::{EpochTransition, EpochVerifier, EthEngine};
-use crate::machine::EthereumMachine;
-use crate::snapshot::{Error, ManifestData, Progress};
+use crate::{
+    engines::{EpochTransition, EpochVerifier, EthEngine},
+    machine::EthereumMachine,
+    snapshot::{Error, ManifestData, Progress},
+};
 
-use crate::blockchain::{BlockChain, BlockChainDB, BlockProvider};
+use crate::{
+    blockchain::{BlockChain, BlockChainDB, BlockProvider},
+    types::{
+        BlockNumber, encoded, header::Header, ids::BlockId, receipt::TypedReceipt,
+        transaction::TypedTransaction,
+    },
+};
 use bytes::Bytes;
 use db::KeyValueDB;
 use ethereum_types::{H256, U256};
 use itertools::{Itertools, Position};
 use rlp::{Rlp, RlpStream};
-use crate::types::{
-    encoded, header::Header, ids::BlockId, receipt::TypedReceipt, transaction::TypedTransaction,
-    BlockNumber,
-};
 
 /// Snapshot creation and restoration for PoA chains.
 /// Chunk format:
@@ -402,7 +406,7 @@ impl Rebuilder for ChunkRebuilder {
             None => {
                 return Err(
                     Error::WrongChunkFormat("Warp target block not included.".into()).into(),
-                )
+                );
             }
         };
 

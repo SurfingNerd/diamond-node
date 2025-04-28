@@ -15,12 +15,11 @@
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
 use parity_crypto::{
-    publickey::{KeyPair, Secret},
     Keccak256,
+    publickey::{KeyPair, Secret},
 };
 
-use crate::parity_wordlist;
-use crate::WordlistError;
+use crate::{WordlistError, parity_wordlist};
 /// Simple brainwallet.
 pub struct Brain(String);
 

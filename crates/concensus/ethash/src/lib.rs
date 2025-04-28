@@ -52,7 +52,7 @@ mod progpow;
 
 pub use cache::{NodeCacheBuilder, OptimizeFor};
 use compute::Light;
-pub use compute::{quick_get_difficulty, slow_hash_block_number, ProofOfWork};
+pub use compute::{ProofOfWork, quick_get_difficulty, slow_hash_block_number};
 use ethereum_types::{BigEndianHash, U256, U512};
 use keccak::H256;
 use parking_lot::Mutex;

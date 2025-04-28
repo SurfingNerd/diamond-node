@@ -36,24 +36,26 @@ use std::{cmp, collections::HashSet, ops, sync::Arc};
 use bytes::Bytes;
 use ethereum_types::{Address, Bloom, H256, U256};
 
-use crate::engines::EthEngine;
-use crate::error::{BlockError, Error};
-use crate::factory::Factories;
-use crate::state::State;
-use crate::state_db::StateDB;
-use crate::trace::Tracing;
+use crate::{
+    engines::EthEngine,
+    error::{BlockError, Error},
+    factory::Factories,
+    state::State,
+    state_db::StateDB,
+    trace::Tracing,
+    verification::PreverifiedBlock,
+};
 use triehash::ordered_trie_root;
 use unexpected::{Mismatch, OutOfBounds};
-use crate::verification::PreverifiedBlock;
 use vm::{EnvInfo, LastHashes};
 
-use hash::keccak;
-use rlp::{encode_list, RlpStream};
 use crate::types::{
     header::{ExtendedHeader, Header},
     receipt::{TransactionOutcome, TypedReceipt},
     transaction::{Error as TransactionError, SignedTransaction},
 };
+use hash::keccak;
+use rlp::{RlpStream, encode_list};
 
 /// Block that is ready for transactions to be added.
 ///
@@ -627,15 +629,17 @@ pub fn enact_verified(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::engines::EthEngine;
+    use crate::{
+        engines::EthEngine,
+        factory::Factories,
+        types::{header::Header, transaction::SignedTransaction, view, views::BlockView},
+        verification::queue::kind::blocks::Unverified,
+    };
     use error::Error;
     use ethereum_types::Address;
-    use crate::factory::Factories;
     use state_db::StateDB;
     use std::sync::Arc;
     use test_helpers::get_temp_state_db;
-    use crate::types::{header::Header, transaction::SignedTransaction, view, views::BlockView};
-    use crate::verification::queue::kind::blocks::Unverified;
     use vm::LastHashes;
 
     /// Enact the block given by `block_bytes` using `engine` on the database `db` with given `parent` block header

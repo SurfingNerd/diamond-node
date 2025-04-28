@@ -22,19 +22,19 @@ use std::{
 };
 
 use jsonrpc_core::{
-    futures::{self, Future, IntoFuture},
     Error, Result,
+    futures::{self, Future, IntoFuture},
 };
 use jsonrpc_pubsub::{
-    typed::{Sink, Subscriber},
     SubscriptionId,
+    typed::{Sink, Subscriber},
 };
 
 use crate::v1::{
-    helpers::{errors, limit_logs, Subscribers},
+    helpers::{Subscribers, errors, limit_logs},
     metadata::Metadata,
     traits::EthPubSub,
-    types::{pubsub, Header, Log, RichHeader},
+    types::{Header, Log, RichHeader, pubsub},
 };
 
 use ethcore::client::{

@@ -19,10 +19,12 @@ use ethereum_types::{Address, H256};
 use parity_util_mem::MallocSizeOf;
 
 use super::{SystemCall, ValidatorSet};
+use crate::{
+    error::Error as EthcoreError,
+    machine::{AuxiliaryData, Call, EthereumMachine},
+    types::{BlockNumber, header::Header},
+};
 use bytes::Bytes;
-use crate::error::Error as EthcoreError;
-use crate::machine::{AuxiliaryData, Call, EthereumMachine};
-use crate::types::{header::Header, BlockNumber};
 
 /// Validator set containing a known set of addresses.
 #[derive(Clone, Debug, PartialEq, Eq, Default, MallocSizeOf)]

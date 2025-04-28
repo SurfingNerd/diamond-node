@@ -3,26 +3,34 @@ use super::{
     hbbft_early_epoch_end_manager::HbbftEarlyEpochEndManager, hbbft_engine_cache::HbbftEngineCache,
 };
 use crate::{
-    client::BlockChainClient,
-    engines::hbbft::{
-        contracts::random_hbbft::set_current_seed_tx_raw, hbbft_message_memorium::BadSealReason,
-        hbbft_peers_management::HbbftPeersManagement,
+    block::ExecutedBlock,
+    client::{
+        BlockChainClient,
+        traits::{EngineClient, ForceUpdateSealing},
+    },
+    engines::{
+        Engine, EngineError, ForkChoice, Seal, SealingState, default_system_or_code_call,
+        hbbft::{
+            contracts::random_hbbft::set_current_seed_tx_raw,
+            hbbft_message_memorium::BadSealReason, hbbft_peers_management::HbbftPeersManagement,
+        },
+        signer::EngineSigner,
+    },
+    error::{BlockError, Error},
+    io::{IoContext, IoHandler, IoService, TimerToken},
+    machine::EthereumMachine,
+    types::{
+        BlockNumber,
+        header::{ExtendedHeader, Header},
+        ids::BlockId,
+        transaction::{SignedTransaction, TypedTransaction},
     },
 };
-use crate::block::ExecutedBlock;
-use crate::client::traits::{EngineClient, ForceUpdateSealing};
 use crypto::publickey::Signature;
-use crate::engines::{
-    default_system_or_code_call, signer::EngineSigner, Engine, EngineError, ForkChoice, Seal,
-    SealingState,
-};
-use crate::error::{BlockError, Error};
-use ethereum_types::{Address, Public, H256, H512, U256};
+use ethereum_types::{Address, H256, H512, Public, U256};
 use ethjson::spec::HbbftParams;
 use hbbft::{NetworkInfo, Target};
-use crate::io::{IoContext, IoHandler, IoService, TimerToken};
 use itertools::Itertools;
-use crate::machine::EthereumMachine;
 use parking_lot::{Mutex, RwLock};
 use rlp;
 use rmp_serde;
@@ -33,27 +41,21 @@ use std::{
     collections::BTreeMap,
     convert::TryFrom,
     ops::BitXor,
-    sync::{atomic::AtomicBool, Arc, Weak},
+    sync::{Arc, Weak, atomic::AtomicBool},
     time::{Duration, Instant},
-};
-use crate::types::{
-    header::{ExtendedHeader, Header},
-    ids::BlockId,
-    transaction::{SignedTransaction, TypedTransaction},
-    BlockNumber,
 };
 
 use super::{
+    NodeId,
     contracts::{
         keygen_history::{all_parts_acks_available, initialize_synckeygen},
         staking::start_time_of_next_phase_transition,
-        validator_set::{get_pending_validators, is_pending_validator, ValidatorType},
+        validator_set::{ValidatorType, get_pending_validators, is_pending_validator},
     },
     contribution::{unix_now_millis, unix_now_secs},
     hbbft_state::{Batch, HbMessage, HbbftState, HoneyBadgerStep},
     keygen_transactions::KeygenTransactionSender,
     sealing::{self, RlpSig, Sealing},
-    NodeId,
 };
 use crate::engines::hbbft::{
     contracts::validator_set::{
@@ -227,7 +229,10 @@ impl TransitionHandler {
                 }
 
                 // lock the client and signal shutdown.
-                warn!("shutdown-on-missing-block-import: Detected stalled block import. no import for {duration_since_last_block_import}. last known import: {:?} now: {:?} Demanding shut down of hbbft engine.", last_known_block_import, now);
+                warn!(
+                    "shutdown-on-missing-block-import: Detected stalled block import. no import for {duration_since_last_block_import}. last known import: {:?} now: {:?} Demanding shut down of hbbft engine.",
+                    last_known_block_import, now
+                );
 
                 // if auto shutdown at missing block production (or import) is configured.
                 // ... we need to check if enough time has passed since the last block was imported.
@@ -235,7 +240,9 @@ impl TransitionHandler {
                     if let Some(c) = weak.upgrade() {
                         c.demand_shutdown();
                     } else {
-                        error!("shutdown-on-missing-block-import: Error during Shutdown: could not upgrade weak reference.");
+                        error!(
+                            "shutdown-on-missing-block-import: Error during Shutdown: could not upgrade weak reference."
+                        );
                     }
                 } else {
                     error!(
@@ -1101,7 +1108,10 @@ impl HoneyBadgerBFT {
                         }
                         Err(call_error) => {
                             error!(target: "engine", "unable to ask for corresponding staking address for given mining address: {:?}", call_error);
-                            let message = format!("unable to ask for corresponding staking address for given mining address: {:?}", call_error);
+                            let message = format!(
+                                "unable to ask for corresponding staking address for given mining address: {:?}",
+                                call_error
+                            );
                             return Err(message.into());
                         }
                     };
@@ -1711,15 +1721,15 @@ impl Engine<EthereumMachine> for HoneyBadgerBFT {
 #[cfg(test)]
 mod tests {
     use super::super::{contribution::Contribution, test::create_transactions::create_transaction};
+    use crate::types::transaction::SignedTransaction;
     use crypto::publickey::{Generator, Random};
     use ethereum_types::U256;
     use hbbft::{
-        honey_badger::{HoneyBadger, HoneyBadgerBuilder},
         NetworkInfo,
+        honey_badger::{HoneyBadger, HoneyBadgerBuilder},
     };
     use rand;
     use std::sync::Arc;
-    use crate::types::transaction::SignedTransaction;
 
     #[test]
     fn test_single_contribution() {

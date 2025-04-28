@@ -16,12 +16,12 @@
 
 use super::helpers::*;
 use crate::chain::SyncState;
+use SyncConfig;
+use WarpSync;
 use ethcore::client::{
     BlockChainClient, BlockId, BlockInfo, ChainInfo, EachBlockWith, TestBlockChainClient,
 };
 use std::sync::Arc;
-use SyncConfig;
-use WarpSync;
 
 #[test]
 fn two_peers() {

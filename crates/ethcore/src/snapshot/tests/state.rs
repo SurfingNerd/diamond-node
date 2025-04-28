@@ -18,16 +18,17 @@
 
 extern crate rand_xorshift;
 
-use hash::{keccak, KECCAK_NULL_RLP};
-use std::sync::{atomic::AtomicBool, Arc};
+use hash::{KECCAK_NULL_RLP, keccak};
+use std::sync::{Arc, atomic::AtomicBool};
 
 use super::helpers::StateProducer;
-use crate::snapshot::{
-    account, chunk_state,
-    io::{PackedReader, PackedWriter, SnapshotReader, SnapshotWriter},
-    Error as SnapshotError, Progress, StateRebuilder, SNAPSHOT_SUBPARTS,
+use crate::{
+    snapshot::{
+        Error as SnapshotError, Progress, SNAPSHOT_SUBPARTS, StateRebuilder, account, chunk_state,
+        io::{PackedReader, PackedWriter, SnapshotReader, SnapshotWriter},
+    },
+    types::basic_account::BasicAccount,
 };
-use crate::types::basic_account::BasicAccount;
 
 use error::{Error, ErrorKind};
 

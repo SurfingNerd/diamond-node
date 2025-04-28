@@ -19,8 +19,8 @@ use std::{
     fmt::{Debug, Error as FmtError, Formatter},
     io::{BufRead, BufReader},
     sync::{
-        atomic::{AtomicUsize, Ordering},
         Arc,
+        atomic::{AtomicUsize, Ordering},
     },
     thread, time,
 };
@@ -38,12 +38,12 @@ use crate::ws::ws::{
 use serde::de::DeserializeOwned;
 use serde_json::{self as json, Error as JsonError, Value as JsonValue};
 
-use futures::{done, oneshot, Canceled, Complete, Future};
+use futures::{Canceled, Complete, Future, done, oneshot};
 
 use jsonrpc_core::{
+    Error as JsonRpcError, Id, Params, Version,
     request::MethodCall,
     response::{Failure, Output, Success},
-    Error as JsonRpcError, Id, Params, Version,
 };
 
 use crate::BoxFuture;

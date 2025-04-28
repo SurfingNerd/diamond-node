@@ -22,30 +22,32 @@ use std::{
     sync::Arc,
 };
 
-use ethereum_types::{Address, H256, U256};
 use crate::types::{
+    BlockNumber,
     header::Header,
     transaction::{
-        self, SignedTransaction, TypedTransaction, UnverifiedTransaction, SYSTEM_ADDRESS,
-        UNSIGNED_SENDER,
+        self, SYSTEM_ADDRESS, SignedTransaction, TypedTransaction, UNSIGNED_SENDER,
+        UnverifiedTransaction,
     },
-    BlockNumber,
 };
+use ethereum_types::{Address, H256, U256};
 use vm::{
     AccessList, ActionParams, ActionValue, CallType, CreateContractAddress, EnvInfo, ParamsType,
     Schedule,
 };
 
-use crate::block::ExecutedBlock;
+use crate::{
+    block::ExecutedBlock,
+    client::BlockInfo,
+    error::Error,
+    executive::Executive,
+    spec::CommonParams,
+    state::{CleanupMode, Substate},
+    trace::{NoopTracer, NoopVMTracer},
+    tx_filter::TransactionFilter,
+};
 use builtin::Builtin;
 use call_contract::CallContract;
-use crate::client::BlockInfo;
-use crate::error::Error;
-use crate::executive::Executive;
-use crate::spec::CommonParams;
-use crate::state::{CleanupMode, Substate};
-use crate::trace::{NoopTracer, NoopVMTracer};
-use crate::tx_filter::TransactionFilter;
 
 /// Ethash-specific extensions.
 #[derive(Debug, Clone)]
@@ -452,10 +454,10 @@ impl EthereumMachine {
 
         match tx.tx_type() {
             transaction::TypedTxId::AccessList if !schedule.eip2930 => {
-                return Err(transaction::Error::TransactionTypeNotEnabled)
+                return Err(transaction::Error::TransactionTypeNotEnabled);
             }
             transaction::TypedTxId::EIP1559Transaction if !schedule.eip1559 => {
-                return Err(transaction::Error::TransactionTypeNotEnabled)
+                return Err(transaction::Error::TransactionTypeNotEnabled);
             }
             _ => (),
         };

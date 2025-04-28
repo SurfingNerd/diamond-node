@@ -15,14 +15,16 @@
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
 use super::test_common::*;
-use crate::client::EvmTestClient;
+use crate::{
+    client::EvmTestClient,
+    transaction_ext::Transaction,
+    types::{
+        header::Header,
+        transaction::{TypedTransaction, UnverifiedTransaction},
+    },
+};
 use ethjson;
 use std::path::Path;
-use crate::transaction_ext::Transaction;
-use crate::types::{
-    header::Header,
-    transaction::{TypedTransaction, UnverifiedTransaction},
-};
 
 pub fn json_transaction_test<H: FnMut(&str, HookType)>(
     path: &Path,

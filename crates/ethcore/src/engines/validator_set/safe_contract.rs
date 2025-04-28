@@ -20,8 +20,14 @@ use std::{
     sync::{Arc, Weak},
 };
 
+use crate::{
+    error::{Error as EthcoreError, ErrorKind as EthcoreErrorKind},
+    types::{
+        BlockNumber, header::Header, ids::BlockId, log_entry::LogEntry, receipt::TypedReceipt,
+        transaction,
+    },
+};
 use bytes::Bytes;
-use crate::error::{Error as EthcoreError, ErrorKind as EthcoreErrorKind};
 use ethabi::FunctionOutputDecoder;
 use ethereum_types::{Address, Bloom, H256, U256};
 use hash::keccak;
@@ -29,15 +35,13 @@ use kvdb::DBValue;
 use memory_cache::MemoryLruCache;
 use parking_lot::{Mutex, RwLock};
 use rlp::{Rlp, RlpStream};
-use crate::types::{
-    header::Header, ids::BlockId, log_entry::LogEntry, receipt::TypedReceipt, transaction,
-    BlockNumber,
-};
 use unexpected::Mismatch;
 
-use super::{simple_list::SimpleList, SystemCall, ValidatorSet};
-use crate::client::{traits::TransactionRequest, BlockChainClient, EngineClient};
-use crate::machine::{AuxiliaryData, AuxiliaryRequest, Call, EthereumMachine};
+use super::{SystemCall, ValidatorSet, simple_list::SimpleList};
+use crate::{
+    client::{BlockChainClient, EngineClient, traits::TransactionRequest},
+    machine::{AuxiliaryData, AuxiliaryRequest, Call, EthereumMachine},
+};
 
 use_contract!(validator_set, "res/contracts/validator_set.json");
 
@@ -525,7 +529,9 @@ impl ValidatorSet for ValidatorSafeContract {
                 contract_address: self.contract_address,
                 header: header.clone(),
             });
-            return crate::engines::EpochChange::Yes(crate::engines::Proof::WithState(state_proof as Arc<_>));
+            return crate::engines::EpochChange::Yes(crate::engines::Proof::WithState(
+                state_proof as Arc<_>,
+            ));
         }
 
         // otherwise, we're checking for logs.
@@ -713,25 +719,27 @@ impl ReportQueue {
 
 #[cfg(test)]
 mod tests {
-    use super::{super::ValidatorSet, ValidatorSafeContract, EVENT_NAME_HASH};
-    use accounts::AccountProvider;
-    use crate::client::{
-        traits::{EngineClient, ForceUpdateSealing},
-        BlockInfo, ChainInfo, ImportBlock,
+    use super::{super::ValidatorSet, EVENT_NAME_HASH, ValidatorSafeContract};
+    use crate::{
+        client::{
+            BlockInfo, ChainInfo, ImportBlock,
+            traits::{EngineClient, ForceUpdateSealing},
+        },
+        spec::Spec,
+        types::{
+            ids::BlockId,
+            transaction::{Action, Transaction, TypedTransaction},
+        },
+        verification::queue::kind::blocks::Unverified,
     };
+    use accounts::AccountProvider;
     use crypto::publickey::Secret;
     use ethereum_types::Address;
     use hash::keccak;
     use miner::{self, MinerService};
     use rustc_hex::FromHex;
-    use crate::spec::Spec;
     use std::sync::Arc;
     use test_helpers::generate_dummy_client_with_spec;
-    use crate::types::{
-        ids::BlockId,
-        transaction::{Action, Transaction, TypedTransaction},
-    };
-    use crate::verification::queue::kind::blocks::Unverified;
 
     #[test]
     fn fetches_validators() {
@@ -740,18 +748,22 @@ mod tests {
         let vc = Arc::new(ValidatorSafeContract::new(addr, None));
         vc.register_client(Arc::downgrade(&client) as _);
         let last_hash = client.best_block_header().hash();
-        assert!(vc.contains(
-            &last_hash,
-            &"7d577a597b2742b498cb5cf0c26cdcd726d39e6e"
-                .parse::<Address>()
-                .unwrap()
-        ));
-        assert!(vc.contains(
-            &last_hash,
-            &"82a978b3f5962a5b0957d9ee9eef472ee55b42f1"
-                .parse::<Address>()
-                .unwrap()
-        ));
+        assert!(
+            vc.contains(
+                &last_hash,
+                &"7d577a597b2742b498cb5cf0c26cdcd726d39e6e"
+                    .parse::<Address>()
+                    .unwrap()
+            )
+        );
+        assert!(
+            vc.contains(
+                &last_hash,
+                &"82a978b3f5962a5b0957d9ee9eef472ee55b42f1"
+                    .parse::<Address>()
+                    .unwrap()
+            )
+        );
     }
 
     #[test]
@@ -856,9 +868,11 @@ mod tests {
 
     #[test]
     fn detects_bloom() {
-        use crate::engines::EpochChange;
-        use crate::machine::AuxiliaryRequest;
-        use crate::types::{header::Header, log_entry::LogEntry};
+        use crate::{
+            engines::EpochChange,
+            machine::AuxiliaryRequest,
+            types::{header::Header, log_entry::LogEntry},
+        };
 
         let client = generate_dummy_client_with_spec(Spec::new_validator_safe_contract);
         let engine = client.engine();
@@ -896,8 +910,10 @@ mod tests {
 
     #[test]
     fn initial_contract_is_signal() {
-        use crate::engines::{EpochChange, Proof};
-        use crate::types::header::Header;
+        use crate::{
+            engines::{EpochChange, Proof},
+            types::header::Header,
+        };
 
         let client = generate_dummy_client_with_spec(Spec::new_validator_safe_contract);
         let engine = client.engine();

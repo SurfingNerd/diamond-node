@@ -17,7 +17,7 @@
 use std::{
     any::Any,
     str::FromStr,
-    sync::{atomic, Arc, Weak},
+    sync::{Arc, Weak, atomic},
     thread,
     time::{Duration, Instant},
 };
@@ -28,12 +28,12 @@ use crate::{
     db,
     helpers::{execute_upgrades, passwords_from_files, to_client_config},
     informant::{FullNodeInformantData, Informant},
-    metrics::{start_prometheus_metrics, MetricsConfiguration},
+    metrics::{MetricsConfiguration, start_prometheus_metrics},
     miner::{external::ExternalMiner, work_notify::WorkPoster},
     modules,
     params::{
-        fatdb_switch_to_bool, mode_switch_to_bool, tracing_switch_to_bool, AccountsConfig,
-        GasPricerConfig, MinerExtras, Pruning, SpecType, Switch,
+        AccountsConfig, GasPricerConfig, MinerExtras, Pruning, SpecType, Switch,
+        fatdb_switch_to_bool, mode_switch_to_bool, tracing_switch_to_bool,
     },
     reserved_peer_management::ReservedPeersWrapper,
     rpc, rpc_apis, secretstore, signer,
@@ -47,7 +47,7 @@ use ethcore::{
         BlockChainClient, BlockInfo, ChainSyncing, Client, DatabaseCompactionProfile, Mode, VMType,
     },
     exit::ShutdownManager,
-    miner::{self, stratum, Miner, MinerOptions, MinerService},
+    miner::{self, Miner, MinerOptions, MinerService, stratum},
     snapshot::{self, SnapshotConfiguration},
     verification::queue::VerifierSettings,
 };
@@ -56,7 +56,7 @@ use ethcore_service::ClientService;
 use ethereum_types::{H256, U64};
 use journaldb::Algorithm;
 use node_filter::NodeFilter;
-use parity_rpc::{informant, is_major_importing, NetworkSettings};
+use parity_rpc::{NetworkSettings, informant, is_major_importing};
 use parity_runtime::Runtime;
 use parity_version::version;
 

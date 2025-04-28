@@ -16,24 +16,26 @@
 
 //! Client tests of tracing
 
-use crate::block::*;
-use crate::client::{BlockChainClient, Client, ClientConfig, *};
+use crate::{
+    block::*,
+    client::{BlockChainClient, Client, ClientConfig, *},
+    io::*,
+    spec::*,
+    trace::{LocalizedTrace, RewardType, trace::Action::Reward},
+    types::{
+        header::Header,
+        transaction::{Action, Transaction, TypedTransaction},
+        view,
+        views::BlockView,
+    },
+    verification::queue::kind::blocks::Unverified,
+};
 use crypto::publickey::KeyPair;
 use ethereum_types::{Address, U256};
 use hash::keccak;
-use crate::io::*;
 use miner::Miner;
-use crate::spec::*;
 use std::{str::FromStr, sync::Arc};
 use test_helpers::{self, get_temp_state_db};
-use crate::trace::{trace::Action::Reward, LocalizedTrace, RewardType};
-use crate::types::{
-    header::Header,
-    transaction::{Action, Transaction, TypedTransaction},
-    view,
-    views::BlockView,
-};
-use crate::verification::queue::kind::blocks::Unverified;
 
 use crate::exit::ShutdownManager;
 

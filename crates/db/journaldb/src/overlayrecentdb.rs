@@ -17,12 +17,13 @@
 //! `JournalDB` over in-memory overlay
 
 use std::{
-    collections::{hash_map::Entry, BTreeMap, HashMap},
+    collections::{BTreeMap, HashMap, hash_map::Entry},
     io,
     sync::Arc,
 };
 
-use super::{error_negatively_reference_hash, JournalDB, DB_PREFIX_LEN, LATEST_ERA_KEY};
+use super::{DB_PREFIX_LEN, JournalDB, LATEST_ERA_KEY, error_negatively_reference_hash};
+use crate::util::DatabaseKey;
 use bytes::Bytes;
 use ethcore_db::{DBTransaction, DBValue, KeyValueDB};
 use ethereum_types::H256;
@@ -32,8 +33,7 @@ use keccak_hasher::KeccakHasher;
 use memory_db::*;
 use parity_util_mem::MallocSizeOf;
 use parking_lot::RwLock;
-use rlp::{decode, encode, Decodable, DecoderError, Encodable, Rlp, RlpStream};
-use crate::util::DatabaseKey;
+use rlp::{Decodable, DecoderError, Encodable, Rlp, RlpStream, decode, encode};
 
 /// Implementation of the `JournalDB` trait for a disk-backed database with a memory overlay
 /// and, possibly, latent-removal semantics.
@@ -569,9 +569,9 @@ impl HashDB<KeccakHasher, DBValue> for OverlayRecentDB {
 mod tests {
 
     use super::*;
+    use JournalDB;
     use hash_db::HashDB;
     use keccak::keccak;
-    use JournalDB;
 
     fn new_db() -> OverlayRecentDB {
         let backing = Arc::new(ethcore_db::InMemoryWithMetrics::create(0));

@@ -21,24 +21,24 @@ use devp2p::PAYLOAD_SOFT_LIMIT;
 #[cfg(test)]
 pub const PAYLOAD_SOFT_LIMIT: usize = 100_000;
 
+use crate::types::{BlockNumber, ids::BlockId};
 use enum_primitive::FromPrimitive;
 use ethereum_types::{H256, H512};
 use network::{self, PeerId};
 use parking_lot::RwLock;
 use rlp::{Rlp, RlpStream};
 use std::cmp;
-use crate::types::{ids::BlockId, BlockNumber};
 
 use crate::sync_io::SyncIo;
 
 use super::{
-    request_id::{prepend_request_id, strip_request_id, RequestId},
+    request_id::{RequestId, prepend_request_id, strip_request_id},
     sync_packet::{PacketInfo, SyncPacket, SyncPacket::*},
 };
 
 use super::{
-    ChainSync, PacketProcessError, RlpResponseResult, SyncHandler, MAX_BODIES_TO_SEND,
-    MAX_HEADERS_TO_SEND, MAX_RECEIPTS_HEADERS_TO_SEND,
+    ChainSync, MAX_BODIES_TO_SEND, MAX_HEADERS_TO_SEND, MAX_RECEIPTS_HEADERS_TO_SEND,
+    PacketProcessError, RlpResponseResult, SyncHandler,
 };
 use crate::chain::MAX_NODE_DATA_TO_SEND;
 use std::borrow::Borrow;
@@ -511,7 +511,10 @@ impl SyncSupplier {
 #[cfg(test)]
 mod test {
     use super::{super::tests::*, *};
-    use crate::blocks::SyncHeader;
+    use crate::{
+        blocks::SyncHeader,
+        tests::{helpers::TestIo, snapshot::TestSnapshotService},
+    };
     use bytes::Bytes;
     use ethcore::{
         client::{BlockChainClient, EachBlockWith, TestBlockChainClient},
@@ -521,7 +524,6 @@ mod test {
     use parking_lot::RwLock;
     use rlp::{Rlp, RlpStream};
     use std::{collections::VecDeque, str::FromStr};
-    use crate::tests::{helpers::TestIo, snapshot::TestSnapshotService};
 
     #[test]
     fn return_block_headers() {

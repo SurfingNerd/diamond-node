@@ -124,10 +124,10 @@ impl txpool::Listener<Transaction> for Logger {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::types::transaction;
     use ethereum_types::H160;
     use parking_lot::Mutex;
     use txpool::Listener;
-    use crate::types::transaction;
 
     #[test]
     fn should_notify_listeners() {

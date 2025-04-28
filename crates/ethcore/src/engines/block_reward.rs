@@ -21,13 +21,15 @@ use ethabi::{self, ParamType};
 use ethereum_types::{Address, H160, U256};
 
 use super::{SystemOrCodeCall, SystemOrCodeCallKind};
-use crate::block::ExecutedBlock;
-use crate::error::Error;
+use crate::{
+    block::ExecutedBlock,
+    error::Error,
+    machine::Machine,
+    trace::{self, ExecutiveTracer, Tracer, Tracing},
+    types::BlockNumber,
+};
 use hash::keccak;
-use crate::machine::Machine;
 use std::sync::Arc;
-use crate::trace::{self, ExecutiveTracer, Tracer, Tracing};
-use crate::types::BlockNumber;
 
 use_contract!(block_reward_contract, "res/contracts/block_reward.json");
 
@@ -195,9 +197,8 @@ pub fn apply_block_rewards<M: Machine>(
 
 #[cfg(test)]
 mod test {
-    use crate::client::PrepareOpenBlock;
+    use crate::{client::PrepareOpenBlock, spec::Spec};
     use ethereum_types::{H160, U256};
-    use crate::spec::Spec;
     use test_helpers::generate_dummy_client_with_spec;
 
     use super::{BlockRewardContract, RewardKind};
@@ -237,10 +238,12 @@ mod test {
         };
 
         // if no beneficiaries are given no rewards are attributed
-        assert!(block_reward_contract
-            .reward(&vec![], &mut call)
-            .unwrap()
-            .is_empty());
+        assert!(
+            block_reward_contract
+                .reward(&vec![], &mut call)
+                .unwrap()
+                .is_empty()
+        );
 
         // the contract rewards (1000 + kind) for each benefactor
         let beneficiaries = vec![

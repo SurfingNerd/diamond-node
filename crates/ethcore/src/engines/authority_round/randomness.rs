@@ -69,10 +69,10 @@
 //! A production implementation of a randomness contract can be found here:
 //! https://github.com/poanetwork/posdao-contracts/blob/4fddb108993d4962951717b49222327f3d94275b/contracts/RandomAuRa.sol
 
-use bytes::Bytes;
-use crypto::publickey::{ecies, Error as CryptoError};
-use derive_more::Display;
 use crate::engines::signer::EngineSigner;
+use bytes::Bytes;
+use crypto::publickey::{Error as CryptoError, ecies};
+use derive_more::Display;
 use ethabi::Hash;
 use ethabi_contract::use_contract;
 use ethereum_types::{Address, H256, U256};

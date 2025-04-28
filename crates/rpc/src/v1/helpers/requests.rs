@@ -15,7 +15,7 @@
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
 use bytes::Bytes;
-use ethereum_types::{Address, H256, U256, U64};
+use ethereum_types::{Address, H256, U64, U256};
 
 use crate::v1::types::{AccessList, Origin, TransactionCondition};
 

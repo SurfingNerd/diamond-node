@@ -40,9 +40,9 @@
 
 use std::{cmp, collections::HashMap};
 
+use crate::types::transaction;
 use ethereum_types::{H160 as Address, U256};
 use txpool::{self, VerifiedTransaction as PoolVerifiedTransaction};
-use crate::types::transaction;
 
 use super::{client::NonceClient, VerifiedTransaction};
 

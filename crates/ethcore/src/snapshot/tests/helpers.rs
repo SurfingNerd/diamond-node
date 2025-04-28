@@ -22,15 +22,17 @@ extern crate trie_standardmap;
 use hash::KECCAK_NULL_RLP;
 use std::sync::Arc;
 
-use crate::account_db::AccountDBMut;
-use crate::blockchain::{BlockChain, BlockChainDB};
-use crate::client::{ChainInfo, Client};
-use crate::engines::EthEngine;
-use crate::snapshot::{
-    io::{PackedReader, PackedWriter, SnapshotReader},
-    StateRebuilder,
+use crate::{
+    account_db::AccountDBMut,
+    blockchain::{BlockChain, BlockChainDB},
+    client::{ChainInfo, Client},
+    engines::EthEngine,
+    snapshot::{
+        StateRebuilder,
+        io::{PackedReader, PackedWriter, SnapshotReader},
+    },
+    types::basic_account::BasicAccount,
 };
-use crate::types::basic_account::BasicAccount;
 
 use rand::Rng;
 use tempdir::TempDir;

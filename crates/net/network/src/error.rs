@@ -18,8 +18,8 @@
 // https://github.com/openethereum/openethereum/issues/10302
 #![allow(deprecated)]
 
-use crypto;
 use crate::io::IoError;
+use crypto;
 use libc::{EMFILE, ENFILE};
 use rlp;
 use snappy;

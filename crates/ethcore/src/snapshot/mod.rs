@@ -19,20 +19,22 @@
 //! Documentation of the format can be found at
 //! https://openethereum.github.io/Warp-Sync-Snapshot-Format
 
-use hash::{keccak, KECCAK_EMPTY, KECCAK_NULL_RLP};
+use hash::{KECCAK_EMPTY, KECCAK_NULL_RLP, keccak};
 use std::{
     cmp,
     collections::{HashMap, HashSet},
     sync::{
-        atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering},
         Arc,
+        atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering},
     },
 };
 
-use crate::account_db::{AccountDB, AccountDBMut};
-use crate::blockchain::{BlockChain, BlockProvider};
-use crate::engines::EthEngine;
-use crate::types::{header::Header, ids::BlockId};
+use crate::{
+    account_db::{AccountDB, AccountDBMut},
+    blockchain::{BlockChain, BlockProvider},
+    engines::EthEngine,
+    types::{header::Header, ids::BlockId},
+};
 
 use bytes::Bytes;
 use db::{DBValue, KeyValueDB};
@@ -50,7 +52,7 @@ use trie::{Trie, TrieMut};
 use self::io::SnapshotWriter;
 
 use crossbeam_utils::thread;
-use rand::{rngs::OsRng, Rng};
+use rand::{Rng, rngs::OsRng};
 
 pub use self::error::Error;
 
@@ -513,7 +515,11 @@ impl StateRebuilder {
     /// Finalize the restoration. Check for accounts missing code and make a dummy
     /// journal entry.
     /// Once all chunks have been fed, there should be nothing missing.
-    pub fn finalize(mut self, era: u64, id: H256) -> Result<Box<dyn JournalDB>, crate::error::Error> {
+    pub fn finalize(
+        mut self,
+        era: u64,
+        id: H256,
+    ) -> Result<Box<dyn JournalDB>, crate::error::Error> {
         let missing = self.missing_code.keys().cloned().collect::<Vec<_>>();
         if !missing.is_empty() {
             return Err(Error::MissingCode(missing).into());

@@ -39,8 +39,8 @@ pub use self::{
 
 // TODO [ToDr] Remove re-export (#10130)
 pub use crate::types::engines::{
-    epoch::{self, Transition as EpochTransition},
     ForkChoice,
+    epoch::{self, Transition as EpochTransition},
 };
 
 use std::{
@@ -49,23 +49,27 @@ use std::{
     sync::{Arc, Weak},
 };
 
-use builtin::Builtin;
-use crate::error::Error;
-use crate::snapshot::SnapshotComponents;
-use crate::spec::CommonParams;
-use crate::types::{
-    header::{ExtendedHeader, Header},
-    transaction::{self, SignedTransaction, UnverifiedTransaction},
-    BlockNumber,
+use crate::{
+    error::Error,
+    snapshot::SnapshotComponents,
+    spec::CommonParams,
+    types::{
+        BlockNumber,
+        header::{ExtendedHeader, Header},
+        transaction::{self, SignedTransaction, UnverifiedTransaction},
+    },
 };
+use builtin::Builtin;
 use vm::{ActionValue, CallType, CreateContractAddress, EnvInfo, Schedule};
 
-use crate::block::ExecutedBlock;
+use crate::{
+    block::ExecutedBlock,
+    machine::{self, AuxiliaryData, AuxiliaryRequest, Machine},
+    types::ancestry_action::AncestryAction,
+};
 use bytes::Bytes;
 use crypto::publickey::Signature;
-use ethereum_types::{Address, H256, H512, H64, U256};
-use crate::machine::{self, AuxiliaryData, AuxiliaryRequest, Machine};
-use crate::types::ancestry_action::AncestryAction;
+use ethereum_types::{Address, H64, H256, H512, U256};
 use unexpected::{Mismatch, OutOfBounds};
 
 /// Default EIP-210 contract code.
