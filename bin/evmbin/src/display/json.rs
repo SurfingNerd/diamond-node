@@ -20,10 +20,10 @@ use std::{collections::HashMap, mem};
 
 use super::config::Config;
 use bytes::ToPretty;
-use display;
+use crate::display;
 use ethcore::trace;
 use ethereum_types::{BigEndianHash, H256, U256};
-use info as vm;
+use crate::info as vm;
 
 /// JSON formatting informant.
 #[derive(Default)]

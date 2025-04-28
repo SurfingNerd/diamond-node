@@ -20,10 +20,10 @@ use std::{collections::HashMap, io};
 
 use super::config::Config;
 use bytes::ToPretty;
-use display;
+use crate::display;
 use ethcore::{pod_state, trace};
 use ethereum_types::{BigEndianHash, H256, U256};
-use info as vm;
+use crate::info as vm;
 
 pub trait Writer: io::Write + Send + Sized {
     fn clone(&self) -> Self;
@@ -132,7 +132,7 @@ impl<Trace: Writer, Out: Writer> Informant<Trace, Out> {
         root: H256,
         end_state: &Option<pod_state::PodState>,
     ) {
-        if let Some(ref end_state) = end_state {
+        if let Some(end_state) = end_state {
             let dump_data = json!({
                 "root": root,
                 "accounts": end_state,
