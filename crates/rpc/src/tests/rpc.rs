@@ -62,7 +62,7 @@ mod tests {
     use crate::v1::Metadata;
     use jsonrpc_core::{MetaIoHandler, Value};
 
-    fn serve() -> (Server<::HttpServer>, ::std::net::SocketAddr) {
+    fn serve() -> (Server<crate::HttpServer>, ::std::net::SocketAddr) {
         let mut io = MetaIoHandler::default();
         io.add_method_with_meta("hello", |_, meta: Metadata| {
             Ok(Value::String(format!("{}", meta.origin)))

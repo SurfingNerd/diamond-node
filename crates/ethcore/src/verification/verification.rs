@@ -553,7 +553,7 @@ mod tests {
         },
     };
     use crypto::publickey::{Generator, Random};
-    use error::{BlockError::*, ErrorKind};
+    use crate::error::{BlockError::*, ErrorKind};
     use ethereum_types::{Address, BloomRef, H256, U256};
     use hash::keccak;
     use rlp;
@@ -561,7 +561,7 @@ mod tests {
         collections::{BTreeMap, HashMap},
         time::{SystemTime, UNIX_EPOCH},
     };
-    use test_helpers::{create_test_block, create_test_block_with_data};
+    use crate::test_helpers::{create_test_block, create_test_block_with_data};
     use triehash::ordered_trie_root;
 
     fn check_ok(result: Result<(), Error>) {
