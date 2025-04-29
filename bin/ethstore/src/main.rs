@@ -150,9 +150,7 @@ impl fmt::Display for Error {
 fn main() {
     panic_hook::set_abort();
     if env::var("RUST_LOG").is_err() {
-        unsafe  {
-            env::set_var("RUST_LOG", "warn")    
-        }
+        unsafe { env::set_var("RUST_LOG", "warn") }
     }
     env_logger::try_init().expect("Logger initialized only once.");
 

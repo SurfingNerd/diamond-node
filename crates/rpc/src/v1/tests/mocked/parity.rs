@@ -14,15 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
-use crate::types::{
-    receipt::{LocalizedReceipt, TransactionOutcome},
-    transaction::TypedTxId,
+use crate::{
+    miner::pool::local_transactions::Status as LocalTransactionStatus,
+    types::{
+        receipt::{LocalizedReceipt, TransactionOutcome},
+        transaction::TypedTxId,
+    },
 };
 use crypto::publickey::{Generator, Random};
 use ethcore::client::{Executed, TestBlockChainClient, TransactionId};
 use ethcore_logger::RotatingLogger;
 use ethereum_types::{Address, BigEndianHash, Bloom, H256, U256};
-use crate::miner::pool::local_transactions::Status as LocalTransactionStatus;
 use std::{str::FromStr, sync::Arc};
 use sync::ManageNetwork;
 

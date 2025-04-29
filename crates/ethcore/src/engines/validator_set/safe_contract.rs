@@ -725,6 +725,7 @@ mod tests {
             BlockInfo, ChainInfo, ImportBlock,
             traits::{EngineClient, ForceUpdateSealing},
         },
+        miner::{self, MinerService},
         spec::Spec,
         types::{
             ids::BlockId,
@@ -736,7 +737,6 @@ mod tests {
     use crypto::publickey::Secret;
     use ethereum_types::Address;
     use hash::keccak;
-    use crate::miner::{self, MinerService};
     use rustc_hex::FromHex;
     use std::sync::Arc;
     use test_helpers::generate_dummy_client_with_spec;

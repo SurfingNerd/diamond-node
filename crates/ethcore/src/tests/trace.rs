@@ -20,6 +20,7 @@ use crate::{
     block::*,
     client::{BlockChainClient, Client, ClientConfig, *},
     io::*,
+    miner::Miner,
     spec::*,
     trace::{LocalizedTrace, RewardType, trace::Action::Reward},
     types::{
@@ -33,7 +34,6 @@ use crate::{
 use crypto::publickey::KeyPair;
 use ethereum_types::{Address, U256};
 use hash::keccak;
-use crate::miner::Miner;
 use std::{str::FromStr, sync::Arc};
 use test_helpers::{self, get_temp_state_db};
 

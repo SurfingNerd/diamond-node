@@ -332,13 +332,14 @@ impl Clique {
                     .expect("chain has at least one element; qed")
                     .parent_hash();
 
-                let last_checkpoint_header =
-                    match c.block_header(BlockId::Hash(last_checkpoint_hash)) {
-                        None => {
-                            return Err(EngineError::CliqueMissingCheckpoint(last_checkpoint_hash))?;
-                        }
-                        Some(header) => header.decode(self.machine.params().eip1559_transition)?,
-                    };
+                let last_checkpoint_header = match c
+                    .block_header(BlockId::Hash(last_checkpoint_hash))
+                {
+                    None => {
+                        return Err(EngineError::CliqueMissingCheckpoint(last_checkpoint_hash))?;
+                    }
+                    Some(header) => header.decode(self.machine.params().eip1559_transition)?,
+                };
 
                 let last_checkpoint_state = match block_state_by_hash.get_mut(&last_checkpoint_hash)
                 {

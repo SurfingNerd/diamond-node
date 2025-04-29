@@ -21,13 +21,19 @@ use std::{
     sync::Arc,
 };
 
-use crate::types::{
-    BlockNumber,
-    block::Block,
-    header::Header,
-    ids::BlockId,
-    receipt::RichReceipt,
-    transaction::{self, PendingTransaction, SignedTransaction, UnverifiedTransaction},
+use crate::{
+    miner::pool::{
+        QueueStatus, VerifiedTransaction, local_transactions::Status as LocalTransactionStatus,
+        verifier,
+    },
+    types::{
+        BlockNumber,
+        block::Block,
+        header::Header,
+        ids::BlockId,
+        receipt::RichReceipt,
+        transaction::{self, PendingTransaction, SignedTransaction, UnverifiedTransaction},
+    },
 };
 use bytes::Bytes;
 use call_contract::CallContract;
@@ -42,10 +48,6 @@ use ethcore::{
     miner::{self, AuthoringParams, MinerService, TransactionFilter},
 };
 use ethereum_types::{Address, H256, U256};
-use crate::miner::pool::{
-    QueueStatus, VerifiedTransaction, local_transactions::Status as LocalTransactionStatus,
-    verifier,
-};
 use parking_lot::{Mutex, RwLock};
 
 /// Test miner service.

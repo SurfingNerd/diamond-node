@@ -51,13 +51,13 @@ use crate::{
     },
     engines::{EngineSigner, Seal},
     factory::Factories,
+    miner::Miner,
     spec::Spec,
     state::*,
+    state_db::StateDB,
     verification::queue::kind::blocks::Unverified,
 };
 use ethjson::crypto::publickey::{Public, Signature};
-use crate::miner::Miner;
-use crate::state_db::StateDB;
 
 use crate::exit::ShutdownManager;
 

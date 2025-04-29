@@ -21,11 +21,14 @@ use std::{
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 
-use crate::types::{
-    ids::{BlockId, TransactionId},
-    log_entry::{LocalizedLogEntry, LogEntry},
-    receipt::{LocalizedReceipt, RichReceipt, TransactionOutcome},
-    transaction::{Action, Transaction, TypedTransaction, TypedTxId},
+use crate::{
+    miner::external::ExternalMiner,
+    types::{
+        ids::{BlockId, TransactionId},
+        log_entry::{LocalizedLogEntry, LogEntry},
+        receipt::{LocalizedReceipt, RichReceipt, TransactionOutcome},
+        transaction::{Action, Transaction, TypedTransaction, TypedTxId},
+    },
 };
 use accounts::AccountProvider;
 use ethcore::{
@@ -33,7 +36,6 @@ use ethcore::{
     miner::{self, MinerService},
 };
 use ethereum_types::{Address, Bloom, H160, H256, U256};
-use crate::miner::external::ExternalMiner;
 use parity_runtime::Runtime;
 use parking_lot::Mutex;
 use rustc_hex::{FromHex, ToHex};

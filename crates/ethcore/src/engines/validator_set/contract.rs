@@ -220,6 +220,7 @@ mod tests {
     use super::{super::ValidatorSet, ValidatorContract};
     use crate::{
         client::{BlockChainClient, BlockInfo, ChainInfo, traits::TransactionRequest},
+        miner::{self, MinerService},
         spec::Spec,
         types::{header::Header, ids::BlockId},
     };
@@ -229,7 +230,6 @@ mod tests {
     use ethabi::FunctionOutputDecoder;
     use ethereum_types::{Address, H520};
     use hash::keccak;
-    use crate::miner::{self, MinerService};
     use rlp::encode;
     use rustc_hex::FromHex;
     use std::sync::Arc;

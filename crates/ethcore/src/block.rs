@@ -632,12 +632,12 @@ mod tests {
     use crate::{
         engines::EthEngine,
         factory::Factories,
+        state_db::StateDB,
         types::{header::Header, transaction::SignedTransaction, view, views::BlockView},
         verification::queue::kind::blocks::Unverified,
     };
     use error::Error;
     use ethereum_types::Address;
-    use crate::state_db::StateDB;
     use std::sync::Arc;
     use test_helpers::get_temp_state_db;
     use vm::LastHashes;

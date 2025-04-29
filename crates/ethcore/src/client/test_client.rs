@@ -69,18 +69,18 @@ use crate::{
         traits::{ForceUpdateSealing, TransactionRequest},
     },
     engines::EthEngine,
+    error::{Error, EthcoreResult},
     executed::CallError,
     executive::Executed,
+    miner::{self, Miner, MinerService},
     spec::Spec,
     state::StateInfo,
+    state_db::StateDB,
     trace::LocalizedTrace,
     verification::queue::{QueueInfo, kind::blocks::Unverified},
 };
 use call_contract::{CallContract, RegistryInfo};
-use crate::error::{Error, EthcoreResult};
 use journaldb;
-use crate::miner::{self, Miner, MinerService};
-use crate::state_db::StateDB;
 use stats::{PrometheusMetrics, PrometheusRegistry};
 
 use super::ReservedPeersManagement;

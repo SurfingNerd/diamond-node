@@ -17,6 +17,7 @@
 use std::sync::Arc;
 
 use crate::{
+    miner,
     types::transaction::{
         Action, LocalizedTransaction, PendingTransaction, SignedTransaction, TypedTransaction,
         TypedTxId,
@@ -25,7 +26,6 @@ use crate::{
 };
 use ethcore::{CreateContractAddress, contract_address};
 use ethereum_types::{H160, H256, H512, U64, U256};
-use crate::miner;
 use serde::{Serialize, Serializer, ser::SerializeStruct};
 
 /// Transaction

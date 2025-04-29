@@ -23,16 +23,16 @@ use crate::{
         ImportBlock, Nonce, StateOrBlock,
     },
     io::IoChannel,
+    miner::Miner,
     spec::Genesis,
+    test_helpers,
     verification::{VerifierType, queue::kind::blocks::Unverified},
 };
 use ethereum_types::{H256, U256};
 use ethjson;
 use log::warn;
-use crate::miner::Miner;
 use rustc_hex::ToHex;
 use std::{path::Path, sync::Arc};
-use crate::test_helpers;
 
 fn check_poststate(
     client: &Arc<Client>,

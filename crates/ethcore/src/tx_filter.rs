@@ -285,6 +285,7 @@ mod test {
     use crate::{
         client::{BlockChainClient, BlockId, Client, ClientConfig},
         io::IoChannel,
+        miner::Miner,
         spec::Spec,
         types::transaction::{
             AccessListTx, Action, EIP1559TransactionTx, Transaction, TypedTransaction,
@@ -292,7 +293,6 @@ mod test {
     };
     use crypto::publickey::{KeyPair, Secret};
     use ethereum_types::{Address, U256};
-    use crate::miner::Miner;
     use std::{str::FromStr, sync::Arc};
     use tempdir::TempDir;
     use test_helpers;

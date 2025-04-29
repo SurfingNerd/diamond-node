@@ -214,6 +214,7 @@ mod tests {
             traits::{ForceUpdateSealing, TransactionRequest},
         },
         engines::{EpochChange, validator_set::ValidatorSet},
+        miner::{self, MinerService},
         spec::Spec,
         types::{header::Header, ids::BlockId},
         verification::queue::kind::blocks::Unverified,
@@ -222,7 +223,6 @@ mod tests {
     use crypto::publickey::Secret;
     use ethereum_types::Address;
     use hash::keccak;
-    use crate::miner::{self, MinerService};
     use std::{collections::BTreeMap, sync::Arc};
     use test_helpers::generate_dummy_client_with_spec;
 

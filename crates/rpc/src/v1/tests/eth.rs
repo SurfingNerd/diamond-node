@@ -17,7 +17,7 @@
 //! rpc integration tests.
 use std::{env, sync::Arc};
 
-use crate::{io::IoChannel, types::ids::BlockId};
+use crate::{io::IoChannel, miner::external::ExternalMiner, types::ids::BlockId};
 use accounts::AccountProvider;
 use ethcore::{
     client::{BlockChainClient, ChainInfo, Client, ClientConfig, EvmTestClient, ImportBlock},
@@ -29,7 +29,6 @@ use ethcore::{
 };
 use ethereum_types::{Address, H256, U256};
 use ethjson::{blockchain::BlockChain, spec::ForkSpec};
-use crate::miner::external::ExternalMiner;
 use parity_runtime::Runtime;
 use parking_lot::Mutex;
 

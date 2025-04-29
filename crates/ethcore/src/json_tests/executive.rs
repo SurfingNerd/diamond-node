@@ -20,6 +20,7 @@ use crate::{
     externalities::*,
     machine::EthereumMachine as Machine,
     state::{Backend as StateBackend, State, Substate},
+    test_helpers::get_temp_state,
     trace::{NoopTracer, NoopVMTracer, Tracer, VMTracer},
 };
 use bytes::Bytes;
@@ -30,7 +31,6 @@ use evm::Finalize;
 use hash::keccak;
 use rlp::RlpStream;
 use std::{path::Path, sync::Arc};
-use crate::test_helpers::get_temp_state;
 use vm::{
     self, ActionParams, CallType, ContractCreateResult, CreateContractAddress, EnvInfo, Ext,
     MessageCallResult, ReturnData, Schedule,

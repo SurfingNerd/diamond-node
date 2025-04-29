@@ -1838,9 +1838,9 @@ mod tests {
 
     use crate::{
         client::{ChainInfo, EachBlockWith, ImportSealedBlock, TestBlockChainClient},
+        miner::{MinerService, PendingOrdering},
         types::transaction::{Transaction, TypedTransaction},
     };
-    use crate::miner::{MinerService, PendingOrdering};
     use test_helpers::{
         dummy_engine_signer_with_address, generate_dummy_client, generate_dummy_client_with_spec,
     };

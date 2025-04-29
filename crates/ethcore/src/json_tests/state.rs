@@ -17,10 +17,10 @@
 use super::{HookType, test_common::*};
 use crate::{
     client::{EvmTestClient, EvmTestError, TransactErr, TransactSuccess},
+    pod_state::PodState,
     trace,
 };
 use ethjson::{self, spec::ForkSpec};
-use crate::pod_state::PodState;
 use std::path::Path;
 use vm::EnvInfo;
 

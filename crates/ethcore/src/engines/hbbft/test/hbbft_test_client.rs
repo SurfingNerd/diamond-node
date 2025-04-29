@@ -5,12 +5,12 @@ use crate::{
         traits::{Balance, StateOrBlock},
     },
     engines::signer::from_keypair,
+    miner::{Miner, MinerService},
     spec::Spec,
     types::{data_format::DataFormat, ids::BlockId},
 };
 use crypto::publickey::{Generator, KeyPair, Random};
 use ethereum_types::{Address, U256};
-use crate::miner::{Miner, MinerService};
 use parking_lot::RwLock;
 use std::{ops::Deref, sync::Arc};
 use test_helpers::{TestNotify, generate_dummy_client_with_spec};

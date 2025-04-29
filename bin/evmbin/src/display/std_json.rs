@@ -19,11 +19,10 @@
 use std::{collections::HashMap, io};
 
 use super::config::Config;
+use crate::{display, info as vm};
 use bytes::ToPretty;
-use crate::display;
 use ethcore::{pod_state, trace};
 use ethereum_types::{BigEndianHash, H256, U256};
-use crate::info as vm;
 
 pub trait Writer: io::Write + Send + Sized {
     fn clone(&self) -> Self;
@@ -165,7 +164,7 @@ impl<Trace: Writer, Out: Writer> vm::Informant for Informant<Trace, Out> {
     }
     fn finish(
         result: vm::RunResult<<Self as trace::VMTracer>::Output>,
-        ( trace_sink,  out_sink, _): &mut Self::Sink,
+        (trace_sink, out_sink, _): &mut Self::Sink,
     ) {
         match result {
             Ok(success) => {
