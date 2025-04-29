@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
-use crate::{ioError, ioHandler};
+use crate::{IoError, IoHandler};
 use deque;
 use fnv::FnvHashMap;
 use num_cpus;
