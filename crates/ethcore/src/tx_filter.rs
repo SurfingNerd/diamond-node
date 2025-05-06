@@ -295,7 +295,7 @@ mod test {
     use ethereum_types::{Address, U256};
     use std::{str::FromStr, sync::Arc};
     use tempdir::TempDir;
-    use test_helpers;
+    use crate::test_helpers;
 
     /// Contract code: https://gist.github.com/VladLupashevskyi/84f18eabb1e4afadf572cf92af3e7e7f
     #[test]

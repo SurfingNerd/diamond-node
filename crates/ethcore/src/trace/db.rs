@@ -418,7 +418,7 @@ mod tests {
     use evm::CallType;
     use kvdb::DBTransaction;
     use std::{collections::HashMap, sync::Arc};
-    use test_helpers::new_db;
+    use crate::test_helpers::new_db;
 
     struct NoopExtras;
 

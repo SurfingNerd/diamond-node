@@ -880,7 +880,7 @@ mod tests {
     };
     use bytes::Bytes;
     use error::*;
-    use test_helpers::{get_good_dummy_block, get_good_dummy_block_seq};
+    use crate::test_helpers::{get_good_dummy_block, get_good_dummy_block_seq};
 
     // create a test block queue.
     // auto_scaling enables verifier adjustment.

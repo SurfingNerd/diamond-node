@@ -564,7 +564,7 @@ mod tests {
     use ethereum_types::{Address, U256};
     use evm::{CallType, EnvInfo, Ext};
     use std::str::FromStr;
-    use test_helpers::get_temp_state;
+    use crate::test_helpers::get_temp_state;
 
     fn get_test_origin() -> OriginInfo {
         OriginInfo {

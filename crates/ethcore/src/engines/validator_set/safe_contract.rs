@@ -739,7 +739,7 @@ mod tests {
     use hash::keccak;
     use rustc_hex::FromHex;
     use std::sync::Arc;
-    use test_helpers::generate_dummy_client_with_spec;
+    use crate::test_helpers::generate_dummy_client_with_spec;
 
     #[test]
     fn fetches_validators() {

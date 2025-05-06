@@ -25,7 +25,7 @@ use crate::{
 use evm::{Factory, VMType};
 use hash::keccak;
 use std::sync::Arc;
-use test_helpers::get_temp_state_with_factory;
+use crate::test_helpers::get_temp_state_with_factory;
 use vm::{AccessList, ActionParams, ActionValue, CallType, EnvInfo, ParamsType};
 
 use rustc_hex::FromHex;

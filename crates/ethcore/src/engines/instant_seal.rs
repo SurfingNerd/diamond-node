@@ -131,7 +131,7 @@ mod tests {
     use crate::{block::*, engines::Seal, spec::Spec, types::header::Header};
     use ethereum_types::{Address, H520};
     use std::sync::Arc;
-    use test_helpers::get_temp_state_db;
+    use crate::test_helpers::get_temp_state_db;
 
     #[test]
     fn instant_can_seal() {

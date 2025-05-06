@@ -1588,7 +1588,7 @@ mod tests {
     use hash::{KECCAK_NULL_RLP, keccak};
     use rustc_hex::FromHex;
     use std::{str::FromStr, sync::Arc};
-    use test_helpers::{get_temp_state, get_temp_state_db};
+    use crate::test_helpers::{get_temp_state, get_temp_state_db};
     use vm::EnvInfo;
 
     fn secret() -> Secret {

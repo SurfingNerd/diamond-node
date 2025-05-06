@@ -228,7 +228,7 @@ mod tests {
         snapshot::{Progress, tests::helpers::fill_storage},
         types::basic_account::BasicAccount,
     };
-    use test_helpers::get_temp_state_db;
+    use crate::test_helpers::get_temp_state_db;
 
     use ethereum_types::{Address, H256};
     use hash::{KECCAK_EMPTY, KECCAK_NULL_RLP, keccak};

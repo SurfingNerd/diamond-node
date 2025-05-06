@@ -445,7 +445,7 @@ mod tests {
     use crate::state::{Account, Backend};
     use ethereum_types::{Address, H256, U256};
     use kvdb::DBTransaction;
-    use test_helpers::get_temp_state_db;
+    use crate::test_helpers::get_temp_state_db;
 
     #[test]
     fn state_db_smoke() {

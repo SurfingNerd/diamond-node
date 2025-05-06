@@ -639,7 +639,7 @@ mod tests {
     use error::Error;
     use ethereum_types::Address;
     use std::sync::Arc;
-    use test_helpers::get_temp_state_db;
+    use crate::test_helpers::get_temp_state_db;
     use vm::LastHashes;
 
     /// Enact the block given by `block_bytes` using `engine` on the database `db` with given `parent` block header

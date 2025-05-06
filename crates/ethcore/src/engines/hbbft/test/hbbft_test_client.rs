@@ -13,7 +13,7 @@ use crypto::publickey::{Generator, KeyPair, Random};
 use ethereum_types::{Address, U256};
 use parking_lot::RwLock;
 use std::{ops::Deref, sync::Arc};
-use test_helpers::{TestNotify, generate_dummy_client_with_spec};
+use crate::test_helpers::{TestNotify, generate_dummy_client_with_spec};
 
 pub fn hbbft_spec() -> Spec {
     Spec::load(

@@ -570,7 +570,7 @@ mod tests {
     use rlp;
     use std::{collections::BTreeMap, str::FromStr, sync::Arc};
     use tempdir::TempDir;
-    use test_helpers::get_temp_state_db;
+    use crate::test_helpers::get_temp_state_db;
 
     fn test_spec() -> Spec {
         let tempdir = TempDir::new("").unwrap();

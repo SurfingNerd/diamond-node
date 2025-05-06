@@ -21,7 +21,7 @@ use crate::{block::*, engines::Engine, state_db::StateDB};
 use crypto::publickey::{KeyPair, Secret};
 use error::{Error, ErrorKind};
 use ethereum_types::{Address, H256};
-use test_helpers::get_temp_state_db;
+use crate::test_helpers::get_temp_state_db;
 
 use std::{collections::HashMap, sync::Arc};
 

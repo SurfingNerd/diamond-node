@@ -224,7 +224,7 @@ mod tests {
     use ethereum_types::Address;
     use hash::keccak;
     use std::{collections::BTreeMap, sync::Arc};
-    use test_helpers::generate_dummy_client_with_spec;
+    use crate::test_helpers::generate_dummy_client_with_spec;
 
     use super::Multi;
 

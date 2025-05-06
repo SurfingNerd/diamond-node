@@ -1245,7 +1245,7 @@ mod tests {
     use ethereum_types::{H160, H256};
     use std::str::FromStr;
     use tempdir::TempDir;
-    use test_helpers::get_temp_state_db;
+    use crate::test_helpers::get_temp_state_db;
 
     #[test]
     fn test_load_empty() {

@@ -27,10 +27,10 @@ use crate::{
 use accounts::AccountProvider;
 use crypto::publickey::Secret;
 use tempdir::TempDir;
-use test_helpers::generate_dummy_client_with_spec;
+use crate::test_helpers::generate_dummy_client_with_spec;
 
 use ethereum_types::Address;
-use test_helpers;
+use crate::test_helpers;
 
 use_contract!(test_validator_set, "res/contracts/test_validator_set.json");
 

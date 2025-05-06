@@ -30,7 +30,7 @@ use crate::{
     types::ids::BlockId,
 };
 use tempdir::TempDir;
-use test_helpers::{
+use crate::test_helpers::{
     generate_dummy_client_with_spec_and_data, new_db, new_temp_db, restoration_db_handler,
 };
 

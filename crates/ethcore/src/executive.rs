@@ -1678,7 +1678,7 @@ mod tests {
     use evm::{Factory, VMType};
     use rustc_hex::FromHex;
     use std::{str::FromStr, sync::Arc};
-    use test_helpers::{get_temp_state, get_temp_state_with_factory};
+    use crate::test_helpers::{get_temp_state, get_temp_state_with_factory};
     use vm::{ActionParams, ActionValue, CallType, CreateContractAddress, EnvInfo};
 
     fn make_frontier_machine(max_depth: usize) -> EthereumMachine {

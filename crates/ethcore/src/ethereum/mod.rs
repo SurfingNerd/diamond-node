@@ -375,7 +375,7 @@ mod tests {
     };
     use ethereum_types::{H160, H256, U256};
     use std::str::FromStr;
-    use test_helpers::get_temp_state_db;
+    use crate::test_helpers::get_temp_state_db;
 
     #[test]
     fn ensure_db_good() {

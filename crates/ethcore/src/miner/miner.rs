@@ -1841,7 +1841,7 @@ mod tests {
         miner::{MinerService, PendingOrdering},
         types::transaction::{Transaction, TypedTransaction},
     };
-    use test_helpers::{
+    use crate::test_helpers::{
         dummy_engine_signer_with_address, generate_dummy_client, generate_dummy_client_with_spec,
     };
 
