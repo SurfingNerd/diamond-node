@@ -553,7 +553,7 @@ mod tests {
         },
     };
     use crypto::publickey::{Generator, Random};
-    use error::{BlockError::*, ErrorKind};
+    use crate::error::{BlockError::*, ErrorKind};
     use ethereum_types::{Address, BloomRef, H256, U256};
     use hash::keccak;
     use rlp;

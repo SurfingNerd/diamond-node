@@ -636,7 +636,7 @@ mod tests {
         types::{header::Header, transaction::SignedTransaction, view, views::BlockView},
         verification::queue::kind::blocks::Unverified,
     };
-    use error::Error;
+    use crate::error::Error;
     use ethereum_types::Address;
     use std::sync::Arc;
     use crate::test_helpers::get_temp_state_db;

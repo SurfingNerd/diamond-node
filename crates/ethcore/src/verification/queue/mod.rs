@@ -879,7 +879,7 @@ mod tests {
         types::{BlockNumber, view, views::BlockView},
     };
     use bytes::Bytes;
-    use error::*;
+    use crate::error::*;
     use crate::test_helpers::{get_good_dummy_block, get_good_dummy_block_seq};
 
     // create a test block queue.

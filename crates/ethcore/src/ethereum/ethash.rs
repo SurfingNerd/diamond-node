@@ -565,7 +565,7 @@ mod tests {
         Ethash, EthashParams, ecip1017_eras_block_reward,
     };
     use crate::{block::*, engines::Engine, spec::Spec, types::header::Header};
-    use error::{BlockError, Error, ErrorKind};
+    use crate::error::{BlockError, Error, ErrorKind};
     use ethereum_types::{Address, H64, H256, U256};
     use rlp;
     use std::{collections::BTreeMap, str::FromStr, sync::Arc};

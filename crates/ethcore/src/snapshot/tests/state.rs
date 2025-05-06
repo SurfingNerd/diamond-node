@@ -30,7 +30,7 @@ use crate::{
     types::basic_account::BasicAccount,
 };
 
-use error::{Error, ErrorKind};
+use crate::error::{Error, ErrorKind};
 
 use self::rand_xorshift::XorShiftRng;
 use ethereum_types::H256;

@@ -41,5 +41,5 @@ mod stop_guard;
 #[cfg(test)]
 extern crate kvdb_rocksdb;
 
-pub use error::{Error, ErrorKind};
+pub use crate::error::{Error, ErrorKind};
 pub use service::ClientService;

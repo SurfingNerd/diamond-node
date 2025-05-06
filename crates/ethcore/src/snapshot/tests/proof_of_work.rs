@@ -16,7 +16,7 @@
 
 //! PoW block chunker and rebuilder tests.
 
-use error::{Error, ErrorKind};
+use crate::error::{Error, ErrorKind};
 use std::sync::atomic::AtomicBool;
 use tempdir::TempDir;
 

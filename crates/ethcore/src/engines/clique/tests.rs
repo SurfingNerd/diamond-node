@@ -19,7 +19,7 @@
 use super::*;
 use crate::{block::*, engines::Engine, state_db::StateDB};
 use crypto::publickey::{KeyPair, Secret};
-use error::{Error, ErrorKind};
+use crate::error::{Error, ErrorKind};
 use ethereum_types::{Address, H256};
 use crate::test_helpers::get_temp_state_db;
 

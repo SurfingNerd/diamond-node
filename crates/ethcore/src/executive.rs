@@ -1673,7 +1673,7 @@ mod tests {
         },
     };
     use crypto::publickey::{Generator, Random};
-    use error::ExecutionError;
+    use crate::error::ExecutionError;
     use ethereum_types::{Address, BigEndianHash, H160, H256, U256, U512};
     use evm::{Factory, VMType};
     use rustc_hex::FromHex;

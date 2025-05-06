@@ -28,7 +28,7 @@ use parity_util_mem::MallocSizeOf;
 
 use super::{SimpleList, SystemCall, ValidatorSet};
 use crate::machine::{AuxiliaryData, Call, EthereumMachine};
-use error::Error as EthcoreError;
+use crate::error::Error as EthcoreError;
 
 /// Set used for testing with a single validator.
 #[derive(Clone, MallocSizeOf)]
