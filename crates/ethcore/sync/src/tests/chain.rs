@@ -16,8 +16,8 @@
 
 use super::helpers::*;
 use crate::chain::SyncState;
-use SyncConfig;
-use WarpSync;
+use crate::SyncConfig;
+use crate::WarpSync;
 use ethcore::client::{
     BlockChainClient, BlockId, BlockInfo, ChainInfo, EachBlockWith, TestBlockChainClient,
 };

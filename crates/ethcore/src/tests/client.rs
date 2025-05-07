@@ -479,8 +479,8 @@ fn transaction_proof() {
         .1;
     let backend = state::backend::ProofCheck::new(&proof);
 
-    let mut factories = ::factory::Factories::default();
-    factories.accountdb = ::account_db::Factory::Plain; // raw state values, no mangled keys.
+    let mut factories = crate::factory::Factories::default();
+    factories.accountdb = crate::account_db::Factory::Plain; // raw state values, no mangled keys.
     let root = *client.best_block_header().state_root();
 
     let machine = test_spec.engine.machine();

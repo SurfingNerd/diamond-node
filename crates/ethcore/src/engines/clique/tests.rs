@@ -330,7 +330,8 @@ fn one_signer_dropping_itself() {
             'A',
         )
         .unwrap();
-    let signers = tester.clique_signers(&vote.hash());
+    let hash = vote.hash(); 
+    let signers = tester.clique_signers(&hash);
     assert!(signers.count() == 0);
 }
 

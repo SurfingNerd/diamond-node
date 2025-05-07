@@ -47,7 +47,7 @@ fn chunk_and_restore(amount: u64) {
     let generator = BlockGenerator::new(vec![rest]);
     let genesis = genesis.last();
 
-    let engine = ::spec::Spec::new_test().engine;
+    let engine = crate::spec::Spec::new_test().engine;
     let tempdir = TempDir::new("").unwrap();
     let snapshot_path = tempdir.path().join("SNAP");
 
@@ -161,7 +161,7 @@ fn checks_flag() {
     let chunk = stream.out();
 
     let db = test_helpers::new_db();
-    let engine = ::spec::Spec::new_test().engine;
+    let engine = crate::spec::Spec::new_test().engine;
     let chain = BlockChain::new(
         Default::default(),
         genesis.last().encoded().raw(),

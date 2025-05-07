@@ -16,8 +16,8 @@
 
 use super::helpers::*;
 use crate::types::BlockNumber;
-use SyncConfig;
-use WarpSync;
+use crate::SyncConfig;
+use crate::WarpSync;
 use bytes::Bytes;
 use ethcore::{
     client::EachBlockWith,

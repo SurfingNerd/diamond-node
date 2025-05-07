@@ -289,7 +289,7 @@ pub mod tests {
 
     #[test]
     fn should_call_account_from_spec() {
-        use display::{config::Config, std_json::tests::informant};
+        use crate::display::{config::Config, std_json::tests::informant};
 
         let (inf, res) = informant(Config::default());
         let mut params = ActionParams::default();

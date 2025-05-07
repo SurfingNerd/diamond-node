@@ -2456,7 +2456,7 @@ mod tests {
         f(&mut params);
 
         // create engine
-        let mut c_params = ::spec::CommonParams::default();
+        let mut c_params = crate::spec::CommonParams::default();
         c_params.gas_limit_bound_divisor = 5.into();
         let machine = ::machine::EthereumMachine::regular(c_params, Default::default());
         AuthorityRound::new(params, machine).unwrap()

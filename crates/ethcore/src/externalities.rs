@@ -604,7 +604,7 @@ mod tests {
 
     impl TestSetup {
         fn new() -> Self {
-            let machine = ::spec::Spec::new_test_machine();
+            let machine = crate::spec::Spec::new_test_machine();
             let env_info = get_test_env_info();
             let schedule = machine.schedule(env_info.number);
             TestSetup {

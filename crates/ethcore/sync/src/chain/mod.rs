@@ -1869,7 +1869,7 @@ pub mod tests {
         tests::{helpers::TestIo, snapshot::TestSnapshotService},
         types::header::Header,
     };
-    use SyncConfig;
+    use crate::SyncConfig;
     use bytes::Bytes;
     use ethcore::{
         client::{BlockChainClient, BlockInfo, ChainInfo, EachBlockWith, TestBlockChainClient},
