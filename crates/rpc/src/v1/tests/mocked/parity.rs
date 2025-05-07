@@ -35,7 +35,7 @@ use crate::v1::{
     metadata::Metadata,
     tests::helpers::{Config, TestMinerService, TestSyncProvider},
 };
-use Host;
+use crate::Host;
 use jsonrpc_core::IoHandler;
 
 pub type TestParityClient = ParityClient<TestBlockChainClient, TestMinerService>;

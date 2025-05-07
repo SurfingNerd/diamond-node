@@ -43,7 +43,7 @@ use crate::{
     verification::queue::kind::blocks::Unverified,
 };
 use crypto::publickey::KeyPair;
-use ethereum;
+use crate::ethereum;
 use ethereum_types::{Address, U256};
 use hash::keccak;
 use rustc_hex::ToHex;

@@ -45,7 +45,7 @@ extern crate journaldb;
 pub mod helpers;
 use app_dirs::{AppDataType, AppInfo, data_root, get_app_root};
 use ethereum_types::{H64, H256};
-use helpers::{replace_home, replace_home_and_local};
+use crate::helpers::{replace_home, replace_home_and_local};
 use journaldb::Algorithm;
 use std::{
     fs,
@@ -335,7 +335,7 @@ mod platform {
 #[cfg(test)]
 mod tests {
     use super::Directories;
-    use helpers::{replace_home, replace_home_and_local};
+    use crate::helpers::{replace_home, replace_home_and_local};
 
     #[test]
     fn test_default_directories() {
