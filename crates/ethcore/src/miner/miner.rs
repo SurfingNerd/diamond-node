@@ -1839,10 +1839,11 @@ mod tests {
     use crate::{
         client::{ChainInfo, EachBlockWith, ImportSealedBlock, TestBlockChainClient},
         miner::{MinerService, PendingOrdering},
+        test_helpers::{
+            dummy_engine_signer_with_address, generate_dummy_client,
+            generate_dummy_client_with_spec,
+        },
         types::transaction::{Transaction, TypedTransaction},
-    };
-    use crate::test_helpers::{
-        dummy_engine_signer_with_address, generate_dummy_client, generate_dummy_client_with_spec,
     };
 
     #[test]

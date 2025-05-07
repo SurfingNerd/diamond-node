@@ -559,12 +559,12 @@ mod tests {
     use super::*;
     use crate::{
         state::{State, Substate},
+        test_helpers::get_temp_state,
         trace::{NoopTracer, NoopVMTracer},
     };
     use ethereum_types::{Address, U256};
     use evm::{CallType, EnvInfo, Ext};
     use std::str::FromStr;
-    use crate::test_helpers::get_temp_state;
 
     fn get_test_origin() -> OriginInfo {
         OriginInfo {

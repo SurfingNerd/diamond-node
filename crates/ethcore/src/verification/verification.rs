@@ -545,7 +545,9 @@ mod tests {
     use crate::{
         blockchain::{BlockDetails, BlockReceipts, TransactionAddress},
         engines::EthEngine,
+        error::{BlockError::*, ErrorKind},
         spec::{CommonParams, Spec},
+        test_helpers::{create_test_block, create_test_block_with_data},
         types::{
             encoded,
             log_entry::{LocalizedLogEntry, LogEntry},
@@ -553,7 +555,6 @@ mod tests {
         },
     };
     use crypto::publickey::{Generator, Random};
-    use crate::error::{BlockError::*, ErrorKind};
     use ethereum_types::{Address, BloomRef, H256, U256};
     use hash::keccak;
     use rlp;
@@ -561,7 +562,6 @@ mod tests {
         collections::{BTreeMap, HashMap},
         time::{SystemTime, UNIX_EPOCH},
     };
-    use crate::test_helpers::{create_test_block, create_test_block_with_data};
     use triehash::ordered_trie_root;
 
     fn check_ok(result: Result<(), Error>) {

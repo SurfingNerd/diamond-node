@@ -442,10 +442,12 @@ unsafe impl Sync for SyncAccount {}
 
 #[cfg(test)]
 mod tests {
-    use crate::state::{Account, Backend};
+    use crate::{
+        state::{Account, Backend},
+        test_helpers::get_temp_state_db,
+    };
     use ethereum_types::{Address, H256, U256};
     use kvdb::DBTransaction;
-    use crate::test_helpers::get_temp_state_db;
 
     #[test]
     fn state_db_smoke() {

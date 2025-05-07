@@ -3788,14 +3788,16 @@ mod tests {
     use crate::{
         blockchain::{BlockProvider, ExtrasInsert},
         spec::Spec,
+        test_helpers::generate_dummy_client_with_spec_and_data,
     };
     use ethereum_types::{H160, H256};
-    use crate::test_helpers::generate_dummy_client_with_spec_and_data;
 
     #[test]
     fn should_not_cache_details_before_commit() {
-        use crate::client::{BlockChainClient, ChainInfo};
-        use crate::test_helpers::{generate_dummy_client, get_good_dummy_block_hash};
+        use crate::{
+            client::{BlockChainClient, ChainInfo},
+            test_helpers::{generate_dummy_client, get_good_dummy_block_hash},
+        };
 
         use crate::types::encoded;
         use kvdb::DBTransaction;
@@ -3842,8 +3844,10 @@ mod tests {
 
     #[test]
     fn should_return_block_receipts() {
-        use crate::client::{BlockChainClient, BlockId, TransactionId};
-        use crate::test_helpers::generate_dummy_client_with_data;
+        use crate::{
+            client::{BlockChainClient, BlockId, TransactionId},
+            test_helpers::generate_dummy_client_with_data,
+        };
 
         let client = generate_dummy_client_with_data(2, 2, &[1.into(), 1.into()]);
         let receipts = client.localized_block_receipts(BlockId::Latest).unwrap();

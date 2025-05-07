@@ -1866,10 +1866,10 @@ impl PrometheusMetrics for ChainSync {
 pub mod tests {
     use super::{PeerAsking, PeerInfo, *};
     use crate::{
+        SyncConfig,
         tests::{helpers::TestIo, snapshot::TestSnapshotService},
         types::header::Header,
     };
-    use crate::SyncConfig;
     use bytes::Bytes;
     use ethcore::{
         client::{BlockChainClient, BlockInfo, ChainInfo, EachBlockWith, TestBlockChainClient},

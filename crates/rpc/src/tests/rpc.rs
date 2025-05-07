@@ -61,7 +61,7 @@ mod tests {
     use super::{Server, request};
     use crate::v1::Metadata;
     use jsonrpc_core::{MetaIoHandler, Value};
-    
+
     fn serve() -> (Server<crate::HttpServer>, ::std::net::SocketAddr) {
         let mut io = MetaIoHandler::default();
         io.add_method_with_meta("hello", |_, meta: Metadata| {

@@ -1240,12 +1240,12 @@ mod tests {
     use super::*;
     use crate::{
         state::State,
+        test_helpers::get_temp_state_db,
         types::{view, views::BlockView},
     };
     use ethereum_types::{H160, H256};
     use std::str::FromStr;
     use tempdir::TempDir;
-    use crate::test_helpers::get_temp_state_db;
 
     #[test]
     fn test_load_empty() {

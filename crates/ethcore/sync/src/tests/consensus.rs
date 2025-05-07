@@ -16,10 +16,10 @@
 
 use super::helpers::*;
 use crate::{
+    SyncConfig,
     io::{IoChannel, IoHandler},
     types::transaction::{Action, PendingTransaction, Transaction, TypedTransaction},
 };
-use crate::SyncConfig;
 use crypto::publickey::{KeyPair, Secret};
 use ethcore::{
     client::{ChainInfo, ClientIoMessage},

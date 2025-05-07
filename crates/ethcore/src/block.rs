@@ -631,15 +631,15 @@ mod tests {
     use super::*;
     use crate::{
         engines::EthEngine,
+        error::Error,
         factory::Factories,
         state_db::StateDB,
+        test_helpers::get_temp_state_db,
         types::{header::Header, transaction::SignedTransaction, view, views::BlockView},
         verification::queue::kind::blocks::Unverified,
     };
-    use crate::error::Error;
     use ethereum_types::Address;
     use std::sync::Arc;
-    use crate::test_helpers::get_temp_state_db;
     use vm::LastHashes;
 
     /// Enact the block given by `block_bytes` using `engine` on the database `db` with given `parent` block header

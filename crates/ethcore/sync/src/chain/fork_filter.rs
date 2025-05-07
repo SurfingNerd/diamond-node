@@ -4,8 +4,8 @@
 // Re-export ethereum-forkid crate contents here.
 pub use crate::ethereum_forkid::{BlockNumber, ForkId, RejectReason};
 
-use ethcore::client::ChainInfo;
 use crate::ethereum_forkid::ForkFilter;
+use ethcore::client::ChainInfo;
 
 /// Wrapper around fork filter that provides integration with `ForkFilter`.
 pub struct ForkFilterApi {

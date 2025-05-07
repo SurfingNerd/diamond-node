@@ -216,6 +216,7 @@ mod tests {
         engines::{EpochChange, validator_set::ValidatorSet},
         miner::{self, MinerService},
         spec::Spec,
+        test_helpers::generate_dummy_client_with_spec,
         types::{header::Header, ids::BlockId},
         verification::queue::kind::blocks::Unverified,
     };
@@ -224,7 +225,6 @@ mod tests {
     use ethereum_types::Address;
     use hash::keccak;
     use std::{collections::BTreeMap, sync::Arc};
-    use crate::test_helpers::generate_dummy_client_with_spec;
 
     use super::Multi;
 

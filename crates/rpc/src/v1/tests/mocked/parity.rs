@@ -29,13 +29,15 @@ use std::{str::FromStr, sync::Arc};
 use sync::ManageNetwork;
 
 use super::manage_network::TestManageNetwork;
-use crate::v1::{
-    Parity, ParityClient,
-    helpers::{NetworkSettings, external_signer::SignerService},
-    metadata::Metadata,
-    tests::helpers::{Config, TestMinerService, TestSyncProvider},
+use crate::{
+    Host,
+    v1::{
+        Parity, ParityClient,
+        helpers::{NetworkSettings, external_signer::SignerService},
+        metadata::Metadata,
+        tests::helpers::{Config, TestMinerService, TestSyncProvider},
+    },
 };
-use crate::Host;
 use jsonrpc_core::IoHandler;
 
 pub type TestParityClient = ParityClient<TestBlockChainClient, TestMinerService>;

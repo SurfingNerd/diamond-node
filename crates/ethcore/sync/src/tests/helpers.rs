@@ -47,8 +47,7 @@ use std::{
     sync::Arc,
 };
 
-use crate::types::BlockNumber;
-use crate::SyncConfig;
+use crate::{SyncConfig, types::BlockNumber};
 
 pub trait FlushingBlockChainClient: BlockChainClient {
     fn flush(&self) {}

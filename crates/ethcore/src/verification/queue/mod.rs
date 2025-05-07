@@ -874,13 +874,13 @@ impl<K: Kind> Drop for VerificationQueue<K> {
 mod tests {
     use super::{BlockQueue, Config, State, kind::blocks::Unverified};
     use crate::{
+        error::*,
         io::*,
         spec::Spec,
+        test_helpers::{get_good_dummy_block, get_good_dummy_block_seq},
         types::{BlockNumber, view, views::BlockView},
     };
     use bytes::Bytes;
-    use crate::error::*;
-    use crate::test_helpers::{get_good_dummy_block, get_good_dummy_block_seq};
 
     // create a test block queue.
     // auto_scaling enables verifier adjustment.

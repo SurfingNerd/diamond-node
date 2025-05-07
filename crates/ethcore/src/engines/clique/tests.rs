@@ -17,11 +17,15 @@
 //! Consensus tests for `PoA Clique Engine`, see http://eips.ethereum.org/EIPS/eip-225 for more information
 
 use super::*;
-use crate::{block::*, engines::Engine, state_db::StateDB};
+use crate::{
+    block::*,
+    engines::Engine,
+    error::{Error, ErrorKind},
+    state_db::StateDB,
+    test_helpers::get_temp_state_db,
+};
 use crypto::publickey::{KeyPair, Secret};
-use crate::error::{Error, ErrorKind};
 use ethereum_types::{Address, H256};
-use crate::test_helpers::get_temp_state_db;
 
 use std::{collections::HashMap, sync::Arc};
 
@@ -330,7 +334,7 @@ fn one_signer_dropping_itself() {
             'A',
         )
         .unwrap();
-    let hash = vote.hash(); 
+    let hash = vote.hash();
     let signers = tester.clique_signers(&hash);
     assert!(signers.count() == 0);
 }

@@ -27,12 +27,12 @@ use crate::{
         service::{Service, ServiceParams},
     },
     spec::Spec,
+    test_helpers::{
+        generate_dummy_client_with_spec_and_data, new_db, new_temp_db, restoration_db_handler,
+    },
     types::ids::BlockId,
 };
 use tempdir::TempDir;
-use crate::test_helpers::{
-    generate_dummy_client_with_spec_and_data, new_db, new_temp_db, restoration_db_handler,
-};
 
 use crate::{io::IoChannel, verification::queue::kind::blocks::Unverified};
 use kvdb_rocksdb::DatabaseConfig;

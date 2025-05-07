@@ -1020,10 +1020,10 @@ mod tests {
         io::IoService,
         snapshot::{ManifestData, RestorationStatus, SnapshotService},
         spec::Spec,
+        test_helpers::{generate_dummy_client_with_spec_and_data, restoration_db_handler},
     };
     use journaldb::Algorithm;
     use tempdir::TempDir;
-    use crate::test_helpers::{generate_dummy_client_with_spec_and_data, restoration_db_handler};
 
     #[test]
     fn sends_async_messages() {

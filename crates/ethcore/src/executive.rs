@@ -1662,8 +1662,10 @@ impl<'a, B: 'a + StateBackend> Executive<'a, B> {
 mod tests {
     use super::*;
     use crate::{
+        error::ExecutionError,
         machine::EthereumMachine,
         state::{CleanupMode, Substate},
+        test_helpers::{get_temp_state, get_temp_state_with_factory},
         trace::{
             ExecutiveTracer, ExecutiveVMTracer, FlatTrace, MemoryDiff, NoopTracer, NoopVMTracer,
             StorageDiff, Tracer, VMExecutedOperation, VMOperation, VMTrace, VMTracer, trace,
@@ -1673,12 +1675,10 @@ mod tests {
         },
     };
     use crypto::publickey::{Generator, Random};
-    use crate::error::ExecutionError;
     use ethereum_types::{Address, BigEndianHash, H160, H256, U256, U512};
     use evm::{Factory, VMType};
     use rustc_hex::FromHex;
     use std::{str::FromStr, sync::Arc};
-    use crate::test_helpers::{get_temp_state, get_temp_state_with_factory};
     use vm::{ActionParams, ActionValue, CallType, CreateContractAddress, EnvInfo};
 
     fn make_frontier_machine(max_depth: usize) -> EthereumMachine {
