@@ -76,7 +76,7 @@ fn snap_and_restore() {
 
     writer
         .into_inner()
-        .finish(::snapshot::ManifestData {
+        .finish(crate::snapshot::ManifestData {
             version: 2,
             state_hashes: state_hashes,
             block_hashes: Vec::new(),
@@ -215,7 +215,7 @@ fn checks_flag() {
 
     writer
         .into_inner()
-        .finish(::snapshot::ManifestData {
+        .finish(crate::snapshot::ManifestData {
             version: 2,
             state_hashes,
             block_hashes: Vec::new(),

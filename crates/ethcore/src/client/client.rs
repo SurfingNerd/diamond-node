@@ -3880,7 +3880,7 @@ mod tests {
         // given
         let key = KeyPair::from_secret_slice(keccak("test").as_bytes()).unwrap();
         let secret = key.secret();
-        let machine = ::ethereum::new_frontier_test_machine();
+        let machine = crate::ethereum::new_frontier_test_machine();
 
         let block_number = 1;
         let block_hash = H256::from_low_u64_be(5);

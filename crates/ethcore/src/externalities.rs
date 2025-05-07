@@ -590,7 +590,7 @@ mod tests {
 
     struct TestSetup {
         state: State<crate::state_db::StateDB>,
-        machine: ::machine::EthereumMachine,
+        machine: crate::machine::EthereumMachine,
         schedule: Schedule,
         sub_state: Substate,
         env_info: EnvInfo,

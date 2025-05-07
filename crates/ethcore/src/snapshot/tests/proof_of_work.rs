@@ -36,7 +36,7 @@ use parking_lot::Mutex;
 use snappy;
 use crate::test_helpers;
 
-const SNAPSHOT_MODE: ::snapshot::PowSnapshot = ::snapshot::PowSnapshot {
+const SNAPSHOT_MODE: crate::snapshot::PowSnapshot = crate::snapshot::PowSnapshot {
     blocks: 30000,
     max_restore_blocks: 30000,
 };
@@ -89,7 +89,7 @@ fn chunk_and_restore(amount: u64) {
     )
     .unwrap();
 
-    let manifest = ::snapshot::ManifestData {
+    let manifest = crate::snapshot::ManifestData {
         version: 2,
         state_hashes: Vec::new(),
         block_hashes: block_hashes,
@@ -169,7 +169,7 @@ fn checks_flag() {
         engine.params().eip1559_transition,
     );
 
-    let manifest = ::snapshot::ManifestData {
+    let manifest = crate::snapshot::ManifestData {
         version: 2,
         state_hashes: Vec::new(),
         block_hashes: Vec::new(),
