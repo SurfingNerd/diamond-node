@@ -97,6 +97,7 @@ impl ConnectionFilter for NodeFilter {
 #[cfg(test)]
 mod test {
     use super::NodeFilter;
+    use crate::io::IoChannel;
     use ethcore::{
         client::{BlockChainClient, Client, ClientConfig},
         exit::ShutdownManager,
@@ -105,7 +106,6 @@ mod test {
         test_helpers,
     };
     use ethereum_types::Address;
-    use io::IoChannel;
     use network::{ConnectionDirection, ConnectionFilter, NodeId};
     use std::{
         str::FromStr,

@@ -45,11 +45,13 @@ pub mod client_version;
 mod connection_filter;
 mod error;
 
+pub use crate::{
+    error::{DisconnectReason, Error, ErrorKind},
+    io::TimerToken,
+};
 pub use connection_filter::{ConnectionDirection, ConnectionFilter};
-pub use error::{DisconnectReason, Error, ErrorKind};
-pub use io::TimerToken;
 
-use client_version::ClientVersion;
+use crate::client_version::ClientVersion;
 use crypto::publickey::Secret;
 use ethereum_types::{H512, U64};
 use ipnetwork::{IpNetwork, IpNetworkError};

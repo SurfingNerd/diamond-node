@@ -391,8 +391,8 @@ pub mod tests {
     }
 
     #[test]
-    pub fn client_version_when_str_parity_long_format_and_valid_and_identity_multiple_tokens_then_all_fields_match(
-    ) {
+    pub fn client_version_when_str_parity_long_format_and_valid_and_identity_multiple_tokens_then_all_fields_match()
+     {
         let client_version_string = make_multitoken_identity_long_version_string();
 
         if let ClientVersion::ParityClient(client_version) =
@@ -434,8 +434,8 @@ pub mod tests {
     }
 
     #[test]
-    pub fn client_version_when_parity_format_and_invalid_then_equals_parity_unknown_client_version_string(
-    ) {
+    pub fn client_version_when_parity_format_and_invalid_then_equals_parity_unknown_client_version_string()
+     {
         // This is invalid because version has no leading 'v'
         let client_version_string = format!(
             "{}/{}/{}/{}",
@@ -453,8 +453,8 @@ pub mod tests {
     }
 
     #[test]
-    pub fn client_version_when_parity_format_without_identity_and_missing_compiler_field_then_equals_parity_unknown_client_version_string(
-    ) {
+    pub fn client_version_when_parity_format_without_identity_and_missing_compiler_field_then_equals_parity_unknown_client_version_string()
+     {
         let client_version_string = format!(
             "{}/v{}/{}",
             CURRENT_CLIENT_ID_PREFIX, PARITY_CLIENT_SEMVER, PARITY_CLIENT_OS,
@@ -468,8 +468,8 @@ pub mod tests {
     }
 
     #[test]
-    pub fn client_version_when_parity_format_with_identity_and_missing_compiler_field_then_equals_parity_unknown_client_version_string(
-    ) {
+    pub fn client_version_when_parity_format_with_identity_and_missing_compiler_field_then_equals_parity_unknown_client_version_string()
+     {
         let client_version_string = format!(
             "{}/{}/v{}/{}",
             CURRENT_CLIENT_ID_PREFIX,

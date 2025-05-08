@@ -16,12 +16,12 @@
 
 //! Parity upgrade logic
 
-use dir::{default_data_path, helpers::replace_home, home_dir, DatabaseDirectories};
+use dir::{DatabaseDirectories, default_data_path, helpers::replace_home, home_dir};
 use journaldb::Algorithm;
 use semver::{SemVerError, Version};
 use std::{
     collections::*,
-    fs::{self, create_dir_all, File},
+    fs::{self, File, create_dir_all},
     io,
     io::{Read, Write},
     path::{Path, PathBuf},

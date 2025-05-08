@@ -43,7 +43,7 @@ pub mod traits;
 
 pub use self::{
     extractors::{RpcExtractor, WsDispatcher, WsExtractor, WsStats},
-    helpers::{block_import, dispatch, NetworkSettings},
+    helpers::{NetworkSettings, block_import, dispatch},
     impls::*,
     metadata::Metadata,
     traits::{

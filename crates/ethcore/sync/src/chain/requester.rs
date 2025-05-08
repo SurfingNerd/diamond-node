@@ -14,15 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
-use block_sync::BlockRequest;
+use crate::{block_sync::BlockRequest, sync_io::SyncIo, types::BlockNumber};
 use bytes::Bytes;
 use ethereum_types::H256;
 use fastmap::H256FastSet;
 use network::PeerId;
 use rlp::RlpStream;
 use std::time::Instant;
-use sync_io::SyncIo;
-use types::BlockNumber;
 
 use super::{
     request_id::generate_request_id,

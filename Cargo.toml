@@ -9,7 +9,7 @@ authors = [
 	"OpenEthereum developers",
 	"Parity Technologies <admin@parity.io>"
 ]
-edition = "2015"
+edition = "2024"
 
 [dependencies]
 blooms-db = { path = "crates/db/blooms-db" }

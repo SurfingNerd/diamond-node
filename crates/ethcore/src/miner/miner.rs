@@ -21,6 +21,21 @@ use std::{
     time::{Duration, Instant},
 };
 
+use crate::{
+    io::IoChannel,
+    miner::{
+        self, MinerService,
+        cache::Cache,
+        pool_client::{CachedNonceClient, PoolClient},
+    },
+    types::{
+        BlockNumber,
+        block::Block,
+        header::Header,
+        receipt::RichReceipt,
+        transaction::{self, Action, PendingTransaction, SignedTransaction, UnverifiedTransaction},
+    },
+};
 use ansi_term::Colour;
 use bytes::Bytes;
 use call_contract::CallContract;
@@ -30,44 +45,31 @@ use ethcore_miner::{
     gas_pricer::GasPricer,
     local_accounts::LocalAccounts,
     pool::{
-        self,
-        transaction_filter::{match_filter, TransactionFilter},
-        PrioritizationStrategy, QueueStatus, TransactionQueue, VerifiedTransaction,
+        self, PrioritizationStrategy, QueueStatus, TransactionQueue, VerifiedTransaction,
+        transaction_filter::{TransactionFilter, match_filter},
     },
     service_transaction_checker::ServiceTransactionChecker,
 };
 use ethereum_types::{Address, H256, U256};
-use io::IoChannel;
 use itertools::Itertools;
-use miner::{
-    self,
-    cache::Cache,
-    pool_client::{CachedNonceClient, PoolClient},
-    MinerService,
-};
 use parking_lot::{Mutex, RwLock};
 use rayon::prelude::*;
-use types::{
-    block::Block,
-    header::Header,
-    receipt::RichReceipt,
-    transaction::{self, Action, PendingTransaction, SignedTransaction, UnverifiedTransaction},
-    BlockNumber,
-};
 use using_queue::{GetAction, UsingQueue};
 
-use block::{ClosedBlock, OpenBlock, SealedBlock};
-use client::{
-    traits::{EngineClient, ForceUpdateSealing},
-    BlockChain, BlockId, BlockProducer, ChainInfo, ClientIoMessage, Nonce, SealedBlockImporter,
-    TransactionId, TransactionInfo,
+use crate::{
+    block::{ClosedBlock, OpenBlock, SealedBlock},
+    client::{
+        BlockChain, BlockId, BlockProducer, ChainInfo, ClientIoMessage, Nonce, SealedBlockImporter,
+        TransactionId, TransactionInfo,
+        traits::{EngineClient, ForceUpdateSealing},
+    },
+    engines::{EngineSigner, EthEngine, Seal, SealingState},
+    error::{Error, ErrorKind},
+    executed::ExecutionError,
+    executive::contract_address,
+    spec::Spec,
+    state::State,
 };
-use engines::{EngineSigner, EthEngine, Seal, SealingState};
-use error::{Error, ErrorKind};
-use executed::ExecutionError;
-use executive::contract_address;
-use spec::Spec;
-use state::State;
 
 /// Different possible definitions for pending transaction set.
 #[derive(Debug, PartialEq)]
@@ -1107,7 +1109,7 @@ impl Miner {
 const SEALING_TIMEOUT_IN_BLOCKS: u64 = 5;
 
 impl miner::MinerService for Miner {
-    type State = State<::state_db::StateDB>;
+    type State = State<crate::state_db::StateDB>;
 
     fn authoring_params(&self) -> AuthoringParams {
         self.params.read().clone()
@@ -1566,8 +1568,11 @@ impl miner::MinerService for Miner {
         // which should be on by default.
         if block.header.number() == 1 {
             if let Some(name) = self.engine.params().nonzero_bugfix_hard_fork() {
-                warn!("Your chain specification contains one or more hard forks which are required to be \
-						on by default. Please remove these forks and start your chain again: {}.", name);
+                warn!(
+                    "Your chain specification contains one or more hard forks which are required to be \
+						on by default. Please remove these forks and start your chain again: {}.",
+                    name
+                );
                 return;
             }
         }
@@ -1743,7 +1748,7 @@ impl miner::MinerService for Miner {
                 let accounts = self.accounts.clone();
                 let service_transaction_checker = self.service_transaction_checker.clone();
 
-                let cull = move |chain: &::client::Client| {
+                let cull = move |chain: &crate::client::Client| {
                     let client = PoolClient::new(
                         chain,
                         &nonce_cache,
@@ -1825,18 +1830,21 @@ mod tests {
     use std::iter::FromIterator;
 
     use super::*;
+    use crate::types::BlockNumber;
     use accounts::AccountProvider;
     use crypto::publickey::{Generator, Random};
     use hash::keccak;
     use rustc_hex::FromHex;
-    use types::BlockNumber;
 
-    use client::{ChainInfo, EachBlockWith, ImportSealedBlock, TestBlockChainClient};
-    use miner::{MinerService, PendingOrdering};
-    use test_helpers::{
-        dummy_engine_signer_with_address, generate_dummy_client, generate_dummy_client_with_spec,
+    use crate::{
+        client::{ChainInfo, EachBlockWith, ImportSealedBlock, TestBlockChainClient},
+        miner::{MinerService, PendingOrdering},
+        test_helpers::{
+            dummy_engine_signer_with_address, generate_dummy_client,
+            generate_dummy_client_with_spec,
+        },
+        types::transaction::{Transaction, TypedTransaction},
     };
-    use types::transaction::{Transaction, TypedTransaction};
 
     #[test]
     fn should_prepare_block_to_seal() {
@@ -2267,13 +2275,18 @@ mod tests {
         assert!(miner.pending_block(0).is_none());
         assert_eq!(client.chain_info().best_block_number, 3 as BlockNumber);
 
-        assert!(miner
-            .import_own_transaction(
-                &*client,
-                PendingTransaction::new(transaction_with_chain_id(spec.chain_id()).into(), None),
-                false
-            )
-            .is_ok());
+        assert!(
+            miner
+                .import_own_transaction(
+                    &*client,
+                    PendingTransaction::new(
+                        transaction_with_chain_id(spec.chain_id()).into(),
+                        None
+                    ),
+                    false
+                )
+                .is_ok()
+        );
 
         miner.update_sealing(&*client, ForceUpdateSealing::No);
         client.flush_queue();

@@ -20,22 +20,24 @@ use std::{
     time::{Duration, Instant},
 };
 
+use crate::{
+    sync_io::SyncIo,
+    types::{BlockNumber, blockchain_info::BlockChainInfo, transaction::SignedTransaction},
+};
 use bytes::Bytes;
 use ethereum_types::H256;
 use fastmap::H256FastSet;
-use network::{client_version::ClientCapabilities, PeerId};
+use network::{PeerId, client_version::ClientCapabilities};
 use rand::RngCore;
 use rlp::RlpStream;
-use sync_io::SyncIo;
-use types::{blockchain_info::BlockChainInfo, transaction::SignedTransaction, BlockNumber};
 
 use crate::chain::propagator_statistics::SyncPropagatorStatistics;
 
 use super::sync_packet::SyncPacket::{self, *};
 
 use super::{
-    random, ChainSync, MAX_PEERS_PROPAGATION, MAX_PEER_LAG_PROPAGATION,
-    MAX_TRANSACTION_PACKET_SIZE, MIN_PEERS_PROPAGATION,
+    ChainSync, MAX_PEER_LAG_PROPAGATION, MAX_PEERS_PROPAGATION, MAX_TRANSACTION_PACKET_SIZE,
+    MIN_PEERS_PROPAGATION, random,
 };
 use ethcore_miner::pool::VerifiedTransaction;
 use std::sync::Arc;
@@ -513,12 +515,14 @@ impl ChainSync {
 
 #[cfg(test)]
 mod tests {
+    use crate::{
+        tests::{helpers::TestIo, snapshot::TestSnapshotService},
+        types::transaction::TypedTransaction,
+    };
     use ethcore::client::{BlockInfo, ChainInfo, EachBlockWith, TestBlockChainClient};
     use parking_lot::RwLock;
     use rlp::Rlp;
     use std::collections::VecDeque;
-    use tests::{helpers::TestIo, snapshot::TestSnapshotService};
-    use types::transaction::TypedTransaction;
 
     use super::{
         super::{tests::*, *},
@@ -927,14 +931,16 @@ mod tests {
         sync.propagate_ready_transactions(&mut io, || true);
 
         // peer#2 && peer#3 are receiving service transaction
-        assert!(io
-            .packets
-            .iter()
-            .any(|p| p.packet_id == 0x02 && p.recipient == 2)); // TRANSACTIONS_PACKET
-        assert!(io
-            .packets
-            .iter()
-            .any(|p| p.packet_id == 0x02 && p.recipient == 3)); // TRANSACTIONS_PACKET
+        assert!(
+            io.packets
+                .iter()
+                .any(|p| p.packet_id == 0x02 && p.recipient == 2)
+        ); // TRANSACTIONS_PACKET
+        assert!(
+            io.packets
+                .iter()
+                .any(|p| p.packet_id == 0x02 && p.recipient == 3)
+        ); // TRANSACTIONS_PACKET
         assert_eq!(io.packets.len(), 2);
     }
 

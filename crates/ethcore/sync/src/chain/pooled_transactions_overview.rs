@@ -1,6 +1,6 @@
 use std::{num::NonZeroUsize, time::Instant};
 
-use fastmap::{new_h256_fast_lru_map, H256FastLruMap};
+use fastmap::{H256FastLruMap, new_h256_fast_lru_map};
 use hash::H256;
 
 /// memorizs currently pooled transactions, so they are not pooled to often from different hosts.

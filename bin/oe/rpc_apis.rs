@@ -33,9 +33,9 @@ use ethcore_logger::RotatingLogger;
 use fetch::Client as FetchClient;
 use jsonrpc_core::{self as core, MetaIoHandler};
 use parity_rpc::{
+    Host, Metadata, NetworkSettings,
     dispatch::FullDispatcher,
     informant::{ActivityNotifier, ClientNotifier},
-    Host, Metadata, NetworkSettings,
 };
 use parity_runtime::Executor;
 use parking_lot::Mutex;

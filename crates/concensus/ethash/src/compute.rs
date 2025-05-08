@@ -19,11 +19,13 @@
 
 // TODO: fix endianess for big endian
 
-use cache::{NodeCache, NodeCacheBuilder};
-use keccak::{keccak_256, keccak_512, H256};
-use progpow::{generate_cdag, keccak_f800_long, keccak_f800_short, progpow, CDag};
-use seed_compute::SeedHashCompute;
-use shared::*;
+use crate::{
+    cache::{NodeCache, NodeCacheBuilder},
+    keccak::{H256, keccak_256, keccak_512},
+    progpow::{CDag, generate_cdag, keccak_f800_long, keccak_f800_short, progpow},
+    seed_compute::SeedHashCompute,
+    shared::*,
+};
 use std::io;
 
 use std::{mem, path::Path};

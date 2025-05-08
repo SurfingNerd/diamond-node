@@ -9,7 +9,7 @@ use crate::{
     ethereum::public_key_to_address::public_key_to_address,
 };
 
-use super::{contracts::staking::get_pool_public_key, NodeId};
+use super::{NodeId, contracts::staking::get_pool_public_key};
 use bytes::ToPretty;
 use ethereum_types::Address;
 
@@ -209,7 +209,10 @@ impl HbbftPeersManagement {
         }
 
         if validators_to_remove.len() > 0 {
-            info!("removing {} reserved peers, because they are neither a pending validator nor a current validator.", validators_to_remove.len());
+            info!(
+                "removing {} reserved peers, because they are neither a pending validator nor a current validator.",
+                validators_to_remove.len()
+            );
 
             let mut peers_management_guard = block_chain_client.reserved_peers_management().lock();
 

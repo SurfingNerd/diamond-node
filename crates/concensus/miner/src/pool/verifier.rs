@@ -30,10 +30,10 @@ use std::{
     },
 };
 
+use crate::types::transaction;
 use ethereum_types::{H256, U256};
 use hash::KECCAK_EMPTY;
 use txpool;
-use types::transaction;
 
 use super::{
     client::{Client, TransactionType},

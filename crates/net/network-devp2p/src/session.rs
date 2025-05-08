@@ -22,22 +22,24 @@ use std::{
     time::{Duration, Instant},
 };
 
-use connection::{Connection, EncryptedConnection, Packet, MAX_PAYLOAD_SIZE};
+use crate::{
+    connection::{Connection, EncryptedConnection, MAX_PAYLOAD_SIZE, Packet},
+    handshake::Handshake,
+    host::*,
+    io::{IoContext, StreamToken},
+    node_table::NodeId,
+};
 use ethereum_types::H256;
-use handshake::Handshake;
-use host::*;
-use io::{IoContext, StreamToken};
 use mio::{
     deprecated::{EventLoop, Handler},
     tcp::*,
     *,
 };
 use network::{
-    client_version::ClientVersion, DisconnectReason, Error, ErrorKind, PeerCapabilityInfo,
-    ProtocolId, SessionCapabilityInfo, SessionInfo,
+    DisconnectReason, Error, ErrorKind, PeerCapabilityInfo, ProtocolId, SessionCapabilityInfo,
+    SessionInfo, client_version::ClientVersion,
 };
-use node_table::NodeId;
-use rlp::{Rlp, RlpStream, EMPTY_LIST_RLP};
+use rlp::{EMPTY_LIST_RLP, Rlp, RlpStream};
 use snappy;
 
 // Timeout must be less than (interval - 1).

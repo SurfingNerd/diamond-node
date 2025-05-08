@@ -23,17 +23,17 @@ extern crate parity_bytes;
 extern crate parity_crypto as crypto;
 extern crate parking_lot;
 
+use crate::io::TimerToken;
 use crypto::publickey::{Generator, Random};
 use ethcore_network::*;
 use ethcore_network_devp2p::NetworkService;
 use ethereum_types::U64;
-use io::TimerToken;
 use parity_bytes::Bytes;
 use parking_lot::Mutex;
 use std::{
     sync::{
-        atomic::{AtomicBool, Ordering as AtomicOrdering},
         Arc,
+        atomic::{AtomicBool, Ordering as AtomicOrdering},
     },
     thread,
     time::*,

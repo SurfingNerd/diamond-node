@@ -39,13 +39,13 @@ use std::{
     io::Write,
     process::{self},
     sync::{
-        atomic::{AtomicBool, Ordering},
         Arc,
+        atomic::{AtomicBool, Ordering},
     },
 };
 
 use ansi_term::Colour;
-use diamond_node::{start, ExecutionAction, ShutdownManager};
+use diamond_node::{ExecutionAction, ShutdownManager, start};
 use ethcore::exit::ExitStatus;
 use ethcore_logger::setup_log;
 use fdlimit::raise_fd_limit;

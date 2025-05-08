@@ -26,7 +26,7 @@
 //! use devp2p::NetworkService;
 //! use std::sync::Arc;
 //! use std::time::Duration;
-//! use types::U64;
+//! use crate::types::U64;
 //!
 //! struct MyHandler;
 //!
@@ -117,7 +117,7 @@ pub use service::NetworkService;
 
 pub use connection::PAYLOAD_SOFT_LIMIT;
 
-pub use io::TimerToken;
-pub use node_table::{validate_node_url, NodeId};
+pub use crate::io::TimerToken;
+pub use node_table::{NodeId, validate_node_url};
 
 const PROTOCOL_VERSION: u32 = 5;

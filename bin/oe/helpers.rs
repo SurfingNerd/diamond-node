@@ -21,7 +21,7 @@ use crate::{
     sync::{self, validate_node_url},
     upgrade::{upgrade, upgrade_data_paths},
 };
-use dir::{helpers::replace_home, DatabaseDirectories};
+use dir::{DatabaseDirectories, helpers::replace_home};
 use ethcore::{
     client::{BlockId, ClientConfig, DatabaseCompactionProfile, Mode, VMType, VerifierType},
     miner::{Penalization, PendingSet},
@@ -591,9 +591,9 @@ but the first password is trimmed
         let res = join_set(Some(&test_set)).unwrap();
 
         assert!(
-			res == "0x1111111111111111111111111111111111111111,0x0000000000000000000000000000000000000000"
-			||
-			res == "0x0000000000000000000000000000000000000000,0x1111111111111111111111111111111111111111"
-		);
+            res == "0x1111111111111111111111111111111111111111,0x0000000000000000000000000000000000000000"
+                || res
+                    == "0x0000000000000000000000000000000000000000,0x1111111111111111111111111111111111111111"
+        );
     }
 }

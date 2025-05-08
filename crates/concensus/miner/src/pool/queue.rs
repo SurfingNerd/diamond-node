@@ -27,10 +27,10 @@ use std::{
 };
 
 use self::scoring::ScoringEvent;
+use crate::types::transaction;
 use ethereum_types::{Address, H256, U256};
 use parking_lot::RwLock;
 use txpool::{self, Verifier};
-use types::transaction;
 
 use crate::pool::{
     self, client, listener,

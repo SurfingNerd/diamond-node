@@ -20,14 +20,14 @@ use crate::{
     hash::keccak,
     metrics::MetricsConfiguration,
     miner::pool,
-    sync::{self, validate_node_url, NetworkConfiguration},
+    sync::{self, NetworkConfiguration, validate_node_url},
 };
 use ansi_term::Colour;
 
 use crate::crypto::publickey::{Public, Secret};
 use ethcore::{
     client::VMType,
-    miner::{stratum, MinerOptions},
+    miner::{MinerOptions, stratum},
     snapshot::SnapshotConfiguration,
     verification::queue::VerifierSettings,
 };
@@ -70,9 +70,8 @@ use crate::{
     types::data_format::DataFormat,
 };
 use dir::{
-    self, default_data_path, default_local_path,
+    self, Directories, default_data_path, default_local_path,
     helpers::{replace_home, replace_home_and_local},
-    Directories,
 };
 use ethcore_logger::Config as LogConfig;
 use parity_rpc::NetworkSettings;
@@ -757,13 +756,13 @@ impl Configuration {
                             return Err(format!(
                                 "Failed to resolve hostname of a boot node: {}",
                                 line
-                            ))
+                            ));
                         }
                         Some(_) => {
                             return Err(format!(
                                 "Invalid node address format given for a boot node: {}",
                                 line
-                            ))
+                            ));
                         }
                     }
                 }
@@ -801,7 +800,7 @@ impl Configuration {
                     return Err(format!(
                         "Invalid host given with `--nat extip:{}`",
                         &self.args.arg_nat[6..]
-                    ))
+                    ));
                 }
             }
         } else {
@@ -1268,6 +1267,7 @@ mod tests {
     use dir::Directories;
     use ethcore::{client::VMType, miner::MinerOptions};
     use parity_rpc::NetworkSettings;
+    use parity_version::NODE_SOFTWARE_NAME;
     use tempdir::TempDir;
 
     use crate::network::{AllowIP, IpFilter};
@@ -1276,8 +1276,6 @@ mod tests {
     use self::ipnetwork::IpNetwork;
 
     use super::*;
-
-    use crate::NODE_SOFTWARE_NAME;
 
     lazy_static! {
         static ref ITERATIONS: NonZeroU32 = NonZeroU32::new(10240).expect("10240 > 0; qed");
@@ -1815,10 +1813,11 @@ mod tests {
         match conf.into_command().unwrap().cmd {
             Cmd::Run(c) => {
                 assert_eq!(c.name, "Somebody");
-                assert!(c
-                    .net_conf
-                    .client_version
-                    .starts_with("OpenEthereum/Somebody/"));
+                assert!(
+                    c.net_conf
+                        .client_version
+                        .starts_with("diamond-node/Somebody/")
+                );
             }
             _ => panic!("Should be Cmd::Run"),
         }

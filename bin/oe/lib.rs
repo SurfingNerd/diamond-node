@@ -128,15 +128,12 @@ use std::alloc::System;
 
 pub use self::{configuration::Configuration, run::RunningClient};
 pub use ethcore::exit::ShutdownManager;
-pub use ethcore_logger::{setup_log, Config as LoggerConfig, RotatingLogger};
+pub use ethcore_logger::{Config as LoggerConfig, RotatingLogger, setup_log};
 pub use parity_rpc::PubSubSession;
 
 #[cfg(feature = "memory_profiling")]
 #[global_allocator]
 static A: System = System;
-
-/// The name of the node software.
-pub const NODE_SOFTWARE_NAME: &str = "diamond-node";
 
 fn print_hash_of(maybe_file: Option<String>) -> Result<String, String> {
     if let Some(file) = maybe_file {
@@ -160,23 +157,25 @@ fn run_deadlock_detection_thread() {
     let builder = std::thread::Builder::new().name("DeadlockDetection".to_string());
 
     // Create a background thread which checks for deadlocks every 10s
-    let spawned = builder.spawn(move || loop {
-        thread::sleep(Duration::from_secs(10));
-        let deadlocks = deadlock::check_deadlock();
-        if deadlocks.is_empty() {
-            continue;
-        }
+    let spawned = builder.spawn(move || {
+        loop {
+            thread::sleep(Duration::from_secs(10));
+            let deadlocks = deadlock::check_deadlock();
+            if deadlocks.is_empty() {
+                continue;
+            }
 
-        warn!(
-            "{} {} detected",
-            deadlocks.len(),
-            Style::new().bold().paint("deadlock(s)")
-        );
-        for (i, threads) in deadlocks.iter().enumerate() {
-            warn!("{} #{}", Style::new().bold().paint("Deadlock"), i);
-            for t in threads {
-                warn!("Thread Id {:#?}", t.thread_id());
-                warn!("{:#?}", t.backtrace());
+            warn!(
+                "{} {} detected",
+                deadlocks.len(),
+                Style::new().bold().paint("deadlock(s)")
+            );
+            for (i, threads) in deadlocks.iter().enumerate() {
+                warn!("{} #{}", Style::new().bold().paint("Deadlock"), i);
+                for t in threads {
+                    warn!("Thread Id {:#?}", t.thread_id());
+                    warn!("{:#?}", t.backtrace());
+                }
             }
         }
     });

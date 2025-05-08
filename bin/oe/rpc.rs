@@ -23,15 +23,14 @@ use crate::{
 use dir::{default_data_path, helpers::replace_home};
 use jsonrpc_core::MetaIoHandler;
 use parity_rpc::{
-    self as rpc,
+    self as rpc, DomainsValidation, Metadata,
     informant::{Middleware, RpcStats},
-    DomainsValidation, Metadata,
 };
 use parity_runtime::Executor;
 
 pub use parity_rpc::{HttpServer, IpcServer};
 //pub use parity_rpc::ws::Server as WsServer;
-pub use parity_rpc::ws::{ws, Server as WsServer};
+pub use parity_rpc::ws::{Server as WsServer, ws};
 
 pub const DAPPS_DOMAIN: &str = "web3.site";
 
@@ -209,14 +208,16 @@ pub fn new_ws<D: rpc_apis::Dependencies>(
     //		Err(e) => Err(format!("WebSockets error: {:?}", e)),
     //	}
     match start_result {
-		Ok(server) => Ok(Some(server)),
-		Err(rpc::ws::Error::WsError(ws::Error {
-			                            kind: ws::ErrorKind::Io(ref err), ..
-		                            })) if err.kind() == io::ErrorKind::AddrInUse => Err(
-			format!("WebSockets address {} is already in use, make sure that another instance of an Ethereum client is not running or change the address using the --ws-port and --ws-interface options.", url)
-		),
-		Err(e) => Err(format!("WebSockets error: {:?}", e)),
-	}
+        Ok(server) => Ok(Some(server)),
+        Err(rpc::ws::Error::WsError(ws::Error {
+            kind: ws::ErrorKind::Io(ref err),
+            ..
+        })) if err.kind() == io::ErrorKind::AddrInUse => Err(format!(
+            "WebSockets address {} is already in use, make sure that another instance of an Ethereum client is not running or change the address using the --ws-port and --ws-interface options.",
+            url
+        )),
+        Err(e) => Err(format!("WebSockets error: {:?}", e)),
+    }
 }
 
 pub fn new_http<D: rpc_apis::Dependencies>(
@@ -253,12 +254,13 @@ pub fn new_http<D: rpc_apis::Dependencies>(
     );
 
     match start_result {
-		Ok(server) => Ok(Some(server)),
-		Err(ref err) if err.kind() == io::ErrorKind::AddrInUse => Err(
-			format!("{} address {} is already in use, make sure that another instance of an Ethereum client is not running or change the address using the --{}-port and --{}-interface options.", id, url, options, options)
-		),
-		Err(e) => Err(format!("{} error: {:?}", id, e)),
-	}
+        Ok(server) => Ok(Some(server)),
+        Err(ref err) if err.kind() == io::ErrorKind::AddrInUse => Err(format!(
+            "{} address {} is already in use, make sure that another instance of an Ethereum client is not running or change the address using the --{}-port and --{}-interface options.",
+            id, url, options, options
+        )),
+        Err(e) => Err(format!("{} error: {:?}", id, e)),
+    }
 }
 
 pub fn new_ipc<D: rpc_apis::Dependencies>(

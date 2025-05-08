@@ -75,7 +75,9 @@ mod tests;
 
 mod api;
 
-pub use api::*;
-pub use chain::{SyncState, SyncStatus};
+pub use crate::{
+    api::*,
+    chain::{SyncState, SyncStatus},
+};
 pub use devp2p::validate_node_url;
 pub use network::{ConnectionDirection, ConnectionFilter, Error, ErrorKind, NonReservedPeerMode};

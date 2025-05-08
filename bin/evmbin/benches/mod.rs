@@ -28,13 +28,13 @@ extern crate evm;
 extern crate rustc_hex;
 extern crate vm;
 
-use criterion::{black_box, Criterion};
+use criterion::{Criterion, black_box};
 use std::sync::Arc;
 
 use ethereum_types::U256;
 use evm::Factory;
 use rustc_hex::FromHex;
-use vm::{tests::FakeExt, ActionParams, Ext};
+use vm::{ActionParams, Ext, tests::FakeExt};
 
 criterion_group!(
     evmbin,
