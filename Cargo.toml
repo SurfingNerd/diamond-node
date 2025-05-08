@@ -80,6 +80,10 @@ net2 = "0.2.38"
 
 # ethcore-secretstore = { path = "crates/util/secret-store", optional = true }
 
+[patch.crates-io]
+# patch parity-rocksdb-sys package
+parity-rocksdb = { git = 'https://github.com/DMDcoin/rust-rocksdb.git' }
+
 [build-dependencies]
 rustc_version = "0.2"
 

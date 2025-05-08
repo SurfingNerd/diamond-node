@@ -3398,8 +3398,7 @@ dependencies = [
 [[package]]
 name = "parity-rocksdb"
 version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2d17caf6640e24b70242f3f48615e3f0764f98871e8c7aea25584e29833eb5a8"
+source = "git+https://github.com/DMDcoin/rust-rocksdb.git#412b49ac7d87c20360fbbdfdda79d22f542f280d"
 dependencies = [
  "libc",
  "local-encoding",
@@ -3408,9 +3407,8 @@ dependencies = [
 
 [[package]]
 name = "parity-rocksdb-sys"
-version = "0.5.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9581e6b8c63f3808500638372ee56faaaffb57c4d349974bff591606b94d5f57"
+version = "0.5.7"
+source = "git+https://github.com/DMDcoin/rust-rocksdb.git#412b49ac7d87c20360fbbdfdda79d22f542f280d"
 dependencies = [
  "cmake",
  "libc",
