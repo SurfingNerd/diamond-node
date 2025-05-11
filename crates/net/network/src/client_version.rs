@@ -179,6 +179,7 @@ impl ClientCapabilities for ClientVersion {
 fn is_parity(client_id: &str) -> bool {
     client_id.starts_with(LEGACY_CLIENT_ID_PREFIX)
         || client_id.starts_with(CURRENT_CLIENT_ID_PREFIX)
+        || client_id.starts_with(parity_version::NODE_SOFTWARE_NAME)
 }
 
 fn is_nethermind(client_id: &str) -> bool {
