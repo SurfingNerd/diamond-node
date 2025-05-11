@@ -27,11 +27,17 @@ use crate::{
             ImportExportBlocks,
         },
     },
+    ethereum,
     executive::{Executive, TransactOptions},
     io::IoChannel,
     miner::{Miner, MinerService, PendingOrdering},
     spec::Spec,
     state::{self, CleanupMode, State, StateInfo},
+    test_helpers::{
+        self, generate_dummy_client, generate_dummy_client_with_data, get_bad_state_dummy_block,
+        get_good_dummy_block, get_good_dummy_block_seq, get_test_client_with_blocks,
+        push_blocks_to_client,
+    },
     types::{
         data_format::DataFormat,
         filter::Filter,
@@ -43,16 +49,10 @@ use crate::{
     verification::queue::kind::blocks::Unverified,
 };
 use crypto::publickey::KeyPair;
-use ethereum;
 use ethereum_types::{Address, U256};
 use hash::keccak;
 use rustc_hex::ToHex;
 use tempdir::TempDir;
-use test_helpers::{
-    self, generate_dummy_client, generate_dummy_client_with_data, get_bad_state_dummy_block,
-    get_good_dummy_block, get_good_dummy_block_seq, get_test_client_with_blocks,
-    push_blocks_to_client,
-};
 
 use crate::exit::ShutdownManager;
 

@@ -1579,6 +1579,7 @@ mod tests {
     use crate::{
         machine::EthereumMachine,
         spec::*,
+        test_helpers::{get_temp_state, get_temp_state_db},
         trace::{FlatTrace, TraceError, trace},
         types::transaction::*,
     };
@@ -1588,7 +1589,6 @@ mod tests {
     use hash::{KECCAK_NULL_RLP, keccak};
     use rustc_hex::FromHex;
     use std::{str::FromStr, sync::Arc};
-    use test_helpers::{get_temp_state, get_temp_state_db};
     use vm::EnvInfo;
 
     fn secret() -> Secret {
@@ -1596,7 +1596,7 @@ mod tests {
     }
 
     fn make_frontier_machine(max_depth: usize) -> EthereumMachine {
-        let mut machine = ::ethereum::new_frontier_test_machine();
+        let mut machine = crate::ethereum::new_frontier_test_machine();
         machine.set_schedule_creation_rules(Box::new(move |s, _| s.max_depth = max_depth));
         machine
     }

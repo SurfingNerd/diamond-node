@@ -287,6 +287,7 @@ mod test {
         io::IoChannel,
         miner::Miner,
         spec::Spec,
+        test_helpers,
         types::transaction::{
             AccessListTx, Action, EIP1559TransactionTx, Transaction, TypedTransaction,
         },
@@ -295,7 +296,6 @@ mod test {
     use ethereum_types::{Address, U256};
     use std::{str::FromStr, sync::Arc};
     use tempdir::TempDir;
-    use test_helpers;
 
     /// Contract code: https://gist.github.com/VladLupashevskyi/84f18eabb1e4afadf572cf92af3e7e7f
     #[test]

@@ -271,7 +271,7 @@ impl trace::VMTracer for Informant {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use info::tests::run_test;
+    use crate::info::tests::run_test;
     use serde_json;
 
     #[derive(Serialize, Deserialize, Debug, PartialEq)]

@@ -197,9 +197,10 @@ pub fn apply_block_rewards<M: Machine>(
 
 #[cfg(test)]
 mod test {
-    use crate::{client::PrepareOpenBlock, spec::Spec};
+    use crate::{
+        client::PrepareOpenBlock, spec::Spec, test_helpers::generate_dummy_client_with_spec,
+    };
     use ethereum_types::{H160, U256};
-    use test_helpers::generate_dummy_client_with_spec;
 
     use super::{BlockRewardContract, RewardKind};
     use crate::engines::SystemOrCodeCallKind;

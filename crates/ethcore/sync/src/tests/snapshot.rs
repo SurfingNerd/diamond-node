@@ -15,9 +15,7 @@
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
 use super::helpers::*;
-use crate::types::BlockNumber;
-use SyncConfig;
-use WarpSync;
+use crate::{SyncConfig, WarpSync, types::BlockNumber};
 use bytes::Bytes;
 use ethcore::{
     client::EachBlockWith,

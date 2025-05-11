@@ -1816,7 +1816,7 @@ mod tests {
                 assert!(
                     c.net_conf
                         .client_version
-                        .starts_with("OpenEthereum/Somebody/")
+                        .starts_with("diamond-node/Somebody/")
                 );
             }
             _ => panic!("Should be Cmd::Run"),

@@ -564,13 +564,18 @@ mod tests {
         super::{new_homestead_test_machine, new_mcip3_test, new_morden},
         Ethash, EthashParams, ecip1017_eras_block_reward,
     };
-    use crate::{block::*, engines::Engine, spec::Spec, types::header::Header};
-    use error::{BlockError, Error, ErrorKind};
+    use crate::{
+        block::*,
+        engines::Engine,
+        error::{BlockError, Error, ErrorKind},
+        spec::Spec,
+        test_helpers::get_temp_state_db,
+        types::header::Header,
+    };
     use ethereum_types::{Address, H64, H256, U256};
     use rlp;
     use std::{collections::BTreeMap, str::FromStr, sync::Arc};
     use tempdir::TempDir;
-    use test_helpers::get_temp_state_db;
 
     fn test_spec() -> Spec {
         let tempdir = TempDir::new("").unwrap();

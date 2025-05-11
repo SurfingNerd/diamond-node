@@ -30,7 +30,7 @@ use crate::{
     types::basic_account::BasicAccount,
 };
 
-use error::{Error, ErrorKind};
+use crate::error::{Error, ErrorKind};
 
 use self::rand_xorshift::XorShiftRng;
 use ethereum_types::H256;
@@ -76,7 +76,7 @@ fn snap_and_restore() {
 
     writer
         .into_inner()
-        .finish(::snapshot::ManifestData {
+        .finish(crate::snapshot::ManifestData {
             version: 2,
             state_hashes: state_hashes,
             block_hashes: Vec::new(),
@@ -215,7 +215,7 @@ fn checks_flag() {
 
     writer
         .into_inner()
-        .finish(::snapshot::ManifestData {
+        .finish(crate::snapshot::ManifestData {
             version: 2,
             state_hashes,
             block_hashes: Vec::new(),

@@ -289,7 +289,7 @@ impl<Trace: Writer, Out: Writer> trace::VMTracer for Informant<Trace, Out> {
 #[cfg(test)]
 pub mod tests {
     use super::*;
-    use info::tests::run_test;
+    use crate::info::tests::run_test;
     use std::sync::{Arc, Mutex};
 
     #[derive(Debug, Clone, Default)]

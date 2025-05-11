@@ -216,6 +216,7 @@ mod tests {
         engines::{EpochChange, validator_set::ValidatorSet},
         miner::{self, MinerService},
         spec::Spec,
+        test_helpers::generate_dummy_client_with_spec,
         types::{header::Header, ids::BlockId},
         verification::queue::kind::blocks::Unverified,
     };
@@ -224,7 +225,6 @@ mod tests {
     use ethereum_types::Address;
     use hash::keccak;
     use std::{collections::BTreeMap, sync::Arc};
-    use test_helpers::generate_dummy_client_with_spec;
 
     use super::Multi;
 
@@ -253,12 +253,12 @@ mod tests {
                 Default::default(),
             ))
             .unwrap();
-        ::client::EngineClient::update_sealing(&*client, ForceUpdateSealing::No);
+        crate::client::EngineClient::update_sealing(&*client, ForceUpdateSealing::No);
         assert_eq!(client.chain_info().best_block_number, 0);
         // Right signer for the first block.
         let signer = Box::new((tap.clone(), v0, "".into()));
         client.miner().set_author(miner::Author::Sealer(signer));
-        ::client::EngineClient::update_sealing(&*client, ForceUpdateSealing::No);
+        crate::client::EngineClient::update_sealing(&*client, ForceUpdateSealing::No);
         assert_eq!(client.chain_info().best_block_number, 1);
         // This time v0 is wrong.
         client
@@ -267,11 +267,11 @@ mod tests {
                 Default::default(),
             ))
             .unwrap();
-        ::client::EngineClient::update_sealing(&*client, ForceUpdateSealing::No);
+        crate::client::EngineClient::update_sealing(&*client, ForceUpdateSealing::No);
         assert_eq!(client.chain_info().best_block_number, 1);
         let signer = Box::new((tap.clone(), v1, "".into()));
         client.miner().set_author(miner::Author::Sealer(signer));
-        ::client::EngineClient::update_sealing(&*client, ForceUpdateSealing::No);
+        crate::client::EngineClient::update_sealing(&*client, ForceUpdateSealing::No);
         assert_eq!(client.chain_info().best_block_number, 2);
         // v1 is still good.
         client
@@ -280,7 +280,7 @@ mod tests {
                 Default::default(),
             ))
             .unwrap();
-        ::client::EngineClient::update_sealing(&*client, ForceUpdateSealing::No);
+        crate::client::EngineClient::update_sealing(&*client, ForceUpdateSealing::No);
         assert_eq!(client.chain_info().best_block_number, 3);
 
         // Check syncing.

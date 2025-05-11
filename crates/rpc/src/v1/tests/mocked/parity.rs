@@ -29,13 +29,15 @@ use std::{str::FromStr, sync::Arc};
 use sync::ManageNetwork;
 
 use super::manage_network::TestManageNetwork;
-use crate::v1::{
-    Parity, ParityClient,
-    helpers::{NetworkSettings, external_signer::SignerService},
-    metadata::Metadata,
-    tests::helpers::{Config, TestMinerService, TestSyncProvider},
+use crate::{
+    Host,
+    v1::{
+        Parity, ParityClient,
+        helpers::{NetworkSettings, external_signer::SignerService},
+        metadata::Metadata,
+        tests::helpers::{Config, TestMinerService, TestSyncProvider},
+    },
 };
-use Host;
 use jsonrpc_core::IoHandler;
 
 pub type TestParityClient = ParityClient<TestBlockChainClient, TestMinerService>;
@@ -464,7 +466,7 @@ fn rpc_parity_local_transactions() {
         nonce: 0.into(),
     })
     .fake_sign(Address::from_low_u64_be(3));
-    let tx = Arc::new(::miner::pool::VerifiedTransaction::from_pending_block_transaction(tx));
+    let tx = Arc::new(crate::miner::pool::VerifiedTransaction::from_pending_block_transaction(tx));
     deps.miner.local_transactions.lock().insert(
         H256::from_low_u64_be(10),
         LocalTransactionStatus::Pending(tx.clone()),

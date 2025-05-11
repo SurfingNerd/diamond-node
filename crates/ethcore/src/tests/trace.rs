@@ -22,6 +22,7 @@ use crate::{
     io::*,
     miner::Miner,
     spec::*,
+    test_helpers::{self, get_temp_state_db},
     trace::{LocalizedTrace, RewardType, trace::Action::Reward},
     types::{
         header::Header,
@@ -35,7 +36,6 @@ use crypto::publickey::KeyPair;
 use ethereum_types::{Address, U256};
 use hash::keccak;
 use std::{str::FromStr, sync::Arc};
-use test_helpers::{self, get_temp_state_db};
 
 use crate::exit::ShutdownManager;
 

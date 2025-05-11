@@ -735,7 +735,7 @@ mod tests {
         // additions that need access to state (tx filter in specific)
         // no existing tests need access to test, so having this not function
         // is fine.
-        let client = ::client::TestBlockChainClient::default();
+        let client = crate::client::TestBlockChainClient::default();
         let parent = bc
             .block_header_data(header.parent_hash())
             .ok_or(BlockError::UnknownParent(*header.parent_hash()))?

@@ -128,10 +128,11 @@ impl<M: Machine> Engine<M> for InstantSeal<M> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{block::*, engines::Seal, spec::Spec, types::header::Header};
+    use crate::{
+        block::*, engines::Seal, spec::Spec, test_helpers::get_temp_state_db, types::header::Header,
+    };
     use ethereum_types::{Address, H520};
     use std::sync::Arc;
-    use test_helpers::get_temp_state_db;
 
     #[test]
     fn instant_can_seal() {

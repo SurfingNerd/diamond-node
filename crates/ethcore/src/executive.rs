@@ -1662,8 +1662,10 @@ impl<'a, B: 'a + StateBackend> Executive<'a, B> {
 mod tests {
     use super::*;
     use crate::{
+        error::ExecutionError,
         machine::EthereumMachine,
         state::{CleanupMode, Substate},
+        test_helpers::{get_temp_state, get_temp_state_with_factory},
         trace::{
             ExecutiveTracer, ExecutiveVMTracer, FlatTrace, MemoryDiff, NoopTracer, NoopVMTracer,
             StorageDiff, Tracer, VMExecutedOperation, VMOperation, VMTrace, VMTracer, trace,
@@ -1673,28 +1675,26 @@ mod tests {
         },
     };
     use crypto::publickey::{Generator, Random};
-    use error::ExecutionError;
     use ethereum_types::{Address, BigEndianHash, H160, H256, U256, U512};
     use evm::{Factory, VMType};
     use rustc_hex::FromHex;
     use std::{str::FromStr, sync::Arc};
-    use test_helpers::{get_temp_state, get_temp_state_with_factory};
     use vm::{ActionParams, ActionValue, CallType, CreateContractAddress, EnvInfo};
 
     fn make_frontier_machine(max_depth: usize) -> EthereumMachine {
-        let mut machine = ::ethereum::new_frontier_test_machine();
+        let mut machine = crate::ethereum::new_frontier_test_machine();
         machine.set_schedule_creation_rules(Box::new(move |s, _| s.max_depth = max_depth));
         machine
     }
 
     fn make_byzantium_machine(max_depth: usize) -> EthereumMachine {
-        let mut machine = ::ethereum::new_byzantium_test_machine();
+        let mut machine = crate::ethereum::new_byzantium_test_machine();
         machine.set_schedule_creation_rules(Box::new(move |s, _| s.max_depth = max_depth));
         machine
     }
 
     fn make_london_machine(max_depth: usize) -> EthereumMachine {
-        let mut machine = ::ethereum::new_london_test_machine();
+        let mut machine = crate::ethereum::new_london_test_machine();
         machine.set_schedule_creation_rules(Box::new(move |s, _| s.max_depth = max_depth));
         machine
     }
@@ -2088,7 +2088,7 @@ mod tests {
             .add_balance(&sender, &U256::from(100), CleanupMode::NoEmpty)
             .unwrap();
         let info = EnvInfo::default();
-        let machine = ::ethereum::new_byzantium_test_machine();
+        let machine = crate::ethereum::new_byzantium_test_machine();
         let schedule = machine.schedule(info.number);
         let mut substate = Substate::new();
         let mut tracer = ExecutiveTracer::default();
@@ -2988,7 +2988,7 @@ mod tests {
         params.code = Some(Arc::new(code));
         params.value = ActionValue::Transfer(U256::zero());
         let info = EnvInfo::default();
-        let machine = ::ethereum::new_byzantium_test_machine();
+        let machine = crate::ethereum::new_byzantium_test_machine();
         let schedule = machine.schedule(info.number);
         let mut substate = Substate::new();
 
@@ -3050,7 +3050,7 @@ mod tests {
             .unwrap();
 
         let info = EnvInfo::default();
-        let machine = ::ethereum::new_constantinople_test_machine();
+        let machine = crate::ethereum::new_constantinople_test_machine();
         let schedule = machine.schedule(info.number);
 
         assert_eq!(
@@ -3141,7 +3141,7 @@ mod tests {
         info.number = 100;
 
         // Network with wasm activated at block 10
-        let machine = ::ethereum::new_kovan_wasm_test_machine();
+        let machine = crate::ethereum::new_kovan_wasm_test_machine();
 
         let mut output = [0u8; 20];
         let FinalizationResult {

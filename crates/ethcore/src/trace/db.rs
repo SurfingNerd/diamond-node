@@ -406,6 +406,7 @@ where
 #[cfg(test)]
 mod tests {
     use crate::{
+        test_helpers::new_db,
         trace::{
             AddressesFilter, Config, Database as TraceDatabase, DatabaseExtras, Filter,
             ImportRequest, LocalizedTrace, TraceDB, TraceError,
@@ -418,7 +419,6 @@ mod tests {
     use evm::CallType;
     use kvdb::DBTransaction;
     use std::{collections::HashMap, sync::Arc};
-    use test_helpers::new_db;
 
     struct NoopExtras;
 

@@ -27,12 +27,12 @@ use crate::{
         service::{Service, ServiceParams},
     },
     spec::Spec,
+    test_helpers::{
+        generate_dummy_client_with_spec_and_data, new_db, new_temp_db, restoration_db_handler,
+    },
     types::ids::BlockId,
 };
 use tempdir::TempDir;
-use test_helpers::{
-    generate_dummy_client_with_spec_and_data, new_db, new_temp_db, restoration_db_handler,
-};
 
 use crate::{io::IoChannel, verification::queue::kind::blocks::Unverified};
 use kvdb_rocksdb::DatabaseConfig;
@@ -69,7 +69,7 @@ fn restored_is_equivalent() {
         Default::default(),
         &spec,
         blockchain_db,
-        Arc::new(::miner::Miner::new_for_tests(&spec, None)),
+        Arc::new(crate::miner::Miner::new_for_tests(&spec, None)),
         IoChannel::disconnected(),
         ShutdownManager::null(),
     )
@@ -173,7 +173,7 @@ fn keep_ancient_blocks() {
     // Test variables
     const NUM_BLOCKS: u64 = 500;
     const NUM_SNAPSHOT_BLOCKS: u64 = 300;
-    const SNAPSHOT_MODE: ::snapshot::PowSnapshot = ::snapshot::PowSnapshot {
+    const SNAPSHOT_MODE: crate::snapshot::PowSnapshot = crate::snapshot::PowSnapshot {
         blocks: NUM_SNAPSHOT_BLOCKS,
         max_restore_blocks: NUM_SNAPSHOT_BLOCKS,
     };
@@ -233,7 +233,7 @@ fn keep_ancient_blocks() {
         ClientConfig::default(),
         &spec,
         client_db,
-        Arc::new(::miner::Miner::new_for_tests(&spec, None)),
+        Arc::new(crate::miner::Miner::new_for_tests(&spec, None)),
         IoChannel::disconnected(),
         ShutdownManager::null(),
     )
@@ -322,7 +322,7 @@ fn recover_aborted_recovery() {
         Default::default(),
         &spec,
         client_db,
-        Arc::new(::miner::Miner::new_for_tests(&spec, None)),
+        Arc::new(crate::miner::Miner::new_for_tests(&spec, None)),
         IoChannel::disconnected(),
         ShutdownManager::null(),
     )

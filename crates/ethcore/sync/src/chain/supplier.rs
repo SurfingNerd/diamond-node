@@ -545,7 +545,7 @@ mod test {
             rlp.out()
         }
         fn to_header_vec(
-            rlp: ::chain::RlpResponseResult,
+            rlp: crate::chain::RlpResponseResult,
             eip1559_transition: BlockNumber,
         ) -> Vec<SyncHeader> {
             Rlp::new(&rlp.unwrap().unwrap().1.out())

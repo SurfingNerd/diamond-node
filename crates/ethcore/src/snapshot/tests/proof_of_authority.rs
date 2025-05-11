@@ -22,15 +22,15 @@ use crate::{
     client::{BlockChainClient, ChainInfo, Client},
     snapshot::tests::helpers as snapshot_helpers,
     spec::Spec,
+    test_helpers::generate_dummy_client_with_spec,
     types::transaction::{Action, SignedTransaction, Transaction, TypedTransaction},
 };
 use accounts::AccountProvider;
 use crypto::publickey::Secret;
 use tempdir::TempDir;
-use test_helpers::generate_dummy_client_with_spec;
 
+use crate::test_helpers;
 use ethereum_types::Address;
-use test_helpers;
 
 use_contract!(test_validator_set, "res/contracts/test_validator_set.json");
 
