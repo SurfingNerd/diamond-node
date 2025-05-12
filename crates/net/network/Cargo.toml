@@ -10,6 +10,7 @@ edition = "2024"
 [dependencies]
 error-chain = { version = "0.12", default-features = false }
 parity-crypto = { version = "0.6.2", features = [ "publickey"] }
+parity-version = { path = "../../../crates/util/version" }
 ethcore-io = { path = "../../runtime/io" }
 ethereum-types = "0.9.2"
 ethkey = { path = "../../../crates/accounts/ethkey" }
