@@ -18,7 +18,6 @@
 
 //! Ethcore library
 
-extern crate ansi_term;
 extern crate common_types as types;
 extern crate crossbeam_utils;
 extern crate derive_more;
