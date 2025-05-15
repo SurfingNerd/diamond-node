@@ -896,7 +896,7 @@ impl SyncHandler {
             trace!(target: "sync", "{} Peer sent us more transactions than was supposed to", peer_id);
             return Err(DownloaderImportError::Invalid);
         }
-        info!(target: "sync", "{:02} -> PooledTransactions ({} entries)", peer_id, item_count);
+        debug!(target: "sync", "{:02} -> PooledTransactions ({} entries)", peer_id, item_count);
         let mut transactions = Vec::with_capacity(item_count);
         for i in 0..item_count {
             let rlp = tx_rlp.at(i)?;

@@ -331,7 +331,7 @@ impl SyncSupplier {
         }
         rlp.finalize_unbounded_list();
 
-        info!(target: "sync", "{} -> GetPooledTransactions: returned {} entries. Not found: {}. parse errors: {}", peer_id, added, not_found, parse_errors);
+        debug!(target: "sync", "{} -> GetPooledTransactions: returned {} entries. Not found: {}. parse errors: {}", peer_id, added, not_found, parse_errors);
         Ok(Some((PooledTransactionsPacket, rlp)))
     }
 
