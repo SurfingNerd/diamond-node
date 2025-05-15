@@ -113,7 +113,7 @@ impl SyncRequester {
         peer_id: PeerId,
         hashes: &H256FastSet,
     ) -> usize {
-        info!(target: "sync", "{} <- GetPooledTransactions: {:?}", peer_id, hashes);
+        debug!(target: "sync", "{} <- GetPooledTransactions: {:?}", peer_id, hashes);
         let mut rlp = RlpStream::new_list(hashes.len());
         for h in hashes {
             rlp.append(h);
