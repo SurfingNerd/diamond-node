@@ -182,7 +182,10 @@ fn hash_compute(light: &Light, full_size: usize, header_hash: &H256, nonce: u64)
                 use std::mem;
 
                 debug_assert_eq!(val.len() * mem::size_of::<T>(), $n * mem::size_of::<U>());
-                &mut *(val.as_mut_ptr() as *mut [U; $n])
+                unsafe {
+                    &mut *(val.as_mut_ptr() as *mut [U; $n])
+                }
+                
             }
 
             make_const_array($value)
