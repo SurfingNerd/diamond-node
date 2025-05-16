@@ -356,6 +356,5 @@ unsafe fn initialize_memory(memory: *mut Node, num_nodes: usize, ident: &H256) {
                 keccak_512::write(&data.bytes, &mut nodes.get_unchecked_mut(i).bytes);
             }
         }
-
     }
 }

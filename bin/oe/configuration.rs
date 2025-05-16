@@ -110,7 +110,6 @@ pub enum Cmd {
 
 pub struct Execute {
     // pub logger: LogConfig,
-
     ///  executed command.
     pub cmd: Cmd,
 }
