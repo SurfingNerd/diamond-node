@@ -25,7 +25,7 @@ extern crate atty;
 extern crate dir;
 extern crate futures;
 extern crate jsonrpc_core;
-extern crate num_cpus;
+use num_cpus;
 extern crate number_prefix;
 extern crate parking_lot;
 extern crate regex;

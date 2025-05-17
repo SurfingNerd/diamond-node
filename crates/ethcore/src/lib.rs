@@ -44,7 +44,7 @@ extern crate lru_cache;
 extern crate maplit;
 extern crate memory_cache;
 extern crate memory_db;
-extern crate num_cpus;
+use num_cpus;
 extern crate parity_bytes as bytes;
 extern crate parity_crypto as crypto;
 extern crate parity_snappy as snappy;

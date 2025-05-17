@@ -17,7 +17,7 @@
 extern crate dir;
 extern crate docopt;
 extern crate ethstore;
-extern crate num_cpus;
+use num_cpus;
 extern crate panic_hook;
 extern crate parking_lot;
 extern crate rustc_hex;
