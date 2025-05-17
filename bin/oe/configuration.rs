@@ -109,7 +109,8 @@ pub enum Cmd {
 }
 
 pub struct Execute {
-    pub logger: LogConfig,
+    // pub logger: LogConfig,
+    ///  executed command.
     pub cmd: Cmd,
 }
 
@@ -438,7 +439,7 @@ impl Configuration {
         };
 
         Ok(Execute {
-            logger: logger_config,
+            // logger: logger_config,
             cmd,
         })
     }

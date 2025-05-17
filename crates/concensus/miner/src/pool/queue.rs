@@ -786,12 +786,13 @@ impl TransactionQueue {
         (pool.listener_mut().1).0.add(f);
     }
 
-    /// Check if pending set is cached.
+    /// Check if pending set is cached. (enforced)
     #[cfg(test)]
     pub fn is_enforced_pending_cached(&self) -> bool {
         self.cached_enforced_pending.read().pending.is_some()
     }
 
+    /// Check if pending set is cached. (non-enforced)
     #[cfg(test)]
     pub fn is_non_enforced_pending_cached(&self) -> bool {
         self.cached_non_enforced_pending.read().pending.is_some()

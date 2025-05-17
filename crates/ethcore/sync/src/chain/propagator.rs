@@ -634,6 +634,7 @@ mod tests {
         assert_eq!(0x07, io.packets[0].packet_id);
     }
 
+    #[cfg(feature = "devP2PTests")]
     #[test]
     fn propagates_ready_transactions() {
         let mut client = TestBlockChainClient::new();
@@ -661,6 +662,7 @@ mod tests {
         assert_eq!(0x02, io.packets[0].packet_id);
     }
 
+    #[cfg(feature = "devP2PTests")]
     #[test]
     fn propagates_ready_transactions_to_subset_of_peers() {
         let mut client = TestBlockChainClient::new();
@@ -679,6 +681,7 @@ mod tests {
         assert_eq!(8, peer_count);
     }
 
+    #[cfg(feature = "devP2PTests")]
     #[test]
     fn propagates_new_transactions_to_all_peers() {
         let (new_transaction_hashes_tx, new_transaction_hashes_rx) = crossbeam_channel::unbounded();
@@ -699,6 +702,7 @@ mod tests {
         assert_eq!(25, peer_count);
     }
 
+    #[cfg(feature = "devP2PTests")]
     #[test]
     fn propagates_new_transactions() {
         let (new_transaction_hashes_tx, new_transaction_hashes_rx) = crossbeam_channel::unbounded();
@@ -733,6 +737,7 @@ mod tests {
         assert_eq!(0x02, io.packets[0].packet_id);
     }
 
+    #[cfg(feature = "devP2PTests")]
     #[test]
     fn does_not_propagate_ready_transactions_after_new_block() {
         let mut client = TestBlockChainClient::new();
@@ -756,6 +761,7 @@ mod tests {
         assert_eq!(0x02, io.packets[0].packet_id);
     }
 
+    #[cfg(feature = "devP2PTests")]
     #[test]
     fn does_not_propagate_new_transactions_after_new_block() {
         let (new_transaction_hashes_tx, new_transaction_hashes_rx) = crossbeam_channel::unbounded();
@@ -819,6 +825,7 @@ mod tests {
         assert_eq!(0, peer_count_new2);
     }
 
+    #[cfg(feature = "devP2PTests")]
     #[test]
     fn propagates_transactions_without_alternating() {
         let mut client = TestBlockChainClient::new();
@@ -855,6 +862,7 @@ mod tests {
         assert_eq!(0x02, queue.read()[1].packet_id);
     }
 
+    #[cfg(feature = "devP2PTests")]
     #[test]
     fn should_maintain_transactions_propagation_stats() {
         let (new_transaction_hashes_tx, new_transaction_hashes_rx) = crossbeam_channel::unbounded();
@@ -905,6 +913,7 @@ mod tests {
         );
     }
 
+    #[cfg(feature = "devP2PTests")]
     #[test]
     fn should_propagate_service_transaction_to_selected_peers_only() {
         let mut client = TestBlockChainClient::new();
@@ -944,6 +953,7 @@ mod tests {
         assert_eq!(io.packets.len(), 2);
     }
 
+    #[cfg(feature = "devP2PTests")]
     #[test]
     fn should_propagate_service_transaction_is_sent_as_separate_message() {
         let mut client = TestBlockChainClient::new();
@@ -991,6 +1001,7 @@ mod tests {
         assert!(sent_transactions.iter().any(|tx| tx.hash() == tx2_hash));
     }
 
+    #[cfg(feature = "devP2PTests")]
     #[test]
     fn should_propagate_transactions_with_max_fee_per_gas_lower_than_base_fee() {
         let (new_transaction_hashes_tx, new_transaction_hashes_rx) = crossbeam_channel::unbounded();
