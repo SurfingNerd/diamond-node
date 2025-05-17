@@ -22,7 +22,6 @@ use self::{
     ethcore_blockchain::{BlockChainDB, BlockChainDBHandler},
     kvdb_rocksdb::{Database, DatabaseConfig},
 };
-use blooms_db;
 use ethcore::client::ClientConfig;
 use ethcore_db::KeyValueDB;
 use stats::PrometheusMetrics;

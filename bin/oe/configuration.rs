@@ -33,7 +33,6 @@ use ethcore::{
 };
 use ethereum_types::{Address, H256, U256};
 
-use num_cpus;
 use parity_version::{version, version_data};
 use std::{
     cmp,
