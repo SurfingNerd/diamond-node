@@ -19,7 +19,7 @@
 #[macro_use]
 extern crate criterion;
 extern crate bit_set;
-extern crate ethereum_types;
+use ethereum_types;
 extern crate evm;
 extern crate keccak_hash as hash;
 extern crate memory_cache;

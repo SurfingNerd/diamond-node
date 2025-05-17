@@ -21,7 +21,7 @@
 //! ```rust
 //! extern crate ethcore_network as net;
 //! extern crate ethcore_network_devp2p as devp2p;
-//! extern crate ethereum_types as types;
+//! use ethereum_types as types;
 //! use net::*;
 //! use devp2p::NetworkService;
 //! use std::sync::Arc;
@@ -66,7 +66,7 @@ extern crate ansi_term; //TODO: remove this
 extern crate bytes;
 extern crate ethcore_io as io;
 extern crate ethcore_network as network;
-extern crate ethereum_types;
+use ethereum_types;
 extern crate ethkey;
 extern crate igd;
 extern crate ipnetwork;

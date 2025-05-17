@@ -16,7 +16,7 @@
 
 //! Provides a `H256FastMap` type with H256 keys and fast hashing function.
 
-extern crate ethereum_types;
+use ethereum_types;
 extern crate lru;
 extern crate plain_hasher;
 

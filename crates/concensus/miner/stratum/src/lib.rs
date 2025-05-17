@@ -16,7 +16,7 @@
 
 //! Stratum protocol implementation for parity ethereum/bitcoin clients
 
-extern crate ethereum_types;
+use ethereum_types;
 extern crate jsonrpc_core;
 extern crate jsonrpc_tcp_server;
 extern crate keccak_hash as hash;
