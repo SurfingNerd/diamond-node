@@ -282,7 +282,6 @@ fn get_number_from_version(version: &str) -> Option<&str> {
     None
 }
 
-
 #[cfg(test)]
 pub mod tests {
     use super::*;
