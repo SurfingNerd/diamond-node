@@ -19,23 +19,16 @@
 //! Ethcore library
 
 extern crate common_types as types;
-use ethabi;
-use ethash;
 extern crate ethcore_blockchain as blockchain;
 extern crate ethcore_builtin as builtin;
 extern crate ethcore_call_contract as call_contract;
 extern crate ethcore_db as db;
 extern crate ethcore_io as io;
-use itertools;
-use journaldb;
 extern crate keccak_hash as hash;
 extern crate parity_bytes as bytes;
 extern crate parity_crypto as crypto;
 extern crate parity_snappy as snappy;
 extern crate patricia_trie_ethereum as ethtrie;
-use rand;
-use rlp;
-use rmp_serde;
 extern crate trie_db as trie;
 extern crate triehash_ethereum as triehash;
 
