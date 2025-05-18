@@ -97,7 +97,6 @@ extern crate ethcore_call_contract as call_contract;
 #[cfg(test)]
 extern crate rpc_servers;
 
-
 pub extern crate jsonrpc_ws_server as ws;
 
 mod authcodes;
