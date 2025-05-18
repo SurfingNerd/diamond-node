@@ -34,7 +34,6 @@ use crate::{
     sync::{ManageNetwork, SyncProvider},
     types::BlockNumber,
 };
-use atty;
 use ethcore::{
     client::{
         BlockChainClient, BlockChainInfo, BlockId, BlockInfo, BlockQueueInfo, ChainInfo,

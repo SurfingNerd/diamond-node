@@ -17,7 +17,7 @@
 //! Wasm Interpreter
 
 extern crate byteorder;
-extern crate ethereum_types;
+use ethereum_types;
 #[macro_use]
 extern crate log;
 extern crate libc;

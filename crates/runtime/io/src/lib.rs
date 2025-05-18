@@ -76,7 +76,7 @@ extern crate log as rlog;
 extern crate crossbeam_deque as deque;
 extern crate fnv;
 extern crate futures;
-extern crate num_cpus;
+use num_cpus;
 extern crate parking_lot;
 extern crate slab;
 extern crate time;

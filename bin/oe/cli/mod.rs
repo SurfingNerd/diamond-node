@@ -1055,7 +1055,6 @@ mod tests {
     };
     use clap::ErrorKind as ClapErrorKind;
     use parity_version::NODE_SOFTWARE_NAME;
-    use toml;
 
     #[test]
     fn should_accept_any_argument_order() {

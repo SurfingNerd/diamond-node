@@ -23,7 +23,7 @@
 #[macro_use]
 extern crate criterion;
 extern crate ethcore;
-extern crate ethereum_types;
+use ethereum_types;
 extern crate evm;
 extern crate rustc_hex;
 extern crate vm;

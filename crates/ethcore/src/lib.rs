@@ -19,7 +19,7 @@
 //! Ethcore library
 
 extern crate common_types as types;
-extern crate crossbeam_utils;
+use crossbeam_utils;
 extern crate derive_more;
 extern crate ethabi;
 extern crate ethash;
@@ -28,9 +28,9 @@ extern crate ethcore_builtin as builtin;
 extern crate ethcore_call_contract as call_contract;
 extern crate ethcore_db as db;
 extern crate ethcore_io as io;
-extern crate ethcore_miner;
-extern crate ethereum_types;
-extern crate ethjson;
+use ethcore_miner;
+use ethereum_types;
+use ethjson;
 extern crate fastmap;
 extern crate hash_db;
 extern crate hbbft;
@@ -44,7 +44,7 @@ extern crate lru_cache;
 extern crate maplit;
 extern crate memory_cache;
 extern crate memory_db;
-extern crate num_cpus;
+use num_cpus;
 extern crate parity_bytes as bytes;
 extern crate parity_crypto as crypto;
 extern crate parity_snappy as snappy;

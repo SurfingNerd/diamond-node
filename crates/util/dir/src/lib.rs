@@ -38,7 +38,7 @@
 /// Unix: $BASE/openethereum/
 ///
 extern crate app_dirs;
-extern crate ethereum_types;
+use ethereum_types;
 extern crate home;
 extern crate journaldb;
 

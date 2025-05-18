@@ -21,7 +21,7 @@ extern crate criterion;
 extern crate lazy_static;
 extern crate ethcore;
 extern crate ethcore_builtin;
-extern crate ethereum_types;
+use ethereum_types;
 extern crate parity_bytes as bytes;
 extern crate rustc_hex;
 

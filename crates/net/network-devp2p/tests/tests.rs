@@ -18,7 +18,7 @@ extern crate env_logger;
 extern crate ethcore_io as io;
 extern crate ethcore_network;
 extern crate ethcore_network_devp2p;
-extern crate ethereum_types;
+use ethereum_types;
 extern crate parity_bytes;
 extern crate parity_crypto as crypto;
 extern crate parking_lot;

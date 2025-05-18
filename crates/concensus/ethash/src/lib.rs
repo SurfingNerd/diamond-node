@@ -15,7 +15,7 @@
 // along with OpenEthereum.  If not, see <http://www.gnu.org/licenses/>.
 
 extern crate either;
-extern crate ethereum_types;
+use ethereum_types;
 extern crate memmap;
 extern crate parking_lot;
 extern crate primal;

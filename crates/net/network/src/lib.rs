@@ -17,7 +17,7 @@
 #![recursion_limit = "128"]
 
 extern crate ethcore_io as io;
-extern crate ethereum_types;
+use ethereum_types;
 extern crate ethkey;
 extern crate ipnetwork;
 extern crate libc;

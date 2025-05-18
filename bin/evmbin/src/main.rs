@@ -20,7 +20,7 @@
 
 extern crate common_types as types;
 extern crate ethcore;
-extern crate ethjson;
+use ethjson;
 extern crate rustc_hex;
 extern crate serde;
 #[macro_use]
@@ -29,7 +29,7 @@ extern crate serde_derive;
 extern crate serde_json;
 extern crate docopt;
 extern crate env_logger;
-extern crate ethereum_types;
+use ethereum_types;
 extern crate evm;
 extern crate panic_hook;
 extern crate parity_bytes as bytes;
