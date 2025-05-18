@@ -24,9 +24,9 @@
 extern crate criterion;
 extern crate ethcore;
 use ethereum_types;
-extern crate evm;
+use evm;
 extern crate rustc_hex;
-extern crate vm;
+use vm;
 
 use criterion::{Criterion, black_box};
 use std::sync::Arc;

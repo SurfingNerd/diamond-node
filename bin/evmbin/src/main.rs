@@ -30,10 +30,10 @@ extern crate serde_json;
 extern crate docopt;
 extern crate env_logger;
 use ethereum_types;
-extern crate evm;
+use evm;
 extern crate panic_hook;
 extern crate parity_bytes as bytes;
-extern crate vm;
+use vm;
 
 #[cfg(test)]
 #[macro_use]

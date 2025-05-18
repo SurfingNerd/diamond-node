@@ -64,9 +64,9 @@ extern crate tiny_keccak;
 extern crate trie_db as trie;
 extern crate triehash_ethereum as triehash;
 extern crate unexpected;
-extern crate using_queue;
-extern crate vm;
-extern crate wasm;
+use using_queue;
+use vm;
+use wasm;
 
 #[cfg(any(test, feature = "blooms-db"))]
 extern crate blooms_db;
@@ -75,7 +75,7 @@ extern crate env_logger;
 #[cfg(test)]
 extern crate ethcore_accounts as accounts;
 #[cfg(feature = "stratum")]
-extern crate ethcore_stratum;
+use ethcore_stratum;
 #[cfg(feature = "json-tests")]
 extern crate globset;
 #[cfg(any(test, feature = "kvdb-rocksdb"))]
@@ -107,7 +107,7 @@ extern crate trace_time;
 extern crate serde_derive;
 
 #[cfg_attr(test, macro_use)]
-extern crate evm;
+use evm;
 
 #[cfg(all(test, feature = "price-info"))]
 extern crate fetch;
