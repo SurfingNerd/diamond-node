@@ -66,7 +66,6 @@ extern crate ansi_term; //TODO: remove this
 extern crate bytes;
 extern crate ethcore_io as io;
 extern crate ethcore_network as network;
-use ethereum_types;
 extern crate ethkey;
 extern crate igd;
 extern crate ipnetwork;

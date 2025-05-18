@@ -109,7 +109,7 @@ use crate::{
     snapshot::Snapshot,
     sync_io::SyncIo,
     transactions_stats::{Stats as TransactionStats, TransactionsStats},
-    types::{BlockNumber, block_status, transaction::UnverifiedTransaction},
+    types::{BlockNumber, transaction::UnverifiedTransaction},
 };
 use bytes::Bytes;
 use derive_more::Display;
