@@ -23,7 +23,7 @@ use crate::{
     trace::{NoopTracer, NoopVMTracer},
     types::transaction::SYSTEM_ADDRESS,
 };
-use evm::{evm_test, Factory, VMType};
+use evm::{Factory, VMType, evm_test};
 use hash::keccak;
 use std::sync::Arc;
 use vm::{AccessList, ActionParams, ActionValue, CallType, EnvInfo, ParamsType};
