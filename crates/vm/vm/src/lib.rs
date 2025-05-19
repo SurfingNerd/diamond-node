@@ -16,8 +16,6 @@
 
 //! Virtual machines support library
 
-use ethereum_types;
-use ethjson;
 extern crate keccak_hash as hash;
 extern crate parity_bytes as bytes;
 extern crate patricia_trie_ethereum as ethtrie;

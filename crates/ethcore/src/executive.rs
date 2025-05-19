@@ -1676,7 +1676,7 @@ mod tests {
     };
     use crypto::publickey::{Generator, Random};
     use ethereum_types::{Address, BigEndianHash, H160, H256, U256, U512};
-    use evm::{Factory, VMType};
+    use evm::{Factory, VMType, evm_test, evm_test_ignore};
     use rustc_hex::FromHex;
     use std::{str::FromStr, sync::Arc};
     use vm::{ActionParams, ActionValue, CallType, CreateContractAddress, EnvInfo};
