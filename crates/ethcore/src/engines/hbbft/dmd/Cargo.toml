@@ -6,6 +6,6 @@ edition = "2018"
 [dependencies]
 clap = "2"
 ethstore = { path = "../../../../../accounts/ethstore"}
-parity-crypto = { version = "0.6.2", features = ["publickey"] }
+parity-crypto = { version = "0.9", features = ["publickey"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"

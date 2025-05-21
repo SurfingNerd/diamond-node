@@ -19,7 +19,7 @@ ethkey = { path = "../../../../../accounts/ethkey" }
 ethstore = { path = "../../../../../accounts/ethstore"}
 hbbft = { git = "https://github.com/dforsten/hbbft", rev = "f1d4c1d6f0714b7f267f84aaafa54c8d572c63bd" }
 hbbft_testing = { git = "https://github.com/dforsten/hbbft", rev = "f1d4c1d6f0714b7f267f84aaafa54c8d572c63bd" }
-parity-crypto = { version = "0.6.2", features = ["publickey"] }
+parity-crypto = { version = "0.9", features = ["publickey"] }
 rand = "0.7.3"
 rustc-hex = "2.1.0"
 serde = { version = "1.0", features = ["derive"] }
