@@ -1,5 +1,10 @@
 
 
+## Diamond Node Software 3.3.5-hbbft-0.10.1
+
+- Emergency fix to improve blockimports: only one block at a time is now requested throught the devp2p block sync protocol. https://github.com/DMDcoin/diamond-node/issues/209
+
+
 ## Diamond Node Software 3.3.5-hbbft-0.10.0
 
 - Bonus Score finalization
