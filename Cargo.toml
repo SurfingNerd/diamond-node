@@ -10,6 +10,7 @@ authors = [
 	"Parity Technologies <admin@parity.io>"
 ]
 edition = "2024"
+rust-version = "1.85"
 
 [dependencies]
 blooms-db = { path = "crates/db/blooms-db" }
