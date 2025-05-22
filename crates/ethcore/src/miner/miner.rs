@@ -1208,8 +1208,8 @@ impl miner::MinerService for Miner {
         chain: &C,
         transactions: Vec<UnverifiedTransaction>,
     ) -> Vec<Result<(), transaction::Error>> {
-        trace!(target: "external_tx", "Importing external transactions");
-        info!(
+        debug!(target: "external_tx", "Importing external transactions");
+        trace!(target: "external_tx",
             "import_external_transactions {:?}",
             transactions.iter().map(|f| f.hash).collect_vec()
         );
