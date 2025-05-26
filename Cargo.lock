@@ -2125,7 +2125,7 @@ dependencies = [
 [[package]]
 name = "hbbft"
 version = "0.1.1"
-source = "git+https://github.com/dforsten/hbbft?rev=f1d4c1d6f0714b7f267f84aaafa54c8d572c63bd#f1d4c1d6f0714b7f267f84aaafa54c8d572c63bd"
+source = "git+https://github.com/DMDcoin/hbbft.git?rev=4edcd5cf5f370e6862d6d84d7ae4f05c0eb88074#4edcd5cf5f370e6862d6d84d7ae4f05c0eb88074"
 dependencies = [
  "bincode",
  "byteorder",
@@ -2168,7 +2168,7 @@ dependencies = [
 [[package]]
 name = "hbbft_testing"
 version = "0.1.0"
-source = "git+https://github.com/dforsten/hbbft?rev=f1d4c1d6f0714b7f267f84aaafa54c8d572c63bd#f1d4c1d6f0714b7f267f84aaafa54c8d572c63bd"
+source = "git+https://github.com/DMDcoin/hbbft.git?rev=4edcd5cf5f370e6862d6d84d7ae4f05c0eb88074#4edcd5cf5f370e6862d6d84d7ae4f05c0eb88074"
 dependencies = [
  "hbbft",
  "integer-sqrt",
@@ -5052,7 +5052,7 @@ dependencies = [
 [[package]]
 name = "threshold_crypto"
 version = "0.4.0"
-source = "git+https://github.com/dforsten/threshold_crypto?rev=776dd301a82036abf6fca60d574197e93e15810e#776dd301a82036abf6fca60d574197e93e15810e"
+source = "git+https://github.com/DMDcoin/threshold_crypto.git?rev=5b582c420cf93b75078654ac3df6ec297bfe0371#5b582c420cf93b75078654ac3df6ec297bfe0371"
 dependencies = [
  "byteorder",
  "ff",
