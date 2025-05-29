@@ -87,6 +87,9 @@ pub struct Configuration {
 }
 
 /// Secret store dependencies
+/// TODO: The compiler complains that none of the struct members are ever used
+/// Remove this struct and all its dependencies
+#[allow(dead_code)]
 pub struct Dependencies<'a> {
     /// Blockchain client.
     pub client: Arc<Client>,

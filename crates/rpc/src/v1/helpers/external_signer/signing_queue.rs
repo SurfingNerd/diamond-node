@@ -88,6 +88,7 @@ pub trait SigningQueue: Send + Sync {
     fn len(&self) -> usize;
 
     /// Returns true if there are no requests awaiting confirmation.
+    #[allow(dead_code)]
     fn is_empty(&self) -> bool;
 }
 

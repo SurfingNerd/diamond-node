@@ -132,7 +132,6 @@ impl WasmInterpreter {
                     address: self.params.address,
                     sender: self.params.sender,
                     origin: self.params.origin,
-                    code_address: self.params.code_address,
                     value: self.params.value.value(),
                 },
             );

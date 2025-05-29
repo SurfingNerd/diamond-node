@@ -214,6 +214,7 @@ pub struct FullDependencies {
     pub client: Arc<Client>,
     pub snapshot: Arc<dyn SnapshotService>,
     pub sync: Arc<dyn SyncProvider>,
+    #[allow(dead_code)]
     pub net: Arc<dyn ManageNetwork>,
     pub accounts: Arc<AccountProvider>,
     pub miner: Arc<Miner>,

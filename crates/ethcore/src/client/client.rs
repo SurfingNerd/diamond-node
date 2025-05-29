@@ -1416,11 +1416,13 @@ impl Client {
         self.importer.miner.clone()
     }
 
+    /// Provides read-only access to the `state_db` instance.
     #[cfg(test)]
     pub fn state_db(&self) -> ::parking_lot::RwLockReadGuard<StateDB> {
         self.state_db.read()
     }
 
+    /// Retrieves a cloned instance of the blockchain.
     #[cfg(test)]
     pub fn chain(&self) -> Arc<BlockChain> {
         self.chain.read().clone()
