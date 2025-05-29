@@ -40,26 +40,18 @@
 #[macro_use]
 extern crate futures;
 
-use order_stat;
-use tokio_timer;
-
-use jsonrpc_core;
 extern crate jsonrpc_http_server as http;
 extern crate jsonrpc_ipc_server as ipc;
 use jsonrpc_pubsub;
 
 extern crate common_types as types;
-use ethash;
 extern crate ethcore_miner as miner;
 extern crate ethcore_network as network;
 extern crate ethcore_sync as sync;
-use fetch;
 extern crate keccak_hash as hash;
 extern crate parity_bytes as bytes;
 extern crate parity_crypto as crypto;
-use parity_runtime;
 extern crate parity_version as version;
-use rlp;
 
 #[cfg(any(test, feature = "ethcore-accounts"))]
 extern crate ethcore_accounts as accounts;
