@@ -40,7 +40,6 @@
 #[macro_use]
 extern crate futures;
 
-
 extern crate jsonrpc_http_server as http;
 extern crate jsonrpc_ipc_server as ipc;
 use jsonrpc_pubsub;
