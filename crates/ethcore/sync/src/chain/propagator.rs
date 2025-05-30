@@ -515,9 +515,7 @@ impl ChainSync {
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        tests::{helpers::TestIo, snapshot::TestSnapshotService},
-    };
+    use crate::tests::{helpers::TestIo, snapshot::TestSnapshotService};
     use ethcore::client::{BlockInfo, ChainInfo, EachBlockWith, TestBlockChainClient};
     use parking_lot::RwLock;
     use std::collections::VecDeque;
