@@ -517,18 +517,15 @@ impl ChainSync {
 mod tests {
     use crate::{
         tests::{helpers::TestIo, snapshot::TestSnapshotService},
-        types::transaction::TypedTransaction,
     };
     use ethcore::client::{BlockInfo, ChainInfo, EachBlockWith, TestBlockChainClient};
     use parking_lot::RwLock;
-    use rlp::Rlp;
     use std::collections::VecDeque;
 
     use super::{
         super::{tests::*, *},
         *,
     };
-    use ethcore::ethereum::new_london_test;
 
     #[test]
     fn sends_new_hashes_to_lagging_peer() {
