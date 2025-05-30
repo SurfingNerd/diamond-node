@@ -306,6 +306,7 @@ impl HbbftPeersManagement {
     /// because those should be current validators by now.
     /// Make sure to connect to the new current validators,
     /// before disconnecting from the pending validators.
+    #[allow(dead_code)]
     pub fn disconnect_pending_validators(
         &mut self,
         client: &dyn BlockChainClient,

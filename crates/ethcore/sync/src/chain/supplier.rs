@@ -23,7 +23,6 @@ pub const PAYLOAD_SOFT_LIMIT: usize = 100_000;
 
 use crate::types::{BlockNumber, ids::BlockId};
 use enum_primitive::FromPrimitive;
-use ethcore::trace;
 use ethereum_types::{H256, H512};
 use network::{self, PeerId};
 use parking_lot::RwLock;

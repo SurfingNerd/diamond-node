@@ -75,6 +75,7 @@ impl From<DeriveHash> for Derive {
 #[cfg(any(test, feature = "accounts"))]
 #[derive(Debug)]
 pub enum ConvertError {
+    #[allow(dead_code)]
     IndexOverlfow(u64),
 }
 

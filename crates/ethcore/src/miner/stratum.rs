@@ -99,9 +99,13 @@ impl SubmitPayload {
 
 #[derive(Debug)]
 enum PayloadError {
+    #[allow(dead_code)]
     ArgumentsAmountUnexpected(usize),
+    #[allow(dead_code)]
     InvalidNonce(String),
+    #[allow(dead_code)]
     InvalidPowHash(String),
+    #[allow(dead_code)]
     InvalidMixHash(String),
 }
 

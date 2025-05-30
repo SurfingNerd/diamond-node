@@ -26,7 +26,6 @@ pub struct RuntimeContext {
     pub address: Address,
     pub sender: Address,
     pub origin: Address,
-    pub code_address: Address,
     pub value: U256,
 }
 

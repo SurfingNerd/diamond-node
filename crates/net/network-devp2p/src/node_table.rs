@@ -111,7 +111,8 @@ impl NodeEndpoint {
                 rlp.append(&(&a.ip().octets()[..]));
             }
             SocketAddr::V6(a) => unsafe {
-                let o: *const u8 = a.ip().segments().as_ptr() as *const u8;
+                let segments = a.ip().segments();
+                let o: *const u8 = segments.as_ptr() as *const u8;
                 rlp.append(&slice::from_raw_parts(o, 16));
             },
         };
@@ -167,7 +168,6 @@ impl Display for NodeEndpoint {
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub enum PeerType {
     _Required,
-    Optional,
 }
 
 /// A type for representing an interaction (contact) with a node at a given time
@@ -211,7 +211,6 @@ impl NodeContact {
 pub struct Node {
     pub id: NodeId,
     pub endpoint: NodeEndpoint,
-    pub peer_type: PeerType,
     pub last_contact: Option<NodeContact>,
 }
 
@@ -220,7 +219,6 @@ impl Node {
         Node {
             id,
             endpoint,
-            peer_type: PeerType::Optional,
             last_contact: None,
         }
     }
@@ -256,7 +254,6 @@ impl FromStr for Node {
         Ok(Node {
             id,
             endpoint,
-            peer_type: PeerType::Optional,
             last_contact: None,
         })
     }

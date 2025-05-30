@@ -17,25 +17,22 @@
 //! OpenEthereum JSON-RPC Servers (WS, HTTP, IPC).
 
 #![warn(missing_docs, unused_extern_crates)]
-#![cfg_attr(feature = "cargo-clippy", warn(clippy::all, clippy::pedantic))]
-#![cfg_attr(
-	feature = "cargo-clippy",
-	allow(
-		// things are often more readable this way
-		clippy::cast_lossless,
-		clippy::module_name_repetitions,
-		clippy::single_match_else,
-		clippy::type_complexity,
-		clippy::use_self,
-		// not practical
-		clippy::match_bool,
-		clippy::needless_pass_by_value,
-		clippy::similar_names,
-		// don't require markdown syntax for docs
-		clippy::doc_markdown,
-	),
-	warn(clippy::indexing_slicing)
+#![warn(clippy::all, clippy::pedantic)]
+#![allow(
+	// things are often more readable this way
+	clippy::cast_lossless,
+	clippy::module_name_repetitions,
+	clippy::single_match_else,
+	clippy::type_complexity,
+	clippy::use_self,
+	// not practical
+	clippy::match_bool,
+	clippy::needless_pass_by_value,
+	clippy::similar_names,
+	// don't require markdown syntax for docs
+	clippy::doc_markdown,
 )]
+#![warn(clippy::indexing_slicing)]
 
 #[macro_use]
 extern crate futures;
@@ -55,9 +52,6 @@ extern crate parity_version as version;
 
 #[cfg(any(test, feature = "ethcore-accounts"))]
 extern crate ethcore_accounts as accounts;
-
-#[cfg(any(test, feature = "ethcore-accounts"))]
-extern crate tiny_keccak;
 
 #[macro_use]
 extern crate log;

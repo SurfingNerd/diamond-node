@@ -17,7 +17,7 @@
 //! Snapshot test helpers. These are used to build blockchains and state tries
 //! which can be queried before and after a full snapshot/restore cycle.
 
-extern crate trie_standardmap;
+use trie_standardmap;
 
 use hash::KECCAK_NULL_RLP;
 use std::sync::Arc;

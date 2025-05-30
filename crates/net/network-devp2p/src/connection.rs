@@ -306,7 +306,6 @@ pub enum WriteStatus {
 
 /// `RLPx` packet
 pub struct Packet {
-    pub protocol: u16,
     pub data: Bytes,
 }
 
@@ -517,10 +516,7 @@ impl EncryptedConnection {
         self.decoder
             .decrypt(&mut payload[..self.payload_len + padding])?;
         payload.truncate(self.payload_len);
-        Ok(Packet {
-            protocol: self.protocol_id,
-            data: payload,
-        })
+        Ok(Packet { data: payload })
     }
 
     /// Update MAC after reading or writing any data.

@@ -46,6 +46,7 @@ pub enum KeyGenError {
     NoSigner,
     NoFullClient,
     NoPartToWrite,
+    #[allow(dead_code)]
     CallError(CallError),
     Unexpected,
 }

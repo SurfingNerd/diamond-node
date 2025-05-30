@@ -1093,8 +1093,8 @@ impl AuthorityRound {
 
     // fetch correct validator set for epoch at header, taking into account
     // finality of previous transitions.
-    fn epoch_set<'a>(
-        &'a self,
+    fn epoch_set(
+        &self,
         header: &Header,
     ) -> Result<(CowLike<dyn ValidatorSet, SimpleList>, BlockNumber), Error> {
         Ok(if self.immediate_transitions {

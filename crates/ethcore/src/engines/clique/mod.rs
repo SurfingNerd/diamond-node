@@ -173,12 +173,20 @@ pub struct Clique {
 #[cfg(test)]
 /// Test version of `CliqueEngine` to make all fields public
 pub struct Clique {
+    /// Number of blocks that make up an epoch in the Clique consensus algorithm.
+    /// At each epoch transition, signers/validators can be added or removed.
     pub epoch_length: u64,
+    /// The period between blocks in seconds
     pub period: u64,
+    /// The Ethereum machine implementation
     pub machine: EthereumMachine,
+    /// Reference to the engine client
     pub client: RwLock<Option<Weak<dyn EngineClient>>>,
+    /// Cache of block states indexed by block hash
     pub block_state_by_hash: RwLock<LruCache<H256, CliqueBlockState>>,
+    /// Current set of proposals for adding/removing validators
     pub proposals: RwLock<HashMap<Address, VoteType>>,
+    /// Optional engine signer
     pub signer: RwLock<Option<Box<dyn EngineSigner>>>,
 }
 

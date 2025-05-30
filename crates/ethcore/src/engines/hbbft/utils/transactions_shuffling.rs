@@ -25,6 +25,7 @@ fn address_xor_u256(address: &Address, seed: U256) -> Address {
 }
 
 /// The list of transactions is expected to be free of duplicates.
+#[allow(dead_code)]
 fn deterministic_transactions_shuffling(
     transactions: Vec<SignedTransaction>,
     seed: U256,
@@ -88,8 +89,8 @@ fn deterministic_transactions_shuffling(
 #[cfg(test)]
 mod tests {
     use super::*;
-    // Convert to bytes in big-endian order.
 
+    // Convert to bytes in big-endian order.
     fn u64_to_bytes_be<const N: usize>(n: u64) -> [u8; N] {
         // Make sure the array is large enough to hold 8 bytes.
         assert!(N >= 8, "Target array size must be at least 8 bytes");
