@@ -1,4 +1,7 @@
 
+## Diamond Node Software 3.3.5-hbbft-0.11.1
+
+- caching of SyncStatus to prevent deadlocks https://github.com/DMDcoin/diamond-node/issues/223
 
 ## Diamond Node Software 3.3.5-hbbft-0.11.0
 
