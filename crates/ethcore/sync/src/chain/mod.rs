@@ -428,6 +428,8 @@ pub struct ChainSyncApi {
     priority_tasks: Mutex<mpsc::Receiver<PriorityTask>>,
     /// The rest of sync data
     sync: RwLock<ChainSync>,
+    /// last known sync state.
+    last_known_sync_status: Mutex<SyncStatus>,
 }
 
 impl ChainSyncApi {
@@ -439,14 +441,14 @@ impl ChainSyncApi {
         priority_tasks: mpsc::Receiver<PriorityTask>,
         new_transaction_hashes: crossbeam_channel::Receiver<H256>,
     ) -> Self {
+        let sync = ChainSync::new(config, chain, fork_filter, new_transaction_hashes);
+
+        let last_known_sync_status = sync.status();
+
         ChainSyncApi {
-            sync: RwLock::new(ChainSync::new(
-                config,
-                chain,
-                fork_filter,
-                new_transaction_hashes,
-            )),
+            sync: RwLock::new(sync),
             priority_tasks: Mutex::new(priority_tasks),
+            last_known_sync_status: Mutex::new(last_known_sync_status),
         }
     }
 
@@ -461,9 +463,17 @@ impl ChainSyncApi {
         ids.iter().map(|id| sync.peer_info(id)).collect()
     }
 
-    /// Returns synchonization status
+    /// Returns best known synchonization status
     pub fn status(&self) -> SyncStatus {
-        self.sync.read().status()
+        if let Some(sync) = self.sync.try_read_for(Duration::from_millis(50)) {
+            let status = sync.status();
+            *self.last_known_sync_status.lock() = status.clone();
+            return status;
+        }
+
+        // we return that last known sync status here, in cases we could not get the most recent information.
+        // see also: https://github.com/DMDcoin/diamond-node/issues/223
+        return self.last_known_sync_status.lock().clone();
     }
 
     /// Returns pending transactions propagation statistics
