@@ -26,6 +26,16 @@ jobs:
         with:
           command:              check
           args:                 --locked --all --benches --verbose --tests
+      - name:                   Run cargo check mio io
+        uses:                   actions-rs/cargo@v1
+        with:
+          command:              check
+          args:                 --locked --manifest-path crates/runtime/io/Cargo.toml --features "mio" --verbose
+      - name:                   Run cargo check evmbin
+        uses:                   actions-rs/cargo@v1
+        with:
+          command:              check
+          args:                 --locked -p evmbin --verbose
       - name:                   Run validate chainspecs
         run:                    ./scripts/actions/validate-chainspecs.sh
           args:                 --locked --all --benches --verbose --tests
