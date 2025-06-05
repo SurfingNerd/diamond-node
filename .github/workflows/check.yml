@@ -26,3 +26,7 @@ jobs:
         with:
           command:              check
           args:                 --locked --all --benches --verbose --tests
+      - name:                   Run validate chainspecs
+        run:                    ./scripts/actions/validate-chainspecs.sh
+          args:                 --locked --all --benches --verbose --tests
+
