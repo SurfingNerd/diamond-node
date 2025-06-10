@@ -35,8 +35,8 @@ ethkey = { path = "../accounts/ethkey" }
 evm = { path = "../vm/evm" }
 globset = "0.4"
 hash-db = "0.11.0"
-hbbft = { git = "https://github.com/dforsten/hbbft", rev = "f1d4c1d6f0714b7f267f84aaafa54c8d572c63bd" }
-hbbft_testing = { git = "https://github.com/dforsten/hbbft", rev = "f1d4c1d6f0714b7f267f84aaafa54c8d572c63bd" }
+hbbft = { git = "https://github.com/DMDcoin/hbbft.git", rev = "4edcd5cf5f370e6862d6d84d7ae4f05c0eb88074" }
+hbbft_testing = { git = "https://github.com/DMDcoin/hbbft.git", rev = "4edcd5cf5f370e6862d6d84d7ae4f05c0eb88074" }
 hex_fmt = "0.3.0"
 itertools = "0.5"
 journaldb = { path = "../db/journaldb" }
