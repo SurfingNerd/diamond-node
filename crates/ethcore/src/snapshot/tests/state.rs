@@ -16,7 +16,7 @@
 
 //! State snapshotting tests.
 
-extern crate rand_xorshift;
+use rand_xorshift;
 
 use hash::{KECCAK_NULL_RLP, keccak};
 use std::sync::{Arc, atomic::AtomicBool};

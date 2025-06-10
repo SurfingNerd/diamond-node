@@ -29,7 +29,7 @@ use ethcore::{
     },
 };
 use ethereum_types::H256;
-use network::{PeerId, client_version::ClientCapabilities};
+use network::PeerId;
 use rlp::{self, Rlp};
 use std::cmp;
 ///
@@ -38,8 +38,6 @@ use std::cmp;
 use std::collections::{BTreeMap, HashSet, VecDeque};
 
 const MAX_HEADERS_TO_REQUEST: usize = 128;
-const MAX_BODIES_TO_REQUEST_LARGE: usize = 128;
-const MAX_BODIES_TO_REQUEST_SMALL: usize = 32; // Size request for parity clients prior to 2.4.0
 const MAX_RECEPITS_TO_REQUEST: usize = 256;
 const SUBCHAIN_SIZE: u64 = 256;
 const MAX_ROUND_PARENTS: usize = 16;

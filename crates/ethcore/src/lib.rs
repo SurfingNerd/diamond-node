@@ -34,24 +34,10 @@ extern crate triehash_ethereum as triehash;
 
 #[cfg(any(test, feature = "blooms-db"))]
 extern crate blooms_db;
-#[cfg(any(test, feature = "env_logger"))]
-extern crate env_logger;
 #[cfg(test)]
 extern crate ethcore_accounts as accounts;
-#[cfg(feature = "stratum")]
-use ethcore_stratum;
-#[cfg(feature = "json-tests")]
-extern crate globset;
 #[cfg(any(test, feature = "kvdb-rocksdb"))]
 extern crate kvdb_rocksdb;
-#[cfg(test)]
-extern crate rlp_compress;
-#[cfg(any(test, feature = "tempdir"))]
-extern crate tempdir;
-#[cfg(feature = "json-tests")]
-extern crate tempfile;
-#[cfg(feature = "json-tests")]
-extern crate walkdir;
 
 #[macro_use]
 extern crate ethabi_contract;
@@ -70,14 +56,8 @@ extern crate trace_time;
 #[macro_use]
 extern crate serde_derive;
 
-#[cfg_attr(test, macro_use)]
+#[cfg(test)]
 use evm;
-
-#[cfg(all(test, feature = "price-info"))]
-extern crate fetch;
-
-#[cfg(all(test, feature = "price-info"))]
-extern crate parity_runtime;
 
 pub mod block;
 pub mod client;

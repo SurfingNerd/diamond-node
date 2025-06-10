@@ -63,7 +63,7 @@ impl EngineSigner for Signer {
 #[cfg(test)]
 mod test_signer {
 
-    extern crate ethkey;
+    use ethkey;
 
     use std::sync::Arc;
 

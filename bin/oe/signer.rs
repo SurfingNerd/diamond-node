@@ -26,7 +26,6 @@ use ethcore_logger::Config as LogConfig;
 pub const CODES_FILENAME: &str = "authcodes";
 
 pub struct NewToken {
-    pub token: String,
     pub message: String,
 }
 
@@ -69,7 +68,6 @@ pub fn generate_token_and_url(
     };
 
     Ok(NewToken {
-        token: code.clone(),
         message: format!(
             r#"
 Generated token:
