@@ -556,9 +556,9 @@ impl ChainSyncApi {
             // since we already have everything let's use a different deadline
             // to do the rest of the job now, so that previous work is not wasted.
             let deadline = Instant::now() + PRIORITY_TASK_DEADLINE;
-            let as_ms = move |prev| {
+            let as_us = move |prev| {
                 let dur: Duration = Instant::now() - prev;
-                dur.as_secs() * 1_000 + dur.subsec_millis() as u64
+                dur.as_micros()
             };
             match task {
                 // NOTE We can't simply use existing methods,
@@ -583,14 +583,14 @@ impl ChainSyncApi {
                             }
                         }
                     }
-                    debug!(target: "sync", "Finished block propagation, took {}ms", as_ms(started));
+                    debug!(target: "sync", "Finished block propagation, took {} us", as_us(started));
                 }
                 PriorityTask::PropagateTransactions(time, _) => {
                     let hashes = sync.new_transaction_hashes(None);
                     sync.propagate_new_transactions(io, hashes, || {
                         check_deadline(deadline).is_some()
                     });
-                    debug!(target: "sync", "Finished transaction propagation, took {}ms", as_ms(time));
+                    debug!(target: "sync", "Finished transaction propagation, took {} us", as_us(time));
                 }
             }
 
@@ -945,7 +945,9 @@ impl ChainSync {
     /// Updates transactions were received by a peer
     pub fn transactions_received(&mut self, txs: &[UnverifiedTransaction], peer_id: PeerId) {
         debug!(target: "sync", "Received {} transactions from peer {}", txs.len(), peer_id);
-        trace!(target: "sync", "Received {:?}", txs.iter().map(|t| t.hash).map(|t| t.0).collect::<Vec<_>>());
+        if !txs.is_empty() {
+            trace!(target: "sync", "Received {:?}", txs.iter().map(|t| t.hash).map(|t| t.0).collect::<Vec<_>>());
+        }
 
         // Remove imported txs from all request queues
         let imported = txs.iter().map(|tx| tx.hash()).collect::<H256FastSet>();
