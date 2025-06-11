@@ -6,6 +6,7 @@ mod hbbft_engine;
 mod hbbft_engine_cache;
 mod hbbft_message_memorium;
 mod hbbft_network_fork_manager;
+mod hbbft_peers_handler;
 mod hbbft_peers_management;
 mod hbbft_state;
 mod keygen_transactions;

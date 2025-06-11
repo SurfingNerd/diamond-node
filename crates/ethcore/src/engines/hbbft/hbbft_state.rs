@@ -11,6 +11,7 @@ use hbbft::{
     crypto::{PublicKey, Signature},
     honey_badger::{self, HoneyBadgerBuilder},
 };
+use io::IoService;
 use parking_lot::{Mutex, RwLock};
 use rand::seq::IteratorRandom;
 use std::{
@@ -31,6 +32,7 @@ use super::{
     contribution::Contribution,
     hbbft_early_epoch_end_manager::HbbftEarlyEpochEndManager,
     hbbft_network_fork_manager::HbbftNetworkForkManager,
+    hbbft_peers_handler::HbbftConnectToPeersMessage,
     hbbft_peers_management::HbbftPeersManagement,
 };
 
@@ -94,7 +96,7 @@ impl HbbftState {
         &mut self,
         client: Arc<dyn EngineClient>,
         signer: &Arc<RwLock<Option<Box<dyn EngineSigner>>>>,
-        peers_management_mutex: &Mutex<HbbftPeersManagement>,
+        peers_service: &IoService<HbbftConnectToPeersMessage>,
         early_epoch_end_manager_mutex: &Mutex<Option<HbbftEarlyEpochEndManager>>,
         current_minimum_gas_price: &Mutex<Option<U256>>,
         block_id: BlockId,
@@ -211,12 +213,9 @@ impl HbbftState {
 
         if sks.is_none() {
             info!(target: "engine", "We are not part of the HoneyBadger validator set - running as regular node.");
-            // we can disconnect the peers here.
-            if let Some(mut peers_management) =
-                peers_management_mutex.try_lock_for(std::time::Duration::from_millis(50))
-            {
-                peers_management.disconnect_all_validators(&client);
-            }
+            peers_service
+                .send_message(HbbftConnectToPeersMessage::DisconnectAllValidators)
+                .ok()?;
             return Some(());
         }
 
@@ -226,21 +225,11 @@ impl HbbftState {
 
         info!(target: "engine", "HoneyBadger Algorithm initialized! Running as validator node.");
 
-        // this is importent, but we should not risk deadlocks...
-        // maybe we should refactor this to a message Queue system, and pass a "connect_to_current_validators" message
-        if let Some(mut peers_management) =
-            peers_management_mutex.try_lock_for(std::time::Duration::from_millis(250))
-        {
-            peers_management.connect_to_current_validators(&self.get_validator_set(), &client);
-        } else {
-            // maybe we should work with signals that signals that connect_to_current_validators should happen
-            // instead of trying to achieve a lock here.
-            // in this case:
-            // if Node A cannot acquire the lock, but Node B can, then Node B connects to Node A,
-            // and we are find.
-            // if both nodes cannot acquire the lock, then we are busted.
-            warn!(target: "engine", "could not acquire to connect to current validators on switching to new validator set for staking epoch {}.", self.current_posdao_epoch);
-        }
+        peers_service
+            .send_message(HbbftConnectToPeersMessage::ConnectToCurrentPeers(
+                self.get_validator_set(),
+            ))
+            .ok()?;
 
         let allowed_devp2p_warmup_time = Duration::from_secs(1200);
 
