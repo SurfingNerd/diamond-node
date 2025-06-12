@@ -290,7 +290,7 @@ impl TransitionHandler {
 
         self.handle_shutdown_on_missing_block_import(shutdown_on_missing_block_import_config);
 
-        let timer_duration = self.min_block_time_remaining(client.clone());
+        let mut timer_duration = self.min_block_time_remaining(client.clone());
 
         // If the minimum block time has passed we are ready to trigger new blocks.
         if timer_duration == Duration::from_secs(0) {
