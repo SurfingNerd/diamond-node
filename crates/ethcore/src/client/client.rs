@@ -2917,11 +2917,16 @@ impl BlockChainClient for Client {
             .import_own_transaction(self, signed.into(), false)
     }
 
-    fn transact_silently(&self, tx_request: TransactionRequest) -> Result<(), transaction::Error> {
+    fn transact_silently(
+        &self,
+        tx_request: TransactionRequest,
+    ) -> Result<H256, transaction::Error> {
         let signed = self.create_transaction(tx_request)?;
+        let tx_hash = signed.hash();
         self.importer
             .miner
             .import_own_transaction(self, signed.into(), true)
+            .map(|_| tx_hash)
     }
 
     fn is_major_syncing(&self) -> bool {

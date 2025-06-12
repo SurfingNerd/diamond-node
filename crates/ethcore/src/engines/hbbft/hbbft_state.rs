@@ -33,7 +33,6 @@ use super::{
     hbbft_early_epoch_end_manager::HbbftEarlyEpochEndManager,
     hbbft_network_fork_manager::HbbftNetworkForkManager,
     hbbft_peers_handler::HbbftConnectToPeersMessage,
-    hbbft_peers_management::HbbftPeersManagement,
 };
 
 pub type HbMessage = honey_badger::Message<NodeId>;

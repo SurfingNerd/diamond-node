@@ -60,7 +60,7 @@ impl ClientService {
         miner: Arc<Miner>,
         shutdown: ShutdownManager,
     ) -> Result<ClientService, Error> {
-        let io_service = IoService::<ClientIoMessage>::start("Client")?;
+        let io_service = IoService::<ClientIoMessage>::start("Client", 4)?;
 
         info!(
             "Configured for {} using {} engine",

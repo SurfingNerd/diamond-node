@@ -266,7 +266,10 @@ where
     Message: Send + Sync + 'static,
 {
     /// Starts IO event loop
-    pub fn start(_symbolic_name: &'static str) -> Result<IoService<Message>, IoError> {
+    pub fn start(
+        _symbolic_name: &'static str,
+        num_threads: i32,
+    ) -> Result<IoService<Message>, IoError> {
         // This minimal implementation of IoService does have named Workers
         // like the mio-dependent one does, so _symbolic_name is ignored.
         let tx = deque::Worker::new_fifo();
@@ -280,7 +283,7 @@ where
             channel: Mutex::new(Some(tx)),
         });
 
-        let thread_joins = (0..num_cpus::get())
+        let thread_joins = (0..num_threads)
             .map(|_| {
                 let rx = rx.clone();
                 let shared = shared.clone();

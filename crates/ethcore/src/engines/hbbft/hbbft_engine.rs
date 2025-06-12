@@ -92,7 +92,7 @@ pub struct HoneyBadgerBFT {
     message_counter: Mutex<usize>,
     random_numbers: RwLock<BTreeMap<BlockNumber, U256>>,
     keygen_transaction_sender: RwLock<KeygenTransactionSender>,
-    has_sent_availability_tx: AtomicBool,
+
     has_connected_to_validator_set: AtomicBool,
     //peers_management: Mutex<HbbftPeersManagement>,
     current_minimum_gas_price: Mutex<Option<U256>>,
@@ -260,6 +260,70 @@ impl TransitionHandler {
             warn!(target: "consensus", "shutdown-on-missing-block-import: Could not read current block number.");
         }
     }
+
+    fn handle_engine(&self, io: &IoContext<()>) -> Result<(), Error> {
+        let client = self
+            .client
+            .read()
+            .as_ref()
+            .ok_or(EngineError::RequiresClient)?
+            .upgrade()
+            .ok_or(EngineError::RequiresClient)?;
+
+        // trace!(target: "consensus", "Honey Badger IoHandler timeout called");
+        // The block may be complete, but not have been ready to seal - trigger a new seal attempt.
+        // TODO: In theory, that should not happen. The seal is ready exactly when the sealing entry is `Complete`.
+        // if let Some(ref weak) = *self.client.read() {
+        //     if let Some(c) = weak.upgrade() {
+        //         c.update_sealing(ForceUpdateSealing::No);
+        //         shutdown_on_missing_block_import_config =
+        //             c.config_shutdown_on_missing_block_import();
+        //     }
+        // }
+
+        client.update_sealing(ForceUpdateSealing::No);
+        let shutdown_on_missing_block_import_config =
+            client.config_shutdown_on_missing_block_import();
+
+        // Periodically allow messages received for future epochs to be processed.
+        self.engine.replay_cached_messages();
+
+        self.handle_shutdown_on_missing_block_import(shutdown_on_missing_block_import_config);
+
+        let timer_duration = self.min_block_time_remaining(client.clone());
+
+        // If the minimum block time has passed we are ready to trigger new blocks.
+        if timer_duration == Duration::from_secs(0) {
+            // Always create blocks if we are in the keygen phase.
+            self.engine.start_hbbft_epoch_if_next_phase();
+
+            // If the maximum block time has been reached we trigger a new block in any case.
+            if self.max_block_time_remaining(client.clone()) == Duration::from_secs(0) {
+                self.engine.start_hbbft_epoch(client);
+            }
+
+            // Transactions may have been submitted during creation of the last block, trigger the
+            // creation of a new block if the transaction threshold has been reached.
+            self.engine.start_hbbft_epoch_if_ready();
+
+            // Set timer duration to the default period (1s)
+            timer_duration = DEFAULT_DURATION;
+        }
+
+        // The duration should be at least 1ms and at most self.engine.params.minimum_block_time
+        timer_duration = max(timer_duration, Duration::from_millis(1));
+        timer_duration = min(
+            timer_duration,
+            Duration::from_secs(self.engine.params.minimum_block_time),
+        );
+
+        io.register_timer_once(ENGINE_TIMEOUT_TOKEN, timer_duration)
+            .unwrap_or_else(
+                |e| warn!(target: "consensus", "Failed to restart consensus step timer: {}.", e),
+            );
+
+        Ok(())
+    }
 }
 
 impl IoHandler<()> for TransitionHandler {
@@ -285,61 +349,9 @@ impl IoHandler<()> for TransitionHandler {
 
     fn timeout(&self, io: &IoContext<()>, timer: TimerToken) {
         if timer == ENGINE_TIMEOUT_TOKEN {
-            let mut shutdown_on_missing_block_import_config: Option<u64> = None;
-
-            // trace!(target: "consensus", "Honey Badger IoHandler timeout called");
-            // The block may be complete, but not have been ready to seal - trigger a new seal attempt.
-            // TODO: In theory, that should not happen. The seal is ready exactly when the sealing entry is `Complete`.
-            if let Some(ref weak) = *self.client.read() {
-                if let Some(c) = weak.upgrade() {
-                    c.update_sealing(ForceUpdateSealing::No);
-                    shutdown_on_missing_block_import_config =
-                        c.config_shutdown_on_missing_block_import();
-                }
+            if let Err(err) = self.handle_engine(io) {
+                error!(target: "consensus", "Error in Honey Badger Engine timeout handler: {:?}", err);
             }
-
-            // Periodically allow messages received for future epochs to be processed.
-            self.engine.replay_cached_messages();
-
-            self.handle_shutdown_on_missing_block_import(shutdown_on_missing_block_import_config);
-
-            // The client may not be registered yet on startup, we set the default duration.
-            let mut timer_duration = DEFAULT_DURATION;
-            if let Some(ref weak) = *self.client.read() {
-                if let Some(c) = weak.upgrade() {
-                    timer_duration = self.min_block_time_remaining(c.clone());
-
-                    // If the minimum block time has passed we are ready to trigger new blocks.
-                    if timer_duration == Duration::from_secs(0) {
-                        // Always create blocks if we are in the keygen phase.
-                        self.engine.start_hbbft_epoch_if_next_phase();
-
-                        // If the maximum block time has been reached we trigger a new block in any case.
-                        if self.max_block_time_remaining(c.clone()) == Duration::from_secs(0) {
-                            self.engine.start_hbbft_epoch(c);
-                        }
-
-                        // Transactions may have been submitted during creation of the last block, trigger the
-                        // creation of a new block if the transaction threshold has been reached.
-                        self.engine.start_hbbft_epoch_if_ready();
-
-                        // Set timer duration to the default period (1s)
-                        timer_duration = DEFAULT_DURATION;
-                    }
-
-                    // The duration should be at least 1ms and at most self.engine.params.minimum_block_time
-                    timer_duration = max(timer_duration, Duration::from_millis(1));
-                    timer_duration = min(
-                        timer_duration,
-                        Duration::from_secs(self.engine.params.minimum_block_time),
-                    );
-                }
-            }
-
-            io.register_timer_once(ENGINE_TIMEOUT_TOKEN, timer_duration)
-                .unwrap_or_else(
-                    |e| warn!(target: "consensus", "Failed to restart consensus step timer: {}.", e),
-                );
         } else if timer == ENGINE_SHUTDOWN {
             // we do not run this on the first occurence,
             // the first occurence could mean that the client is not fully set up
@@ -424,9 +436,10 @@ impl HoneyBadgerBFT {
         let is_unit_test = params.is_unit_test.unwrap_or(false);
 
         let engine = Arc::new(HoneyBadgerBFT {
-            transition_service: IoService::<()>::start("Hbbft")?,
+            transition_service: IoService::<()>::start("Hbbft", 4)?,
             hbbft_peers_service: IoService::<HbbftConnectToPeersMessage>::start(
                 "peers_management",
+                1,
             )?,
             client: Arc::new(RwLock::new(None)),
             signer: Arc::new(RwLock::new(None)),
@@ -449,7 +462,7 @@ impl HoneyBadgerBFT {
             message_counter: Mutex::new(0),
             random_numbers: RwLock::new(BTreeMap::new()),
             keygen_transaction_sender: RwLock::new(KeygenTransactionSender::new()),
-            has_sent_availability_tx: AtomicBool::new(false),
+
             has_connected_to_validator_set: AtomicBool::new(false),
             current_minimum_gas_price: Mutex::new(None),
             early_epoch_manager: Mutex::new(None),
@@ -893,46 +906,8 @@ impl HoneyBadgerBFT {
         Some(())
     }
 
-    fn should_handle_availability_announcements(&self) -> bool {
-        !self.has_sent_availability_tx.load(Ordering::SeqCst)
-    }
-
     fn should_connect_to_validator_set(&self) -> bool {
         !self.has_connected_to_validator_set.load(Ordering::SeqCst)
-    }
-
-    fn handle_availability_announcements(
-        &self,
-        engine_client: &dyn EngineClient,
-        block_chain_client: &dyn BlockChainClient,
-        mining_address: &Address,
-    ) {
-        // handles the announcements of the availability of other peers as blockchain transactions
-
-        // let engine_client = client.deref();
-
-        match get_validator_available_since(engine_client, &mining_address) {
-            Ok(s) => {
-                if s.is_zero() {
-                    //debug!(target: "engine", "sending announce availability transaction");
-                    info!(target: "engine", "sending announce availability transaction");
-                    match send_tx_announce_availability(block_chain_client, &mining_address) {
-                        Ok(()) => {}
-                        Err(call_error) => {
-                            error!(target: "engine", "CallError during announce availability. {:?}", call_error);
-                        }
-                    }
-                }
-
-                // we store "HAS_SENT" if we SEND,
-                // or if we are already marked as available.
-                self.has_sent_availability_tx.store(true, Ordering::SeqCst);
-                //return Ok(());
-            }
-            Err(e) => {
-                error!(target: "engine", "Error trying to send availability check: {:?}", e);
-            }
-        }
     }
 
     /// early epoch ends
@@ -1032,9 +1007,6 @@ impl HoneyBadgerBFT {
                     }
                 };
 
-                let should_handle_availability_announcements =
-                    self.should_handle_availability_announcements();
-
                 let should_connect_to_validator_set = self.should_connect_to_validator_set();
                 let mut should_handle_early_epoch_end = false;
 
@@ -1068,26 +1040,17 @@ impl HoneyBadgerBFT {
                     };
                 } // drop lock for hbbft_state
 
-                self.hbbft_peers_service.send_message(
-                    HbbftConnectToPeersMessage::AnnounceOwnInternetAddress(mining_address),
-                )?;
+                self.hbbft_peers_service
+                    .send_message(HbbftConnectToPeersMessage::AnnounceOwnInternetAddress)?;
 
                 // if we do not have to do anything, we can return early.
-                if !(should_handle_availability_announcements
-                    || should_connect_to_validator_set
-                    || should_handle_early_epoch_end)
-                {
+                if !(should_connect_to_validator_set || should_handle_early_epoch_end) {
                     return Ok(());
                 }
 
-                // if we are not a potential validator, we already have already returned here.
-                if should_handle_availability_announcements {
-                    self.handle_availability_announcements(
-                        engine_client,
-                        block_chain_client,
-                        &mining_address,
-                    );
-                }
+                self.hbbft_peers_service
+                    .channel()
+                    .send(HbbftConnectToPeersMessage::AnnounceAvailability)?;
 
                 if should_connect_to_validator_set {
                     self.hbbft_peers_service.send_message(
@@ -1336,14 +1299,16 @@ impl Engine<EthereumMachine> for HoneyBadgerBFT {
 
     fn set_signer(&self, signer: Option<Box<dyn EngineSigner>>) {
         if let Some(engine_signer) = signer.as_ref() {
-            if let Err(err) =
-                self.hbbft_peers_service
-                    .send_message(HbbftConnectToPeersMessage::SetSignerAddress(
-                        engine_signer.address(),
-                    ))
+            let signer_address = engine_signer.address();
+            info!(target: "engine", "set_signer: {:?}", signer_address);
+            if let Err(err) = self
+                .hbbft_peers_service
+                .send_message(HbbftConnectToPeersMessage::SetSignerAddress(signer_address))
             {
                 error!(target: "engine", "Error setting signer address in hbbft peers service: {:?}", err);
             }
+        } else {
+            info!(target: "engine", "set_signer: signer is None, not setting signer address in hbbft peers service.");
         }
 
         *self.signer.write() = signer;
