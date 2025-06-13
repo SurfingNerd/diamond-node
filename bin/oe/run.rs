@@ -710,6 +710,24 @@ impl RunningClient {
                 keep_alive,
             } => {
                 info!("Finishing work, please wait...");
+
+                // this is a backup thread that exits the process after 90 seconds,
+                // in case the shutdown routine does not finish in time.
+                std::thread::Builder::new()
+                    .name("diamond-node-force-quit".to_string())
+                    .spawn(move || {
+                        // we make a force quit if after 90 seconds, if this shutdown routine 
+                        std::thread::sleep(Duration::from_secs(30));
+                        warn!(target: "shutdown", "shutdown not happened within 30 seconds, waiting for 60 seconds before force exiting the process.");
+                        std::thread::sleep(Duration::from_secs(50));
+                        warn!(target: "shutdown", "force exit in 10 seconds.");
+                        std::thread::sleep(Duration::from_secs(10));
+                        warn!(target: "shutdown", "force exiting now.");
+                        std::process::exit(1);
+                        // Wait for the shutdown manager to finish
+                    })
+                    .expect("Failed to spawn Force shutdown thread");
+
                 // Create a weak reference to the client so that we can wait on shutdown
                 // until it is dropped
                 let weak_client = Arc::downgrade(&client);
