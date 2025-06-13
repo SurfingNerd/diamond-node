@@ -46,7 +46,7 @@
 //! }
 //!
 //! fn main () {
-//! 	let mut service = IoService::<MyMessage>::start("name").expect("Error creating network service");
+//! 	let mut service = IoService::<MyMessage>::start("name", 4).expect("Error creating network service");
 //! 	service.register_handler(Arc::new(MyHandler)).unwrap();
 //!
 //! 	// Wait for quit condition
