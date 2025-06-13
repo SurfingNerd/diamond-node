@@ -309,9 +309,10 @@ impl KeygenTransactionSender {
                         .nonce(full_client.nonce(&address, BlockId::Latest).unwrap())
                         .gas_price(U256::from(10000000000u64));
                 debug!(target: "engine", "sending acks with nonce: {}",  acks_transaction.nonce.unwrap());
-                full_client
+                let hash = full_client
                     .transact_silently(acks_transaction)
                     .map_err(|_| CallError::ReturnValueInvalid)?;
+                debug!(target: "engine", "sending acks tx: {}",  hash);
             }
             _ => {}
         }
@@ -343,12 +344,14 @@ fn send_part_transaction(
         .gas(U256::from(gas))
         .nonce(nonce)
         .gas_price(U256::from(10000000000u64));
-    full_client
+    let hash = full_client
         .transact_silently(part_transaction)
         .map_err(|e| {
             warn!(target:"engine", "could not transact_silently: {:?}", e);
             CallError::ReturnValueInvalid
         })?;
+
+    debug!(target: "engine", "sending part tx: {}",  hash);
 
     return Ok(nonce);
 }

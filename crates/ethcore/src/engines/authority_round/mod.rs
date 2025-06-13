@@ -1046,7 +1046,7 @@ impl AuthorityRound {
         step.calibrate();
 
         let engine = Arc::new(AuthorityRound {
-            transition_service: IoService::<()>::start("AuRa")?,
+            transition_service: IoService::<()>::start("AuRa", 4)?,
             step: Arc::new(PermissionedStep {
                 inner: step,
                 can_propose: AtomicBool::new(true),

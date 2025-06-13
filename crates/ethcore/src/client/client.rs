@@ -304,7 +304,7 @@ pub struct Client {
 
     importer: Importer,
 
-    shutdown: ShutdownManager,
+    shutdown: Arc<ShutdownManager>,
 
     statistics: ClientStatistics,
 }
@@ -994,7 +994,7 @@ impl Client {
         db: Arc<dyn BlockChainDB>,
         miner: Arc<Miner>,
         message_channel: IoChannel<ClientIoMessage>,
-        shutdown: ShutdownManager,
+        shutdown: Arc<ShutdownManager>,
     ) -> Result<Arc<Client>, crate::error::Error> {
         let trie_spec = match config.fat_db {
             true => TrieSpec::Fat,
@@ -2917,11 +2917,16 @@ impl BlockChainClient for Client {
             .import_own_transaction(self, signed.into(), false)
     }
 
-    fn transact_silently(&self, tx_request: TransactionRequest) -> Result<(), transaction::Error> {
+    fn transact_silently(
+        &self,
+        tx_request: TransactionRequest,
+    ) -> Result<H256, transaction::Error> {
         let signed = self.create_transaction(tx_request)?;
+        let tx_hash = signed.hash();
         self.importer
             .miner
             .import_own_transaction(self, signed.into(), true)
+            .map(|_| tx_hash)
     }
 
     fn is_major_syncing(&self) -> bool {

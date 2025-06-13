@@ -1030,7 +1030,7 @@ mod tests {
         let gas_prices = vec![1.into(), 2.into(), 3.into(), 999.into()];
         let client =
             generate_dummy_client_with_spec_and_data(Spec::new_null, 400, 5, &gas_prices, false);
-        let service = IoService::<ClientIoMessage>::start("Test").unwrap();
+        let service = IoService::<ClientIoMessage>::start("Test", 4).unwrap();
         let spec = Spec::new_test();
 
         let tempdir = TempDir::new("").unwrap();

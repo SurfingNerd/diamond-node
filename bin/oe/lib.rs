@@ -146,7 +146,18 @@ fn print_hash_of(maybe_file: Option<String>) -> Result<String, String> {
 }
 
 #[cfg(feature = "deadlock_detection")]
-fn run_deadlock_detection_thread() {
+#[cfg(feature = "shutdown-on-deadlock")]
+fn on_deadlock_detected(shutdown: &Arc<ShutdownManager>) {
+    warn!("Deadlock detected, trying to shutdown the node software");
+    shutdown.demand_shutdown();
+}
+
+#[cfg(feature = "deadlock_detection")]
+#[cfg(not(feature = "shutdown-on-deadlock"))]
+fn on_deadlock_detected(_: &Arc<ShutdownManager>) {}
+
+#[cfg(feature = "deadlock_detection")]
+fn run_deadlock_detection_thread(shutdown: Arc<ShutdownManager>) {
     use ansi_term::Style;
     use parking_lot::deadlock;
     use std::{thread, time::Duration};
@@ -176,6 +187,7 @@ fn run_deadlock_detection_thread() {
                     warn!("{:#?}", t.backtrace());
                 }
             }
+            on_deadlock_detected(&shutdown);
         }
     });
 
@@ -206,12 +218,14 @@ fn execute(
     logger: Arc<RotatingLogger>,
     shutdown: ShutdownManager,
 ) -> Result<ExecutionAction, String> {
+    let shutdown_arc = Arc::new(shutdown);
+
     #[cfg(feature = "deadlock_detection")]
-    run_deadlock_detection_thread();
+    run_deadlock_detection_thread(shutdown_arc.clone());
 
     match command.cmd {
         Cmd::Run(run_cmd) => {
-            let outcome = run::execute(run_cmd, logger, shutdown)?;
+            let outcome = run::execute(run_cmd, logger, shutdown_arc)?;
             Ok(ExecutionAction::Running(outcome))
         }
         Cmd::Version => Ok(ExecutionAction::Instant(Some(Args::print_version()))),

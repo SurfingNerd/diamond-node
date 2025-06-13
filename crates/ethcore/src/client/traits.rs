@@ -529,7 +529,8 @@ pub trait BlockChainClient:
 
     /// Same as transact(), but just adding the transaction to the queue, without calling back into the engine.
     /// Used by engines to queue transactions without causing deadlocks due to re-entrant calls.
-    fn transact_silently(&self, tx_request: TransactionRequest) -> Result<(), transaction::Error>;
+    fn transact_silently(&self, tx_request: TransactionRequest)
+    -> Result<H256, transaction::Error>;
 
     /// Returns true if the chain is currently syncing in major states.
     fn is_major_syncing(&self) -> bool;

@@ -365,6 +365,9 @@ impl HbbftPeersManagement {
         mining_address: &Address,
         staking_address: &Address,
     ) -> Result<(), String> {
+        if !self.should_announce_own_internet_address(block_chain_client) {
+            return Ok(());
+        }
         // updates the nodes internet address if the information on the blockchain is outdated.
 
         // check if the stored internet address differs from our.

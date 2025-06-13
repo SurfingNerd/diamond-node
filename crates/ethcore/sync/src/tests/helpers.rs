@@ -451,7 +451,7 @@ impl TestNet<EthPeer<EthcoreClient>> {
             test_helpers::new_db(),
             miner.clone(),
             channel.clone(),
-            ShutdownManager::null(),
+            Arc::new(ShutdownManager::null()),
         )
         .unwrap();
 
