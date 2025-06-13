@@ -274,7 +274,7 @@ mod tests {
             restoration_db_handler,
             tempdir.path(),
             Arc::new(Miner::new_for_tests(&spec, None)),
-            Arc(ShutdownManager::null()),
+            Arc::new(ShutdownManager::null()),
         );
         assert!(service.is_ok());
         drop(service.unwrap());
