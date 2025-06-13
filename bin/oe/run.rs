@@ -177,7 +177,7 @@ impl ChainSyncing for SyncProviderWrapper {
 pub fn execute(
     cmd: RunCmd,
     logger: Arc<RotatingLogger>,
-    shutdown: ShutdownManager,
+    shutdown: Arc<ShutdownManager>,
 ) -> Result<RunningClient, String> {
     // load spec
     let spec = cmd.spec.spec(&cmd.dirs.cache)?;
@@ -755,8 +755,8 @@ fn print_running_environment(data_dir: &str, dirs: &Directories, db_dirs: &Datab
 
 fn wait_for_drop<T>(w: Weak<T>) {
     const SLEEP_DURATION: Duration = Duration::from_secs(1);
-    const WARN_TIMEOUT: Duration = Duration::from_secs(60);
-    const MAX_TIMEOUT: Duration = Duration::from_secs(300);
+    const WARN_TIMEOUT: Duration = Duration::from_secs(30);
+    const MAX_TIMEOUT: Duration = Duration::from_secs(60);
 
     let instant = Instant::now();
     let mut warned = false;

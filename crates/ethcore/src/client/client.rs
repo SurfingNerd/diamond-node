@@ -304,7 +304,7 @@ pub struct Client {
 
     importer: Importer,
 
-    shutdown: ShutdownManager,
+    shutdown: Arc<ShutdownManager>,
 
     statistics: ClientStatistics,
 }
@@ -994,7 +994,7 @@ impl Client {
         db: Arc<dyn BlockChainDB>,
         miner: Arc<Miner>,
         message_channel: IoChannel<ClientIoMessage>,
-        shutdown: ShutdownManager,
+        shutdown: Arc<ShutdownManager>,
     ) -> Result<Arc<Client>, crate::error::Error> {
         let trie_spec = match config.fat_db {
             true => TrieSpec::Fat,

@@ -241,7 +241,7 @@ impl SnapshotCommand {
             // TODO [ToDr] don't use test miner here
             // (actually don't require miner at all)
             Arc::new(Miner::new_for_tests(&spec, None)),
-            ShutdownManager::null(),
+            Arc::new(ShutdownManager::null()),
         )
         .map_err(|e| format!("Client service error: {:?}", e))?;
 

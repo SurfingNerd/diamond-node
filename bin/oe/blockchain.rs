@@ -214,7 +214,7 @@ fn execute_import(cmd: ImportBlockchain) -> Result<(), String> {
         // TODO [ToDr] don't use test miner here
         // (actually don't require miner at all)
         Arc::new(Miner::new_for_tests(&spec, None)),
-        ShutdownManager::null(),
+        Arc::new(ShutdownManager::null()),
     )
     .map_err(|e| format!("Client service error: {:?}", e))?;
 
@@ -282,7 +282,7 @@ fn start_client(
     require_fat_db: bool,
     max_round_blocks_to_import: usize,
     shutdown_on_missing_block_import: Option<u64>,
-    shutdown: ShutdownManager,
+    shutdown: Arc<ShutdownManager>,
 ) -> Result<ClientService, String> {
     // load spec file
     let spec = spec.spec(&dirs.cache)?;
@@ -376,7 +376,7 @@ fn execute_export(cmd: ExportBlockchain) -> Result<(), String> {
         false,
         cmd.max_round_blocks_to_import,
         None,
-        ShutdownManager::null(),
+        Arc::new(ShutdownManager::null()),
     )?;
     let client = service.client();
 
@@ -407,7 +407,7 @@ fn execute_export_state(cmd: ExportState) -> Result<(), String> {
         true,
         cmd.max_round_blocks_to_import,
         None,
-        ShutdownManager::null(),
+        Arc::new(ShutdownManager::null()),
     )?;
 
     let client = service.client();
@@ -527,7 +527,7 @@ fn execute_reset(cmd: ResetBlockchain) -> Result<(), String> {
         false,
         0,
         None,
-        ShutdownManager::null(),
+        Arc::new(ShutdownManager::null()),
     )?;
 
     let client = service.client();
