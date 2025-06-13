@@ -17,7 +17,6 @@
 use crate::{IoError, IoHandler};
 use deque;
 use fnv::FnvHashMap;
-use num_cpus;
 use parking_lot::{Mutex, RwLock};
 use slab::Slab;
 use std::{
