@@ -175,7 +175,6 @@ impl HbbftPeersHandler {
     }
 
     fn handle_message(&self, message: &HbbftConnectToPeersMessage) -> Result<(), Error> {
-
         match message {
             HbbftConnectToPeersMessage::ConnectToPendingPeers(peers) => {
                 match self
