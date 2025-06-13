@@ -1,3 +1,7 @@
+## Diamond Node Software 3.3.5-hbbft-0.11.2
+
+- [shutdown on deadlock](https://github.com/DMDcoin/diamond-node/issues/231)
+- [deadlock possibility in reserved peers management](https://github.com/DMDcoin/diamond-node/issues/229)
 
 ## Diamond Node Software 3.3.5-hbbft-0.11.1
 
