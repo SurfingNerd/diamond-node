@@ -29,7 +29,7 @@ pub enum HbbftConnectToPeersMessage {
     DisconnectAllValidators,
 }
 
-/// IOChannel Wrapper for doing the HbbftPeersManagement asynconous.
+/// IOChannel handler for doing hbbft peers management and hbbft service transactions async.
 pub struct HbbftPeersHandler {
     peers_management: Mutex<HbbftPeersManagement>,
     client: Arc<RwLock<Option<Weak<dyn EngineClient>>>>,
@@ -39,12 +39,6 @@ pub struct HbbftPeersHandler {
 
 impl HbbftPeersHandler {
     pub fn new(client: Arc<RwLock<Option<Weak<dyn EngineClient>>>>) -> Self {
-        // let c = client.read().expect("Client lock is poisoned").upgrade().expect("");
-
-        // let fullClient = c.as_full_client().expect("Client is not a full client");
-
-        info!(target: "engine", "Creating HbbftPeersHandler");
-
         Self {
             peers_management: Mutex::new(HbbftPeersManagement::new()),
             client,
@@ -181,9 +175,6 @@ impl HbbftPeersHandler {
     }
 
     fn handle_message(&self, message: &HbbftConnectToPeersMessage) -> Result<(), Error> {
-        // we can savely lock the whole peers_management here, because this handler is the only one that locks that data.
-
-        // working peers management is a nice to have, but it is not worth a deadlock.
 
         match message {
             HbbftConnectToPeersMessage::ConnectToPendingPeers(peers) => {
@@ -255,7 +246,6 @@ impl IoHandler<HbbftConnectToPeersMessage> for HbbftPeersHandler {
         _io: &io::IoContext<HbbftConnectToPeersMessage>,
         message: &HbbftConnectToPeersMessage,
     ) {
-        info!(target: "engine", "Hbbft Queue received message: {:?}", message);
         match self.handle_message(message) {
             Ok(_) => {
                 info!(target: "engine", "Hbbft Queue successfully worked message {:?}", message);
@@ -266,13 +256,3 @@ impl IoHandler<HbbftConnectToPeersMessage> for HbbftPeersHandler {
         }
     }
 }
-
-// fn do_keygen_peers_management(
-//     client: Arc<dyn EngineClient>,
-//     validators: Vec<Address>,
-//     peers_management: &Mutex<HbbftPeersManagement>,
-// ) {
-//     parity_runtime::tokio::spawn(async move {
-
-//     });
-// }
