@@ -2,7 +2,7 @@ use super::{
     block_reward_hbbft::BlockRewardContract,
     hbbft_early_epoch_end_manager::HbbftEarlyEpochEndManager,
     hbbft_engine_cache::HbbftEngineCache,
-    hbbft_peers_handler::{self, HbbftConnectToPeersMessage, HbbftPeersHandler},
+    hbbft_peers_handler::{HbbftConnectToPeersMessage, HbbftPeersHandler},
 };
 use crate::{
     block::ExecutedBlock,
@@ -14,7 +14,7 @@ use crate::{
         Engine, EngineError, ForkChoice, Seal, SealingState, default_system_or_code_call,
         hbbft::{
             contracts::random_hbbft::set_current_seed_tx_raw,
-            hbbft_message_memorium::BadSealReason, hbbft_peers_management::HbbftPeersManagement,
+            hbbft_message_memorium::BadSealReason,
         },
         signer::EngineSigner,
     },
@@ -59,12 +59,7 @@ use super::{
     keygen_transactions::KeygenTransactionSender,
     sealing::{self, RlpSig, Sealing},
 };
-use crate::engines::hbbft::{
-    contracts::validator_set::{
-        get_validator_available_since, send_tx_announce_availability, staking_by_mining_address,
-    },
-    hbbft_message_memorium::HbbftMessageDispatcher,
-};
+use crate::engines::hbbft::hbbft_message_memorium::HbbftMessageDispatcher;
 use std::{ops::Deref, sync::atomic::Ordering};
 
 type TargetedMessage = hbbft::TargetedMessage<Message, NodeId>;
