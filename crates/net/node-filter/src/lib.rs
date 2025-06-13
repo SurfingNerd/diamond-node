@@ -128,7 +128,7 @@ mod test {
             client_db,
             Arc::new(Miner::new_for_tests(&spec, None)),
             IoChannel::disconnected(),
-            ShutdownManager::null(),
+            Arc::new(ShutdownManager::null()),
         )
         .unwrap();
         let filter = NodeFilter::new(

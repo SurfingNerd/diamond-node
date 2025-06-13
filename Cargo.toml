@@ -99,7 +99,7 @@ lazy_static = "1.2.0"
 winapi = { version = "0.3.4", features = ["winsock2", "winuser", "shellapi"] }
 
 [features]
-default = ["accounts"]
+default = ["shutdown-on-deadlock", "accounts"]
 accounts = ["ethcore-accounts", "parity-rpc/accounts"]
 miner-debug = ["ethcore/miner-debug"]
 json-tests = ["ethcore/json-tests"]
@@ -118,6 +118,7 @@ deadlock_detection = ["parking_lot/deadlock_detection"]
 # and `massif-visualizer` for visualization
 memory_profiling = []
 secretstore = []
+shutdown-on-deadlock = ["deadlock_detection"]
 
 [lib]
 path = "bin/oe/lib.rs"
