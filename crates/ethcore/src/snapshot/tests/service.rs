@@ -71,7 +71,7 @@ fn restored_is_equivalent() {
         blockchain_db,
         Arc::new(crate::miner::Miner::new_for_tests(&spec, None)),
         IoChannel::disconnected(),
-        ShutdownManager::null(),
+        Arc::new(ShutdownManager::null()),
     )
     .unwrap();
 
@@ -235,7 +235,7 @@ fn keep_ancient_blocks() {
         client_db,
         Arc::new(crate::miner::Miner::new_for_tests(&spec, None)),
         IoChannel::disconnected(),
-        ShutdownManager::null(),
+        Arc::new(ShutdownManager::null()),
     )
     .unwrap();
 
@@ -324,7 +324,7 @@ fn recover_aborted_recovery() {
         client_db,
         Arc::new(crate::miner::Miner::new_for_tests(&spec, None)),
         IoChannel::disconnected(),
-        ShutdownManager::null(),
+        Arc::new(ShutdownManager::null()),
     )
     .unwrap();
     let service_params = ServiceParams {

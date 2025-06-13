@@ -312,7 +312,7 @@ mod test {
             db,
             Arc::new(Miner::new_for_tests(&spec, None)),
             IoChannel::disconnected(),
-            ShutdownManager::null(),
+            Arc::new(ShutdownManager::null()),
         )
         .unwrap();
         let key1 = KeyPair::from_secret(
@@ -554,7 +554,7 @@ mod test {
             db,
             Arc::new(Miner::new_for_tests(&spec, None)),
             IoChannel::disconnected(),
-            ShutdownManager::null(),
+            Arc::new(ShutdownManager::null()),
         )
         .unwrap();
         let key1 = KeyPair::from_secret(
@@ -623,7 +623,7 @@ mod test {
             db,
             Arc::new(Miner::new_for_tests(&spec, None)),
             IoChannel::disconnected(),
-            ShutdownManager::null(),
+            Arc::new(ShutdownManager::null()),
         )
         .unwrap();
         let key1 = KeyPair::from_secret(
@@ -692,7 +692,7 @@ mod test {
             db,
             Arc::new(Miner::new_for_tests(&spec, None)),
             IoChannel::disconnected(),
-            ShutdownManager::null(),
+            Arc::new(ShutdownManager::null()),
         )
         .unwrap();
         let key1 = KeyPair::from_secret(
@@ -764,7 +764,7 @@ mod test {
             db,
             Arc::new(Miner::new_for_tests(&spec, None)),
             IoChannel::disconnected(),
-            ShutdownManager::null(),
+            Arc::new(ShutdownManager::null()),
         )
         .unwrap();
         let key1 = KeyPair::from_secret(

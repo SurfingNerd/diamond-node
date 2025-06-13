@@ -169,7 +169,7 @@ where
         client_db,
         Arc::new(miner),
         IoChannel::disconnected(),
-        ShutdownManager::null(),
+        Arc::new(ShutdownManager::null()),
     )
     .unwrap();
     let test_engine = &*test_spec.engine;
@@ -377,7 +377,7 @@ pub fn get_test_client_with_blocks(blocks: Vec<Bytes>) -> Arc<Client> {
         client_db,
         Arc::new(Miner::new_for_tests(&test_spec, None)),
         IoChannel::disconnected(),
-        ShutdownManager::null(),
+        Arc::new(ShutdownManager::null()),
     )
     .unwrap();
 
