@@ -13,8 +13,7 @@ use crate::{
     engines::{
         Engine, EngineError, ForkChoice, Seal, SealingState, default_system_or_code_call,
         hbbft::{
-            contracts::random_hbbft::set_current_seed_tx_raw,
-            hbbft_message_memorium::BadSealReason,
+            contracts::random_hbbft::set_current_seed_tx_raw, hbbft_message_memorium::BadSealReason,
         },
         signer::EngineSigner,
     },
