@@ -115,6 +115,12 @@ impl HbbftPeersHandler {
     }
 
     fn announce_own_internet_address(&self) -> Result<(), Error> {
+
+        // todo:
+        // if the network is unable to process this transaction,
+        // we are keeping to announce out internet address.
+
+        
         let mining_address = self.get_mining_address();
 
         if mining_address.is_zero() {
@@ -169,7 +175,7 @@ impl HbbftPeersHandler {
             error!(target: "engine", "Error trying to announce own internet address: {:?}", error);
         }
 
-        info!(target: "engine", "Success: trying to announce own internet address for mining address: {:?}", mining_address);
+        trace!(target: "engine", "Success: trying to announce own internet address for mining address: {:?}", mining_address);
 
         return Ok(());
     }
