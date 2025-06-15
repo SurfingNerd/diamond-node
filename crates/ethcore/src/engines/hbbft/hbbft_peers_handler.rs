@@ -120,7 +120,7 @@ impl HbbftPeersHandler {
         // if the network is unable to process this transaction,
         // we are keeping to announce out internet address.
 
-        
+
         let mining_address = self.get_mining_address();
 
         if mining_address.is_zero() {
@@ -253,7 +253,7 @@ impl IoHandler<HbbftConnectToPeersMessage> for HbbftPeersHandler {
     ) {
         match self.handle_message(message) {
             Ok(_) => {
-                info!(target: "engine", "Hbbft Queue successfully worked message {:?}", message);
+                trace!(target: "engine", "Hbbft Queue successfully worked message {:?}", message);
             }
             Err(e) => {
                 error!(target: "engine", "Error handling HbbftConnectToPeersMessage: {:?} {:?}", message, e);
