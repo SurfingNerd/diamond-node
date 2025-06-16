@@ -189,7 +189,7 @@ impl HbbftPeersManagement {
 
         // validators_to_remove
         let mut current_validator_connections: Vec<ValidatorConnectionData> = Vec::new();
-        let mut validators_to_connect : Vec<ValidatorConnectionData> = Vec::new();
+        let mut validators_to_connect_count = 0;
         for node in validator_set.iter() {
             let address = public_key_to_address(&node.0);
 
@@ -204,7 +204,7 @@ impl HbbftPeersManagement {
                 self.connect_to_validator(client, block_chain_client, &address)
             {
                 validators_to_remove.remove(&connection.mining_address);
-                validators_to_connect.push(connection.clone());
+                validators_to_connect_count += 1;
                 current_validator_connections.push(connection);
             } else {
                 warn!(target: "Engine", "could not add current validator to reserved peers: {}", address);
@@ -246,8 +246,8 @@ impl HbbftPeersManagement {
         // and we have disconnected all previous validators that are not current validators anymore.
         // so we now can set the information of collected validators.
 
-        if validators_to_connect.len() > 0 {
-            info!(target: "Engine", "added {} current validators as reserved peers.", validators_to_connect.len());
+        if validators_to_connect_count > 0 {
+            info!(target: "Engine", "added {} current validators as reserved peers.", validators_to_connect_count);
         }
 
         self.connected_current_validators = current_validator_connections;
