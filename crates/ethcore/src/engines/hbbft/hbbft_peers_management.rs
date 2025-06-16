@@ -157,7 +157,9 @@ impl HbbftPeersManagement {
         validator_set: &Vec<NodeId>,
         client_arc: &Arc<dyn EngineClient>,
     ) {
-        info!(target: "Engine", "adding current validators as reserved peers: {}", validator_set.len());
+        if validator_set.len() > 0 {
+            info!(target: "Engine", "adding current validators as reserved peers: {}", validator_set.len());
+        }
         // todo: iterate over NodeIds, extract the address
         // we do not need to connect to ourself.
         // figure out the IP and port from the contracts

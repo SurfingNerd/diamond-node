@@ -970,7 +970,7 @@ impl Host {
                             {
                                 if !reserved_nodes.contains(&id) {
                                     // only proceed if the connecting peer is reserved.
-                                    trace!(target: "network", "Disconnecting non-reserved peer {:?}", id);
+                                    trace!(target: "network", "Disconnecting non-reserved peer {:?} (TooManyPeers)", id);
                                     s.disconnect(io, DisconnectReason::TooManyPeers);
                                     kill = true;
                                     break;
