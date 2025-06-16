@@ -81,6 +81,11 @@ impl HbbftPeersHandler {
             .as_full_client()
             .ok_or("BlockchainClient required")?;
 
+
+        if block_chain_client.is_major_syncing() {
+            return Ok(());
+        }
+
         match get_validator_available_since(engine_client.as_ref(), &mining_address) {
             Ok(s) => {
                 if s.is_zero() {
