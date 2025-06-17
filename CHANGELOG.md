@@ -1,3 +1,7 @@
+## Diamond Node Software 3.3.5-hbbft-0.11.3
+
+- [deadlocks in transaction pools](https://github.com/DMDcoin/diamond-node/issues/236)
+
 ## Diamond Node Software 3.3.5-hbbft-0.11.2
 
 - [shutdown on deadlock](https://github.com/DMDcoin/diamond-node/issues/231)
