@@ -965,7 +965,7 @@ impl HoneyBadgerBFT {
     fn do_validator_engine_actions(&self) -> Result<(), Error> {
         // here we need to differentiate the different engine functions,
         // that requre different levels of access to the client.
-        debug!(target: "engine", "do_validator_engine_actions.");
+        trace!(target: "engine", "do_validator_engine_actions.");
         match self.client_arc() {
             Some(client_arc) => {
                 if self.is_syncing(&client_arc) {
@@ -1031,7 +1031,7 @@ impl HoneyBadgerBFT {
                         }
                         None => {
                             // maybe improve here, to return with a result, that triggers a retry soon.
-                            warn!(target: "engine", "Unable to do_validator_engine_actions: Could not acquire read lock for hbbft state. Unable to decide about early epoch end.");
+                            info!(target: "engine", "Unable to do_validator_engine_actions: Could not acquire read lock for hbbft state. Unable to decide about early epoch end. retrying soon.");
                         }
                     };
                 } // drop lock for hbbft_state
