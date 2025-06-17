@@ -81,6 +81,10 @@ impl HbbftPeersHandler {
             .as_full_client()
             .ok_or("BlockchainClient required")?;
 
+        if block_chain_client.is_major_syncing() {
+            return Ok(());
+        }
+
         match get_validator_available_since(engine_client.as_ref(), &mining_address) {
             Ok(s) => {
                 if s.is_zero() {
@@ -115,6 +119,10 @@ impl HbbftPeersHandler {
     }
 
     fn announce_own_internet_address(&self) -> Result<(), Error> {
+        // todo:
+        // if the network is unable to process this transaction,
+        // we are keeping to announce out internet address.
+
         let mining_address = self.get_mining_address();
 
         if mining_address.is_zero() {
@@ -169,7 +177,7 @@ impl HbbftPeersHandler {
             error!(target: "engine", "Error trying to announce own internet address: {:?}", error);
         }
 
-        info!(target: "engine", "Success: trying to announce own internet address for mining address: {:?}", mining_address);
+        trace!(target: "engine", "Success: trying to announce own internet address for mining address: {:?}", mining_address);
 
         return Ok(());
     }
@@ -247,7 +255,7 @@ impl IoHandler<HbbftConnectToPeersMessage> for HbbftPeersHandler {
     ) {
         match self.handle_message(message) {
             Ok(_) => {
-                info!(target: "engine", "Hbbft Queue successfully worked message {:?}", message);
+                trace!(target: "engine", "Hbbft Queue successfully worked message {:?}", message);
             }
             Err(e) => {
                 error!(target: "engine", "Error handling HbbftConnectToPeersMessage: {:?} {:?}", message, e);

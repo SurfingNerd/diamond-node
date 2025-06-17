@@ -1,3 +1,7 @@
+## Diamond Node Software 3.3.5-hbbft-0.11.3
+
+- [deadlocks in transaction pools](https://github.com/DMDcoin/diamond-node/issues/236)
+
 ## Diamond Node Software 3.3.5-hbbft-0.11.2
 
 - [shutdown on deadlock](https://github.com/DMDcoin/diamond-node/issues/231)
@@ -5,17 +9,17 @@
 
 ## Diamond Node Software 3.3.5-hbbft-0.11.1
 
-- caching of SyncStatus to prevent deadlocks https://github.com/DMDcoin/diamond-node/issues/223
+- [caching of SyncStatus to prevent deadlocks](https://github.com/DMDcoin/diamond-node/issues/223)
 
 ## Diamond Node Software 3.3.5-hbbft-0.11.0
 
-- Fixed: Compile error on newer Linux Versions https://github.com/DMDcoin/diamond-node/issues/145
-- rust update to  1.85 and rust edition 2024 https://github.com/DMDcoin/diamond-node/issues/191
-- updated dependencies https://github.com/DMDcoin/diamond-node/issues/107
-- Fixed: Service Transaction not allowed: https://github.com/DMDcoin/diamond-node/issues/185
-- reduced network usage: https://github.com/DMDcoin/diamond-node/issues/163 
-- additional prometheus counter and gauges, most of them for analysing  https://github.com/DMDcoin/diamond-node/issues/163 
-- Improved transaction propagation for clients that are syncing https://github.com/DMDcoin/diamond-node/issues/173
+- [Fixed: Compile error on newer Linux Versions](https://github.com/DMDcoin/diamond-node/issues/145)
+- [rust update to  1.85 and rust edition 2024](https://github.com/DMDcoin/diamond-node/issues/191)
+- [updated dependencies](https://github.com/DMDcoin/diamond-node/issues/107)
+- [Fixed: Service Transaction not allowed:](https://github.com/DMDcoin/diamond-node/issues/185)
+- [reduced network usage:](https://github.com/DMDcoin/diamond-node/issues/163) 
+- [additional prometheus counter and gauges, most of them for analysing](https://github.com/DMDcoin/diamond-node/issues/163) 
+- [Improved transaction propagation for clients that are syncing](https://github.com/DMDcoin/diamond-node/issues/173)
 
 ## Diamond Node Software 3.3.5-hbbft-0.10.1
 

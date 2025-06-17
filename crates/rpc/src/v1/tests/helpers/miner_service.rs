@@ -254,6 +254,14 @@ impl MinerService for TestMinerService {
             .map(|tx| Arc::new(VerifiedTransaction::from_pending_block_transaction(tx)))
     }
 
+    fn transaction_if_readable(&self, hash: &H256) -> Option<Arc<VerifiedTransaction>> {
+        self.pending_transactions
+            .try_lock()?
+            .get(hash)
+            .cloned()
+            .map(|tx| Arc::new(VerifiedTransaction::from_pending_block_transaction(tx)))
+    }
+
     fn remove_transaction(&self, hash: &H256) -> Option<Arc<VerifiedTransaction>> {
         self.pending_transactions
             .lock()

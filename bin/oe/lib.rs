@@ -166,7 +166,7 @@ fn run_deadlock_detection_thread(shutdown: Arc<ShutdownManager>) {
 
     let builder = std::thread::Builder::new().name("DeadlockDetection".to_string());
 
-    // Create a background thread which checks for deadlocks every 10s
+    // Create a background thread which checks for deadlocks
     let spawned = builder.spawn(move || {
         loop {
             thread::sleep(Duration::from_secs(10));
@@ -208,7 +208,7 @@ pub enum ExecutionAction {
     Instant(Option<String>),
 
     /// The client has started running and must be shut down manually by calling `shutdown`.
-    ///
+    ///      
     /// If you don't call `shutdown()`, execution will continue in the background.
     Running(RunningClient),
 }

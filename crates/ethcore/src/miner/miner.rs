@@ -1468,6 +1468,10 @@ impl miner::MinerService for Miner {
         return result;
     }
 
+    fn transaction_if_readable(&self, hash: &H256) -> Option<Arc<VerifiedTransaction>> {
+        self.transaction_queue.find_if_readable(hash)
+    }
+
     fn remove_transaction(&self, hash: &H256) -> Option<Arc<VerifiedTransaction>> {
         self.transaction_queue
             .remove(::std::iter::once(hash), false)
