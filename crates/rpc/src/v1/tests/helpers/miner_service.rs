@@ -409,6 +409,4 @@ impl MinerService for TestMinerService {
             }
         }
     }
-    
- 
 }
