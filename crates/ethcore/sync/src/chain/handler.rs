@@ -868,7 +868,7 @@ impl SyncHandler {
 
             // if we cant read the pool here, we are asuming we dont know the transaction yet.
             // in the worst case we are refetching a transaction that we already have.
-            if io.chain().queued_transaction_if_readable(&hash).is_none() {
+            if io.chain().transaction_if_readable(&hash).is_none() {
                 sync.peers
                     .get_mut(&peer_id)
                     .map(|peer| peer.unfetched_pooled_transactions.insert(hash));

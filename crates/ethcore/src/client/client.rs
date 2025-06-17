@@ -2426,7 +2426,7 @@ impl BlockChainClient for Client {
         self.importer.miner.transaction(&hash)
     }
 
-    fn queued_transaction_if_readable(&self, hash: &H256) -> Option<Arc<VerifiedTransaction>> {
+    fn transaction_if_readable(&self, hash: &H256) -> Option<Arc<VerifiedTransaction>> {
         self.importer.miner.transaction_if_readable(&hash)
     }
 

@@ -323,7 +323,7 @@ impl SyncSupplier {
                 // we do not lock here, if we cannot access the memory at this point in time,
                 // we will just skip this transaction, otherwise the other peer might wait to long, resulting in a timeout.
                 // also this solved a potential deadlock situation:
-                if let Some(tx) = io.chain().queued_transaction_if_readable(&hash) {
+                if let Some(tx) = io.chain().transaction_if_readable(&hash) {
                     tx.signed().rlp_append(&mut rlp);
                     added += 1;
                     if rlp.len() > PAYLOAD_SOFT_LIMIT {

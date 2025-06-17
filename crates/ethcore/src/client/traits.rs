@@ -353,10 +353,6 @@ pub trait BlockChainClient:
     /// Get pool transaction with a given hash.
     fn queued_transaction(&self, hash: H256) -> Option<Arc<VerifiedTransaction>>;
 
-    /// see queued_transactions(&self).
-    /// Get pool transaction with a given hash, but returns NONE fast, if if cannot acquire a readlock fast.
-    fn queued_transaction_if_readable(&self, hash: &H256) -> Option<Arc<VerifiedTransaction>>;
-
     /// Get uncle with given id.
     fn uncle(&self, id: UncleId) -> Option<encoded::Header>;
 
@@ -426,6 +422,10 @@ pub trait BlockChainClient:
 
     /// Get verified transaction with specified transaction hash.
     fn transaction(&self, tx_hash: &H256) -> Option<Arc<VerifiedTransaction>>;
+
+    /// see queued_transactions(&self).
+    /// Get pool transaction with a given hash, but returns NONE fast, if if cannot acquire a readlock fast.
+    fn transaction_if_readable(&self, hash: &H256) -> Option<Arc<VerifiedTransaction>>;
 
     /// Sorted list of transaction gas prices from at least last sample_size blocks.
     fn gas_price_corpus(&self, sample_size: usize) -> ::stats::Corpus<U256> {
