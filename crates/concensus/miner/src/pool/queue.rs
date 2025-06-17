@@ -466,6 +466,7 @@ impl TransactionQueue {
 
         // Double check after acquiring write lock
         let mut cached_pending = cached.write();
+
         if let Some(pending) =
             cached_pending.pending(block_number, current_timestamp, nonce_cap.as_ref(), max_len)
         {
@@ -668,11 +669,11 @@ impl TransactionQueue {
     /// Given transaction hash looks up that transaction in the pool
     /// and returns a shared pointer to it or `None` if it's not present.
     pub fn find(&self, hash: &H256) -> Option<Arc<pool::VerifiedTransaction>> {
-        self.pool
+        self.cached_enforced_pending
             .read()
             .find(hash)
-            .or(self.cached_enforced_pending.read().find(hash))
             .or(self.cached_non_enforced_pending.read().find(hash))
+            .or(self.pool.read().find(hash))
     }
 
     /// Remove a set of transactions from the pool.
