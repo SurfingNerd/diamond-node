@@ -1160,6 +1160,10 @@ impl BlockChainClient for TestBlockChainClient {
         self.miner.transaction(tx_hash)
     }
 
+    fn transaction_if_readable(&self, hash: &H256) -> Option<Arc<VerifiedTransaction>> {
+        self.miner.transaction_if_readable(hash)
+    }
+
     /// Returns the devp2p network endpoint IP and Port information that is used to communicate with other peers.
 
     fn reserved_peers_management(&self) -> &Mutex<Option<Box<dyn ReservedPeersManagement>>> {

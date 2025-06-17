@@ -866,7 +866,9 @@ impl SyncHandler {
             // todo: what if the Transaction is not new, and already in the chain?
             // see: https://github.com/DMDcoin/diamond-node/issues/196
 
-            if io.chain().queued_transaction(hash).is_none() {
+            // if we cant read the pool here, we are asuming we dont know the transaction yet.
+            // in the worst case we are refetching a transaction that we already have.
+            if io.chain().transaction_if_readable(&hash).is_none() {
                 sync.peers
                     .get_mut(&peer_id)
                     .map(|peer| peer.unfetched_pooled_transactions.insert(hash));
