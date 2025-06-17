@@ -382,7 +382,7 @@ impl IoHandler<()> for TransitionHandler {
 
             let is_staked = self.engine.is_staked();
             if is_staked {
-                debug!(target: "consensus", "We are staked!");
+                trace!(target: "consensus", "We are staked!");
                 let is_available = self.engine.is_available();
                 if !is_available {
                     warn!(target: "consensus", "Initiating Shutdown: Honey Badger Consensus detected that this Node has been flagged as unavailable, while it should be available.");
