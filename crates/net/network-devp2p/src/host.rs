@@ -1063,7 +1063,7 @@ impl Host {
                     return;
                 }
                 for p in ready_data {
-                    let reserved = self.reserved_nodes.read();
+                    let reserved = self.reserved_nodes.read().clone();
                     if let Some(h) = handlers.get(&p) {
                         h.connected(
                             &NetworkContext::new(
@@ -1084,7 +1084,7 @@ impl Host {
             }
 
             for (p, packet_id, data) in packet_data {
-                let reserved = self.reserved_nodes.read();
+                let reserved = self.reserved_nodes.read().clone();
                 if let Some(h) = handlers.get(&p) {
                     h.read(
                         &NetworkContext::new(
