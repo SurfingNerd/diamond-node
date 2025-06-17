@@ -676,6 +676,18 @@ impl TransactionQueue {
             .or(self.pool.read().find(hash))
     }
 
+    /// Retrieve a transaction from the pool, if the pool is readable.
+    ///
+    /// Given transaction hash looks up that transaction in the pool
+    /// and returns a shared pointer to it or `None` if it's not present, or a readlock could not get acquired.
+    pub fn find_if_readable(&self, hash: &H256) -> Option<Arc<pool::VerifiedTransaction>> {
+        self.cached_enforced_pending
+            .try_read()?
+            .find(hash)
+            .or(self.cached_non_enforced_pending.try_read()?.find(hash))
+            .or(self.pool.try_read()?.find(hash))
+    }
+
     /// Remove a set of transactions from the pool.
     ///
     /// Given an iterator of transaction hashes

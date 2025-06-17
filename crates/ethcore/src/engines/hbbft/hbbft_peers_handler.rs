@@ -81,7 +81,6 @@ impl HbbftPeersHandler {
             .as_full_client()
             .ok_or("BlockchainClient required")?;
 
-
         if block_chain_client.is_major_syncing() {
             return Ok(());
         }
@@ -120,11 +119,9 @@ impl HbbftPeersHandler {
     }
 
     fn announce_own_internet_address(&self) -> Result<(), Error> {
-
         // todo:
         // if the network is unable to process this transaction,
         // we are keeping to announce out internet address.
-
 
         let mining_address = self.get_mining_address();
 

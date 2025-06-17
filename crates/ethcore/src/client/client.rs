@@ -2426,6 +2426,10 @@ impl BlockChainClient for Client {
         self.importer.miner.transaction(&hash)
     }
 
+    fn queued_transaction_if_readable(&self, hash: &H256) -> Option<Arc<VerifiedTransaction>> {
+        self.importer.miner.transaction_if_readable(&hash)
+    }
+
     fn uncle(&self, id: UncleId) -> Option<encoded::Header> {
         let index = id.position;
         self.block_body(id.block)

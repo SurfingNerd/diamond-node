@@ -353,6 +353,10 @@ pub trait BlockChainClient:
     /// Get pool transaction with a given hash.
     fn queued_transaction(&self, hash: H256) -> Option<Arc<VerifiedTransaction>>;
 
+    /// see queued_transactions(&self).
+    /// Get pool transaction with a given hash, but returns NONE fast, if if cannot acquire a readlock fast.
+    fn queued_transaction_if_readable(&self, hash: &H256) -> Option<Arc<VerifiedTransaction>>;
+
     /// Get uncle with given id.
     fn uncle(&self, id: UncleId) -> Option<encoded::Header>;
 

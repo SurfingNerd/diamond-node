@@ -199,6 +199,10 @@ pub trait MinerService: Send + Sync {
     /// Query transaction from the pool given it's hash.
     fn transaction(&self, hash: &H256) -> Option<Arc<VerifiedTransaction>>;
 
+    /// Query transaction from the pool given it's hash, without blocking.
+    /// Might return "None" in cases when the lock could not get acquired.
+    fn transaction_if_readable(&self, hash: &H256) -> Option<Arc<VerifiedTransaction>>;
+
     /// Returns next valid nonce for given address.
     ///
     /// This includes nonces of all transactions from this address in the pending queue
