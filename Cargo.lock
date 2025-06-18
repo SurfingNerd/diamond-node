@@ -1592,6 +1592,7 @@ dependencies = [
  "rlp",
  "rustc-hex 1.0.0",
  "stats",
+ "time-utils",
  "trace-time",
  "triehash-ethereum",
 ]
