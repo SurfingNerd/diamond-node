@@ -2426,8 +2426,14 @@ impl BlockChainClient for Client {
         self.importer.miner.transaction(&hash)
     }
 
-    fn transaction_if_readable(&self, hash: &H256) -> Option<Arc<VerifiedTransaction>> {
-        self.importer.miner.transaction_if_readable(&hash)
+    fn transaction_if_readable(
+        &self,
+        hash: &H256,
+        max_lock_duration: &Duration,
+    ) -> Option<Arc<VerifiedTransaction>> {
+        self.importer
+            .miner
+            .transaction_if_readable(&hash, max_lock_duration)
     }
 
     fn uncle(&self, id: UncleId) -> Option<encoded::Header> {

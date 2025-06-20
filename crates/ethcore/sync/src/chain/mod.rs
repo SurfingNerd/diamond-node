@@ -1021,7 +1021,7 @@ impl ChainSync {
         // Reactivate peers only if some progress has been made
         // since the last sync round of if starting fresh.
         self.active_peers = self.peers.keys().cloned().collect();
-        info!(target: "sync", "resetting sync state to {:?}", self.state);
+        debug!(target: "sync", "resetting sync state to {:?}", self.state);
     }
 
     /// Add a request for later processing
