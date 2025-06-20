@@ -1,3 +1,6 @@
+## Diamond Node Software 3.3.5-hbbft-0.11.4
+- [Balanced lock approach for solving the lock problems in devp2p](https://github.com/DMDcoin/diamond-node/issues/236)
+
 ## Diamond Node Software 3.3.5-hbbft-0.11.3
 
 - [deadlocks in transaction pools](https://github.com/DMDcoin/diamond-node/issues/236)
