@@ -323,7 +323,8 @@ impl SyncSupplier {
             if let Ok(hash) = v.as_val::<H256>() {
                 // io.chain().transaction(hash)
 
-                if !deadline.should_continue() {
+                if deadline.is_expired() {
+                    debug!(target: "sync", "{} -> GetPooledTransactions: deadline reached, only returning partial result to ", peer_id);
                     break;
                 }
 

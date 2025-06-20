@@ -879,6 +879,7 @@ impl SyncHandler {
             // in the worst case we are refetching a transaction that we already have.
 
             if deadline.is_expired() {
+                debug!(target: "sync", "{}: deadline reached while processing pooled transactions", peer_id);
                 // we did run out of time to finish this opation, but thats Ok.
                 return Ok(());
             }
