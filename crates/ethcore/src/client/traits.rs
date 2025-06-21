@@ -20,6 +20,7 @@ use std::{
     collections::{BTreeMap, BTreeSet},
     net::SocketAddr,
     sync::Arc,
+    time::Duration,
 };
 
 use crate::{
@@ -423,6 +424,14 @@ pub trait BlockChainClient:
     /// Get verified transaction with specified transaction hash.
     fn transaction(&self, tx_hash: &H256) -> Option<Arc<VerifiedTransaction>>;
 
+    /// see queued_transactions(&self).
+    /// Get pool transaction with a given hash, but returns NONE fast, if if cannot acquire a readlock fast.
+    fn transaction_if_readable(
+        &self,
+        hash: &H256,
+        max_lock_duration: &Duration,
+    ) -> Option<Arc<VerifiedTransaction>>;
+
     /// Sorted list of transaction gas prices from at least last sample_size blocks.
     fn gas_price_corpus(&self, sample_size: usize) -> ::stats::Corpus<U256> {
         let mut h = self.chain_info().best_block_hash;
@@ -529,7 +538,8 @@ pub trait BlockChainClient:
 
     /// Same as transact(), but just adding the transaction to the queue, without calling back into the engine.
     /// Used by engines to queue transactions without causing deadlocks due to re-entrant calls.
-    fn transact_silently(&self, tx_request: TransactionRequest) -> Result<(), transaction::Error>;
+    fn transact_silently(&self, tx_request: TransactionRequest)
+    -> Result<H256, transaction::Error>;
 
     /// Returns true if the chain is currently syncing in major states.
     fn is_major_syncing(&self) -> bool;

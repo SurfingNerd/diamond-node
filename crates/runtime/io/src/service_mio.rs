@@ -214,10 +214,10 @@ where
         symbolic_name: &str,
         event_loop: &mut EventLoop<IoManager<Message>>,
         handlers: Arc<RwLock<Slab<Arc<dyn IoHandler<Message>>>>>,
+        num_workers: i32,
     ) -> Result<(), IoError> {
         let worker = deque::Worker::new_fifo();
         let stealer = worker.stealer();
-        let num_workers = 4;
         let work_ready_mutex = Arc::new(Mutex::new(()));
         let work_ready = Arc::new(Condvar::new());
         let workers = (0..num_workers)
@@ -537,7 +537,10 @@ where
     Message: Send + Sync + 'static,
 {
     /// Starts IO event loop
-    pub fn start(symbolic_name: &'static str) -> Result<IoService<Message>, IoError> {
+    pub fn start(
+        symbolic_name: &'static str,
+        num_workers: i32,
+    ) -> Result<IoService<Message>, IoError> {
         let mut config = EventLoopBuilder::new();
         config.messages_per_tick(1024);
         let mut event_loop = config.build().expect("Error creating event loop");
@@ -545,7 +548,7 @@ where
         let handlers = Arc::new(RwLock::new(Slab::with_capacity(MAX_HANDLERS)));
         let h = handlers.clone();
         let thread = thread::spawn(move || {
-            IoManager::<Message>::start(symbolic_name, &mut event_loop, h)
+            IoManager::<Message>::start(symbolic_name, &mut event_loop, h, num_workers)
                 .expect("Error starting IO service");
         });
         Ok(IoService {

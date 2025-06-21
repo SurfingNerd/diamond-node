@@ -32,7 +32,11 @@ use ethereum_types::{H256, H512, U256};
 use hash::keccak;
 use network::{PeerId, client_version::ClientVersion};
 use rlp::Rlp;
-use std::{cmp, mem, time::Instant};
+use std::{
+    cmp, mem,
+    time::{Duration, Instant},
+};
+use time_utils::DeadlineStopwatch;
 
 use super::{
     request_id::strip_request_id,
@@ -858,6 +862,11 @@ impl SyncHandler {
         peer_id: PeerId,
         tx_rlp: &Rlp,
     ) -> Result<(), DownloaderImportError> {
+        // those P2P operations must not take forever, a better , configurable but balanced timeout managment would be nice to have.
+        let max_duration = Duration::from_millis(500);
+
+        let deadline = DeadlineStopwatch::new(max_duration);
+
         for item in tx_rlp {
             let hash = item
                 .as_val::<H256>()
@@ -866,7 +875,20 @@ impl SyncHandler {
             // todo: what if the Transaction is not new, and already in the chain?
             // see: https://github.com/DMDcoin/diamond-node/issues/196
 
-            if io.chain().queued_transaction(hash).is_none() {
+            // if we cant read the pool here, we are asuming we dont know the transaction yet.
+            // in the worst case we are refetching a transaction that we already have.
+
+            if deadline.is_expired() {
+                debug!(target: "sync", "{}: deadline reached while processing pooled transactions", peer_id);
+                // we did run out of time to finish this opation, but thats Ok.
+                return Ok(());
+            }
+
+            if io
+                .chain()
+                .transaction_if_readable(&hash, &deadline.time_left())
+                .is_none()
+            {
                 sync.peers
                     .get_mut(&peer_id)
                     .map(|peer| peer.unfetched_pooled_transactions.insert(hash));

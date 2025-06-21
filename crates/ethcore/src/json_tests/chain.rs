@@ -203,7 +203,7 @@ pub fn json_chain_test<H: FnMut(&str, HookType)>(
                     db,
                     Arc::new(Miner::new_for_tests(&spec, None)),
                     IoChannel::disconnected(),
-                    ShutdownManager::null(),
+                    Arc::new(ShutdownManager::null()),
                 )
                 .expect("Failed to instantiate a new Client");
 

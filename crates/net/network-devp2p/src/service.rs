@@ -64,7 +64,7 @@ impl NetworkService {
         let host_handler = Arc::new(HostHandler {
             public_url: RwLock::new(None),
         });
-        let io_service = IoService::<NetworkIoMessage>::start("devp2p")?;
+        let io_service = IoService::<NetworkIoMessage>::start("devp2p", 4)?;
 
         Ok(NetworkService {
             io_service,

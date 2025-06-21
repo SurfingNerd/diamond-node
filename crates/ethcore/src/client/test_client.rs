@@ -23,6 +23,7 @@ use std::{
         Arc,
         atomic::{AtomicBool, AtomicUsize, Ordering as AtomicOrder},
     },
+    time::Duration,
 };
 
 use crate::{
@@ -1106,9 +1107,15 @@ impl BlockChainClient for TestBlockChainClient {
             .import_own_transaction(self, signed.into(), false)
     }
 
-    fn transact_silently(&self, tx_request: TransactionRequest) -> Result<(), transaction::Error> {
+    fn transact_silently(
+        &self,
+        tx_request: TransactionRequest,
+    ) -> Result<H256, transaction::Error> {
         let signed = self.create_transaction(tx_request)?;
-        self.miner.import_own_transaction(self, signed.into(), true)
+        let hash = signed.hash();
+        self.miner
+            .import_own_transaction(self, signed.into(), true)
+            .map(|_| hash)
     }
 
     fn is_major_syncing(&self) -> bool {
@@ -1152,6 +1159,14 @@ impl BlockChainClient for TestBlockChainClient {
 
     fn transaction(&self, tx_hash: &H256) -> Option<Arc<VerifiedTransaction>> {
         self.miner.transaction(tx_hash)
+    }
+
+    fn transaction_if_readable(
+        &self,
+        hash: &H256,
+        max_lock_duration: &Duration,
+    ) -> Option<Arc<VerifiedTransaction>> {
+        self.miner.transaction_if_readable(hash, max_lock_duration)
     }
 
     /// Returns the devp2p network endpoint IP and Port information that is used to communicate with other peers.

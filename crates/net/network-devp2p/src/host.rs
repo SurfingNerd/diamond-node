@@ -970,7 +970,7 @@ impl Host {
                             {
                                 if !reserved_nodes.contains(&id) {
                                     // only proceed if the connecting peer is reserved.
-                                    trace!(target: "network", "Disconnecting non-reserved peer {:?}", id);
+                                    trace!(target: "network", "Disconnecting non-reserved peer {:?} (TooManyPeers)", id);
                                     s.disconnect(io, DisconnectReason::TooManyPeers);
                                     kill = true;
                                     break;
@@ -1063,7 +1063,7 @@ impl Host {
                     return;
                 }
                 for p in ready_data {
-                    let reserved = self.reserved_nodes.read();
+                    let reserved = self.reserved_nodes.read().clone();
                     if let Some(h) = handlers.get(&p) {
                         h.connected(
                             &NetworkContext::new(
@@ -1084,7 +1084,7 @@ impl Host {
             }
 
             for (p, packet_id, data) in packet_data {
-                let reserved = self.reserved_nodes.read();
+                let reserved = self.reserved_nodes.read().clone();
                 if let Some(h) = handlers.get(&p) {
                     h.read(
                         &NetworkContext::new(

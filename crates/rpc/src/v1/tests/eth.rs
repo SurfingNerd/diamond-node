@@ -129,7 +129,7 @@ impl EthTester {
             test_helpers::new_db(),
             miner_service.clone(),
             IoChannel::disconnected(),
-            ShutdownManager::null(),
+            Arc::new(ShutdownManager::null()),
         )
         .unwrap();
         let sync_provider = sync_provider();

@@ -19,6 +19,7 @@
 use std::{
     collections::{BTreeMap, BTreeSet, HashMap},
     sync::Arc,
+    time::Duration,
 };
 
 use crate::{
@@ -249,6 +250,18 @@ impl MinerService for TestMinerService {
     fn transaction(&self, hash: &H256) -> Option<Arc<VerifiedTransaction>> {
         self.pending_transactions
             .lock()
+            .get(hash)
+            .cloned()
+            .map(|tx| Arc::new(VerifiedTransaction::from_pending_block_transaction(tx)))
+    }
+
+    fn transaction_if_readable(
+        &self,
+        hash: &H256,
+        max_duration: &Duration,
+    ) -> Option<Arc<VerifiedTransaction>> {
+        self.pending_transactions
+            .try_lock_for(*max_duration)?
             .get(hash)
             .cloned()
             .map(|tx| Arc::new(VerifiedTransaction::from_pending_block_transaction(tx)))
