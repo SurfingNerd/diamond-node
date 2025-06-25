@@ -576,7 +576,7 @@ impl NetworkProtocolHandler for SyncProtocolHandler {
         trace_time!("sync::connected");
         let node_id = io.session_info(*peer).unwrap().id;
         if io.is_reserved_peer(*peer) {
-            trace!(target: "sync", "Connected to reserved peer {:?}", node_id);
+            debug!(target: "sync", "Connected to reserved peer {:?}", node_id);
         }
         // If warp protocol is supported only allow warp handshake
         let warp_protocol = io.protocol_version(PAR_PROTOCOL, *peer).unwrap_or(0) != 0;
@@ -592,7 +592,7 @@ impl NetworkProtocolHandler for SyncProtocolHandler {
     fn disconnected(&self, io: &dyn NetworkContext, peer: &PeerId) {
         trace_time!("sync::disconnected");
         if io.is_reserved_peer(*peer) {
-            warn!(target: "sync", "Disconnected from reserved peer peerID: {} {}",peer,  io.session_info(*peer).expect("").id.map_or("".to_string(), |f| format!("{:?}", f)));
+            debug!(target: "sync", "Disconnected from reserved peer peerID: {} {}",peer,  io.session_info(*peer).expect("").id.map_or("".to_string(), |f| format!("{:?}", f)));
         }
         if io.subprotocol_name() != PAR_PROTOCOL {
             self.sync.write().on_peer_aborting(
