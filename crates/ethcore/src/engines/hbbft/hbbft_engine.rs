@@ -342,8 +342,11 @@ impl IoHandler<()> for TransitionHandler {
     }
 
     fn timeout(&self, io: &IoContext<()>, timer: TimerToken) {
+
+        
         if timer == ENGINE_TIMEOUT_TOKEN {
             if let Err(err) = self.handle_engine(io) {
+                //todo: this gets called very early and results in "client not available" error message.
                 error!(target: "consensus", "Error in Honey Badger Engine timeout handler: {:?}", err);
             }
         } else if timer == ENGINE_SHUTDOWN {
