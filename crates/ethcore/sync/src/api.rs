@@ -511,16 +511,38 @@ impl SyncProtocolHandler {
         node_id: &NodeId,
         peer_id: PeerId,
     ) {
+        
         // now since we are connected, lets send any cached messages
         if let Some(vec_msg) = self.message_cache.write().remove(&Some(*node_id)) {
             trace!(target: "consensus", "Cached Messages: Trying to send cached messages to {:?}", node_id);
+
+            let mut failed_messages: Vec<ChainMessageType> = Vec::new();
+
             for msg in vec_msg {
                 match msg {
-                    ChainMessageType::Consensus(message) => self
+                    ChainMessageType::Consensus(message) => {
+                        let send_consensus_result = self
                         .sync
                         .write()
-                        .send_consensus_packet(sync_io, message, peer_id),
+                        .send_consensus_packet(sync_io, message.clone(), peer_id);
+
+                        match send_consensus_result {
+                            Ok(_) => {},
+                            Err(e) => {
+                                info!(target: "consensus", "Error sending cached consensus message to peer (re-adding) {:?}: {:?}", peer_id, e);
+                                failed_messages.push(ChainMessageType::Consensus(message));
+                            },
+                        }
+                    }
                 }
+            }
+
+            if !failed_messages.is_empty() {
+                // If we failed to send some messages, cache them for later
+                let mut lock = self.message_cache.write();
+                lock.entry(Some(*node_id)).or_default().extend(failed_messages);
+            } else {
+                trace!(target: "consensus", "Cached Messages: Successfully sent all cached messages to {:?}", node_id);
             }
         }
     }
@@ -742,7 +764,15 @@ impl ChainNotify for EthSync {
                                              &self.eth_handler.overlay);
 
             match message_type {
-                ChainMessageType::Consensus(message) => self.eth_handler.sync.write().send_consensus_packet(&mut sync_io, message, my_peer_id),
+                ChainMessageType::Consensus(message) => {
+                    let send_result = self.eth_handler.sync.write().send_consensus_packet(&mut sync_io, message.clone(), my_peer_id);
+                    if let Err(e) = send_result {
+                        info!(target: "consensus", "Error sending consensus message to peer - caching message {:?}: {:?}", my_peer_id, e);
+                        // If we failed to send the message, cache it for later
+                        let mut lock = self.eth_handler.message_cache.write();
+                        lock.entry(node_id.clone()).or_default().push(ChainMessageType::Consensus(message));
+                    }
+                },
             }
         });
     }
