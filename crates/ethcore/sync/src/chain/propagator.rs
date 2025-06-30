@@ -25,9 +25,9 @@ use crate::{
     types::{BlockNumber, blockchain_info::BlockChainInfo, transaction::SignedTransaction},
 };
 use bytes::Bytes;
-use ethereum_types::H256;
+use ethereum_types::{H256, H512};
 use fastmap::H256FastSet;
-use network::{client_version::ClientCapabilities, Error, PeerId};
+use network::{Error, PeerId, client_version::ClientCapabilities};
 use rand::RngCore;
 use rlp::RlpStream;
 
@@ -202,7 +202,6 @@ impl ChainSync {
                            rlp: Bytes| {
             let size = rlp.len();
 
-
             let send_result = ChainSync::send_packet(
                 io,
                 peer_id,
@@ -214,17 +213,14 @@ impl ChainSync {
                 rlp,
             );
 
-
-
             if send_result.is_ok() {
                 if is_hashes {
                     stats.log_propagated_hashes(sent, size);
                 } else {
                     stats.log_propagated_transactions(sent, size);
-                }    
+                }
                 trace!(target: "sync", "{:02} <- {} ({} entries; {} bytes)", peer_id, if is_hashes { "NewPooledTransactionHashes" } else { "Transactions" }, sent, size);
             }
-            
         };
 
         let mut sent_to_peers = HashSet::new();
@@ -403,32 +399,46 @@ impl ChainSync {
         let lucky_peers = ChainSync::select_random_peers(&self.get_consensus_peers());
         trace!(target: "sync", "Sending consensus packet to {:?}", lucky_peers);
 
-        self.statistics
-            .log_consensus_broadcast(lucky_peers.len(), packet.len());
+        let mut num_sent_messages = 0;
         for peer_id in lucky_peers {
-            let send_result = ChainSync::send_packet(io, peer_id, ConsensusDataPacket, packet.clone());
+            let send_result =
+                ChainSync::send_packet(io, peer_id, ConsensusDataPacket, packet.clone());
 
             if let Err(e) = send_result {
                 info!(target: "sync", "Error broadcast consensus packet to peer {}: {:?}", peer_id, e);
+            } else {
+                num_sent_messages += 1;
             }
         }
+
+        self.statistics
+            .log_consensus_broadcast(num_sent_messages, packet.len());
     }
 
+    /// Sends a packet to a specific peer.
+    /// The caller has to take care about Errors, and reshedule if an error occurs.
     pub(crate) fn send_consensus_packet(
         &mut self,
         io: &mut dyn SyncIo,
         packet: Bytes,
-        peer_id: usize,
+        peer: &H512,
     ) -> Result<(), Error> {
+        let peer_id = match io.node_id_to_peer_id(peer) {
+            Some(id) => id,
+            None => {
+                warn!(target: "sync", "Peer with node id {} not found in peers list.", peer);
+                return Err("No Session for Peer".into());
+            }
+        };
         let packet_len = packet.len();
         let send_result = ChainSync::send_packet(io, peer_id, ConsensusDataPacket, packet.clone());
         match &send_result {
             Ok(_) => {
-                self.statistics.log_consensus(peer_id, packet_len);
-            },
+                self.statistics.log_consensus(packet_len);
+            }
             Err(e) => {
                 warn!(target: "sync", "Error sending consensus packet to peer {}: {:?}", peer_id, e);
-            },
+            }
         }
         return send_result;
     }
@@ -467,7 +477,7 @@ impl ChainSync {
         packet: Bytes,
     ) -> Result<(), Error> {
         let result = sync.send(peer_id, packet_id, packet);
-        if let  Err(e) = &result {
+        if let Err(e) = &result {
             debug!(target:"sync", "Error sending packet: {:?}", e);
             sync.disconnect_peer(peer_id);
         }
