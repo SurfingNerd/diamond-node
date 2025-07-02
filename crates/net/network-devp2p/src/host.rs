@@ -107,7 +107,7 @@ impl Encodable for CapabilityInfo {
 pub struct NetworkContext<'s> {
     io: &'s IoContext<NetworkIoMessage>,
     protocol: ProtocolId,
-    sessions: Arc<RwLock<std::collections::BTreeSet<usize, SharedSession>>>,
+    sessions: Arc<RwLock<std::collections::BTreeMap<usize, SharedSession>>>,
     session: Option<SharedSession>,
     session_id: Option<StreamToken>,
     reserved_peers: &'s HashSet<NodeId>,
@@ -299,8 +299,10 @@ impl<'s> NetworkContextTrait for NetworkContext<'s> {
         let sessions = self.sessions.read();
         let sessions = &*sessions;
 
+        // todo:
+        // we can do deterministic lookup here ?!
         for i in (0..MAX_SESSIONS).map(|x| x + FIRST_SESSION) {
-            if let Some(session) = sessions.get(i) {
+            if let Some(session) = sessions.get(&i) {
                 let session_node_id_o = session.lock().info.id;
                 if let Some(session_node_id) = session_node_id_o {
                     if session_node_id == *node_id {
@@ -514,7 +516,7 @@ impl Host {
                 let reserved: HashSet<NodeId> = self.reserved_nodes.read().clone();
                 let mut to_kill = Vec::new();
                 for e in self.sessions.read().iter() {
-                    let mut s = e.lock();
+                    let mut s = e.1.lock();
                     {
                         let id = s.id();
                         if id.map_or(false, |id| reserved.contains(id)) {
@@ -556,7 +558,7 @@ impl Host {
         self.stopping.store(true, AtomicOrdering::SeqCst);
         let mut to_kill = Vec::new();
         for e in self.sessions.read().iter() {
-            let mut s = e.lock();
+            let mut s = e.1.lock();
             s.disconnect(io, DisconnectReason::ClientQuit);
             to_kill.push(s.token());
         }
@@ -660,7 +662,7 @@ impl Host {
         self.sessions
             .read()
             .iter()
-            .any(|e| e.lock().info.id == Some(*id))
+            .any(|e| e.1.lock().info.id == Some(*id))
     }
 
     // returns (handshakes, egress, ingress)
