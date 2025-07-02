@@ -21,7 +21,7 @@ use hash::keccak;
 use rlp::{Encodable, RlpStream};
 use std::{
     cmp::{max, min},
-    collections::{HashMap, HashSet},
+    collections::{BTreeSet, HashMap, HashSet},
     fs,
     io::{self, Read, Write},
     net::{Ipv4Addr, SocketAddr, SocketAddrV4},
@@ -29,8 +29,7 @@ use std::{
     path::{Path, PathBuf},
     str::FromStr,
     sync::{
-        Arc,
-        atomic::{AtomicBool, AtomicU64, Ordering as AtomicOrdering},
+        atomic::{AtomicBool, AtomicU64, Ordering as AtomicOrdering}, Arc
     },
     time::Duration,
 };
@@ -108,7 +107,7 @@ impl Encodable for CapabilityInfo {
 pub struct NetworkContext<'s> {
     io: &'s IoContext<NetworkIoMessage>,
     protocol: ProtocolId,
-    sessions: Arc<RwLock<Slab<SharedSession>>>,
+    sessions: Arc<RwLock<std::collections::BTreeSet<usize, SharedSession>>>,
     session: Option<SharedSession>,
     session_id: Option<StreamToken>,
     reserved_peers: &'s HashSet<NodeId>,
@@ -161,7 +160,7 @@ impl<'s> NetworkContext<'s> {
         io: &'s IoContext<NetworkIoMessage>,
         protocol: ProtocolId,
         session: Option<SharedSession>,
-        sessions: Arc<RwLock<Slab<SharedSession>>>,
+        sessions: Arc<RwLock<std::collections::BTreeMap<usize, SharedSession>>>,
         reserved_peers: &'s HashSet<NodeId>,
         statistics: &'s NetworkingStatistics,
     ) -> NetworkContext<'s> {
@@ -180,7 +179,7 @@ impl<'s> NetworkContext<'s> {
     fn resolve_session(&self, peer: PeerId) -> Option<SharedSession> {
         match self.session_id {
             Some(id) if id == peer => self.session.clone(),
-            _ => self.sessions.read().get(peer).cloned(),
+            _ => self.sessions.read().get(&peer).cloned(),
         }
     }
 }
@@ -366,7 +365,7 @@ pub struct Host {
     pub info: RwLock<HostInfo>,
     udp_socket: Mutex<Option<UdpSocket>>,
     tcp_listener: Mutex<TcpListener>,
-    sessions: Arc<RwLock<Slab<SharedSession>>>,
+    sessions: Arc<RwLock<std::collections::BTreeMap<usize, SharedSession>>>,
     discovery: Mutex<Option<Discovery<'static>>>,
     nodes: RwLock<NodeTable>,
     handlers: RwLock<HashMap<ProtocolId, Arc<dyn NetworkProtocolHandler + Sync>>>,
@@ -575,7 +574,7 @@ impl Host {
 
         let mut peers = Vec::with_capacity(sessions.count());
         for i in (0..MAX_SESSIONS).map(|x| x + FIRST_SESSION) {
-            if sessions.get(i).is_some() {
+            if sessions.get(&i).is_some() {
                 peers.push(i);
             }
         }
@@ -703,13 +702,13 @@ impl Host {
         self.sessions
             .read()
             .iter()
-            .any(|e| e.lock().id() == Some(id))
+            .any(|e| e.1.lock().id() == Some(id))
     }
 
     fn keep_alive(&self, io: &IoContext<NetworkIoMessage>) {
         let mut to_kill = Vec::new();
         for e in self.sessions.read().iter() {
-            let mut s = e.lock();
+            let mut s = e.1.lock();
             if !s.keep_alive(io) {
                 s.disconnect(io, DisconnectReason::PingTimeout);
                 to_kill.push(s.token());
@@ -847,6 +846,9 @@ impl Host {
         let nonce = self.info.write().next_nonce();
         let mut sessions = self.sessions.write();
 
+        // we can add now the new session.
+        // if no NodeID is provided, we use the smalles used number.
+
         let token = sessions.insert_with_opt(|token| {
             trace!(target: "network", "{}: Initiating session {:?}", token, id);
             match Session::new(io, socket, token, id, &nonce, &self.info.read()) {
@@ -886,7 +888,7 @@ impl Host {
     }
 
     fn session_writable(&self, token: StreamToken, io: &IoContext<NetworkIoMessage>) {
-        let session = { self.sessions.read().get(token).cloned() };
+        let session = { self.sessions.read().get(&token).cloned() };
 
         if let Some(session) = session {
             let mut s = session.lock();
@@ -909,7 +911,7 @@ impl Host {
         let mut ready_data: Vec<ProtocolId> = Vec::new();
         let mut packet_data: Vec<(ProtocolId, PacketId, Vec<u8>)> = Vec::new();
         let mut kill = false;
-        let session = { self.sessions.read().get(token).cloned() };
+        let session = { self.sessions.read().get(&token).cloned() };
         let mut ready_id = None;
         if let Some(session) = session.clone() {
             {
@@ -1047,7 +1049,7 @@ impl Host {
                     .read()
                     .iter()
                     .filter_map(|e| {
-                        let session = e.lock();
+                        let session = e.1.lock();
                         if session.token() != token && session.info.id == ready_id {
                             return Some(session.token());
                         } else {
@@ -1183,7 +1185,7 @@ impl Host {
         let mut expired_session = None;
         if let FIRST_SESSION..=LAST_SESSION = token {
             let sessions = self.sessions.read();
-            if let Some(session) = sessions.get(token).cloned() {
+            if let Some(session) = sessions.get(&token).cloned() {
                 expired_session = Some(session.clone());
                 let mut s = session.lock();
                 if !s.expired() {
@@ -1232,7 +1234,7 @@ impl Host {
         {
             let sessions = self.sessions.read();
             for c in sessions.iter() {
-                let s = c.lock();
+                let s = c.1.lock();
                 if let Some(id) = s.id() {
                     if node_changes.removed.contains(id) {
                         to_remove.push(s.token());
@@ -1447,7 +1449,7 @@ impl IoHandler<NetworkIoMessage> for Host {
                     .unwrap_or_else(|e| debug!("Error registering timer {}: {:?}", token, e));
             }
             NetworkIoMessage::Disconnect(ref peer) => {
-                let session = { self.sessions.read().get(*peer).cloned() };
+                let session = { self.sessions.read().get(&*peer).cloned() };
                 if let Some(session) = session {
                     session
                         .lock()
@@ -1457,7 +1459,7 @@ impl IoHandler<NetworkIoMessage> for Host {
                 self.kill_connection(*peer, io, false);
             }
             NetworkIoMessage::DisablePeer(ref peer) => {
-                let session = { self.sessions.read().get(*peer).cloned() };
+                let session = { self.sessions.read().get(&*peer).cloned() };
                 if let Some(session) = session {
                     session
                         .lock()
@@ -1486,7 +1488,7 @@ impl IoHandler<NetworkIoMessage> for Host {
     ) {
         match stream {
             FIRST_SESSION..=LAST_SESSION => {
-                let session = { self.sessions.read().get(stream).cloned() };
+                let session = { self.sessions.read().get(&stream).cloned() };
                 if let Some(session) = session {
                     session
                         .lock()
@@ -1522,13 +1524,13 @@ impl IoHandler<NetworkIoMessage> for Host {
         match stream {
             FIRST_SESSION..=LAST_SESSION => {
                 let mut connections = self.sessions.write();
-                if let Some(connection) = connections.get(stream).cloned() {
+                if let Some(connection) = connections.get(&stream).cloned() {
                     let c = connection.lock();
                     if c.expired() {
                         // make sure it is the same connection that the event was generated for
                         c.deregister_socket(event_loop)
                             .expect("Error deregistering socket");
-                        connections.remove(stream);
+                        connections.remove(&stream);
                     }
                 }
             }
@@ -1545,7 +1547,7 @@ impl IoHandler<NetworkIoMessage> for Host {
     ) {
         match stream {
             FIRST_SESSION..=LAST_SESSION => {
-                let connection = { self.sessions.read().get(stream).cloned() };
+                let connection = { self.sessions.read().get(&&stream).cloned() };
                 if let Some(connection) = connection {
                     connection
                         .lock()
