@@ -19,9 +19,10 @@ use crypto::publickey::{Generator, KeyPair, Random, Secret};
 use ethereum_types::H256;
 use hash::keccak;
 use rlp::{Encodable, RlpStream};
+use slab::Index;
 use std::{
-    cmp::{max, min},
-    collections::{BTreeSet, HashMap, HashSet},
+    cmp::{max, min, Ordering},
+    collections::{BTreeMap, HashMap, HashSet},
     fs,
     io::{self, Read, Write},
     net::{Ipv4Addr, SocketAddr, SocketAddrV4},
@@ -29,7 +30,7 @@ use std::{
     path::{Path, PathBuf},
     str::FromStr,
     sync::{
-        atomic::{AtomicBool, AtomicU64, Ordering as AtomicOrdering}, Arc
+        atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering as AtomicOrdering}, Arc
     },
     time::Duration,
 };
@@ -49,7 +50,7 @@ use network::{
     client_version::ClientVersion,
 };
 use parity_path::restrict_permissions_owner;
-use parking_lot::{Mutex, RwLock};
+use parking_lot::{lock_api::RwLockReadGuard, Mutex, RwLock};
 use stats::{PrometheusMetrics, PrometheusRegistry};
 
 type Slab<T> = ::slab::Slab<T, usize>;
@@ -360,6 +361,45 @@ struct ProtocolTimer {
     pub token: TimerToken, // Handler level token
 }
 
+
+
+struct SessionContainer {
+    sessions: Arc<RwLock<std::collections::BTreeMap<usize, SharedSession>>>,
+    node_id_to_session: BTreeMap<H256, usize>,
+    sessions_tokens: Mutex<usize>, // Used to generate new session tokens
+}
+
+impl SessionContainer {
+
+    pub fn new() -> Self {
+        SessionContainer {
+            sessions: Arc::new(RwLock::new(std::collections::BTreeMap::new())),
+            node_id_to_session: BTreeMap::new(),
+            sessions_tokens: Mutex::new(0),
+        }
+    }
+
+    /// Returns a reference to the sessions map.
+    pub fn sessions(&self) -> &Arc<RwLock<std::collections::BTreeMap<usize, SharedSession>>> {
+        &self.sessions
+    }
+
+    /// gets the next token ID and store this information 
+    fn next_token_id(&self) -> usize {
+        let lock = self.sessions_tokens.lock();
+
+        let next_id = 0;
+        // if (lock.as_usize() > usize::MAX - 1) {
+
+        // }
+        //let sessions = self.sessions.read();
+
+
+        todo!("Implement next_token_id logic");
+
+    }
+}
+
 /// Root IO handler. Manages protocol handlers, IO timers and network connections.
 ///
 /// NOTE: must keep the lock in order of: reserved_nodes (rwlock) -> session (mutex, from sessions)
@@ -367,7 +407,7 @@ pub struct Host {
     pub info: RwLock<HostInfo>,
     udp_socket: Mutex<Option<UdpSocket>>,
     tcp_listener: Mutex<TcpListener>,
-    sessions: Arc<RwLock<std::collections::BTreeMap<usize, SharedSession>>>,
+    sessions: SessionContainer,
     discovery: Mutex<Option<Discovery<'static>>>,
     nodes: RwLock<NodeTable>,
     handlers: RwLock<HashMap<ProtocolId, Arc<dyn NetworkProtocolHandler + Sync>>>,
@@ -437,10 +477,7 @@ impl Host {
             discovery: Mutex::new(None),
             udp_socket: Mutex::new(None),
             tcp_listener: Mutex::new(tcp_listener),
-            sessions: Arc::new(RwLock::new(Slab::new_starting_at(
-                FIRST_SESSION,
-                MAX_SESSIONS,
-            ))),
+            sessions: SessionContainer::new(),
             nodes: RwLock::new(NodeTable::new(path)),
             handlers: RwLock::new(HashMap::new()),
             timers: RwLock::new(HashMap::new()),
@@ -515,7 +552,7 @@ impl Host {
                 // disconnect all non-reserved peers here.
                 let reserved: HashSet<NodeId> = self.reserved_nodes.read().clone();
                 let mut to_kill = Vec::new();
-                for e in self.sessions.read().iter() {
+                for e in self.sessions.sessions.read().iter() {
                     let mut s = e.1.lock();
                     {
                         let id = s.id();
@@ -557,7 +594,7 @@ impl Host {
     pub fn stop(&self, io: &IoContext<NetworkIoMessage>) {
         self.stopping.store(true, AtomicOrdering::SeqCst);
         let mut to_kill = Vec::new();
-        for e in self.sessions.read().iter() {
+        for e in self.sessions.sessions.read().iter() {
             let mut s = e.1.lock();
             s.disconnect(io, DisconnectReason::ClientQuit);
             to_kill.push(s.token());
@@ -571,10 +608,10 @@ impl Host {
 
     /// Get all connected peers.
     pub fn connected_peers(&self) -> Vec<PeerId> {
-        let sessions = self.sessions.read();
+        let sessions = self.sessions.sessions.read();
         let sessions = &*sessions;
 
-        let mut peers = Vec::with_capacity(sessions.count());
+        let mut peers = Vec::with_capacity(sessions.len());
         for i in (0..MAX_SESSIONS).map(|x| x + FIRST_SESSION) {
             if sessions.get(&i).is_some() {
                 peers.push(i);
@@ -659,7 +696,7 @@ impl Host {
     }
 
     fn have_session(&self, id: &NodeId) -> bool {
-        self.sessions
+        self.sessions.sessions
             .read()
             .iter()
             .any(|e| e.1.lock().info.id == Some(*id))
@@ -670,8 +707,8 @@ impl Host {
         let mut handshakes = 0;
         let mut egress = 0;
         let mut ingress = 0;
-        for s in self.sessions.read().iter() {
-            match s.try_lock() {
+        for s in self.sessions.sessions.read().iter() {
+            match s.1.try_lock() {
                 Some(ref s) if s.is_ready() && s.info.originated => egress += 1,
                 Some(ref s) if s.is_ready() && !s.info.originated => ingress += 1,
                 _ => handshakes += 1,
@@ -686,9 +723,9 @@ impl Host {
         let mut egress = 0;
         let mut ingress = 0;
 
-        if let Some(lock) = self.sessions.try_read_for(lock_duration) {
+        if let Some(lock) = self.sessions.sessions.try_read_for(lock_duration) {
             for s in lock.iter() {
-                match s.try_lock() {
+                match s.1.try_lock() {
                     Some(ref s) if s.is_ready() && s.info.originated => egress += 1,
                     Some(ref s) if s.is_ready() && !s.info.originated => ingress += 1,
                     _ => handshakes += 1,
@@ -701,7 +738,8 @@ impl Host {
     }
 
     fn connecting_to(&self, id: &NodeId) -> bool {
-        self.sessions
+        // todo: we can use the mapping here for faster access.
+        self.sessions.sessions
             .read()
             .iter()
             .any(|e| e.1.lock().id() == Some(id))
@@ -709,7 +747,7 @@ impl Host {
 
     fn keep_alive(&self, io: &IoContext<NetworkIoMessage>) {
         let mut to_kill = Vec::new();
-        for e in self.sessions.read().iter() {
+        for e in self.sessions.sessions.read().iter() {
             let mut s = e.1.lock();
             if !s.keep_alive(io) {
                 s.disconnect(io, DisconnectReason::PingTimeout);
@@ -846,21 +884,26 @@ impl Host {
         io: &IoContext<NetworkIoMessage>,
     ) -> Result<(), Error> {
         let nonce = self.info.write().next_nonce();
-        let mut sessions = self.sessions.write();
+        let mut sessions = self.sessions.sessions.write();
 
+
+        // even a try without success will give a new token.
+        let token = self.session.next_token_id();
         // we can add now the new session.
         // if no NodeID is provided, we use the smalles used number.
 
-        let token = sessions.insert_with_opt(|token| {
-            trace!(target: "network", "{}: Initiating session {:?}", token, id);
-            match Session::new(io, socket, token, id, &nonce, &self.info.read()) {
-                Ok(s) => Some(Arc::new(Mutex::new(s))),
-                Err(e) => {
-                    debug!(target: "network", "Session create error: {:?}", e);
-                    None
-                }
+        let existing = sessions.get(&token);
+
+        
+
+        trace!(target: "network", "{}: Initiating session {:?}", token, id);
+        let session = match Session::new(io, socket, token, id, &nonce, &self.info.read()) {
+            Ok(s) => Some(Arc::new(Mutex::new(s))),
+            Err(e) => {
+                debug!(target: "network", "Session create error: {:?}", e);
+                None
             }
-        });
+        };
 
         match token {
             Some(t) => io.register_stream(t).map(|_| ()).map_err(Into::into),
@@ -890,7 +933,7 @@ impl Host {
     }
 
     fn session_writable(&self, token: StreamToken, io: &IoContext<NetworkIoMessage>) {
-        let session = { self.sessions.read().get(&token).cloned() };
+        let session = { self.sessions.sessions.read().get(&token).cloned() };
 
         if let Some(session) = session {
             let mut s = session.lock();
@@ -913,7 +956,7 @@ impl Host {
         let mut ready_data: Vec<ProtocolId> = Vec::new();
         let mut packet_data: Vec<(ProtocolId, PacketId, Vec<u8>)> = Vec::new();
         let mut kill = false;
-        let session = { self.sessions.read().get(&token).cloned() };
+        let session = { self.sessions.sessions.read().get(&token).cloned() };
         let mut ready_id = None;
         if let Some(session) = session.clone() {
             {
@@ -1048,6 +1091,7 @@ impl Host {
             if !ready_data.is_empty() {
                 let duplicates: Vec<usize> = self
                     .sessions
+                    .sessions
                     .read()
                     .iter()
                     .filter_map(|e| {
@@ -1077,7 +1121,7 @@ impl Host {
                                 io,
                                 p,
                                 Some(session.clone()),
-                                self.sessions.clone(),
+                                self.sessions.sessions.clone(),
                                 &reserved,
                                 &self.statistics,
                             ),
@@ -1098,7 +1142,7 @@ impl Host {
                             io,
                             p,
                             Some(session.clone()),
-                            self.sessions.clone(),
+                            self.sessions.sessions.clone(),
                             &reserved,
                             &self.statistics,
                         ),
@@ -1186,7 +1230,7 @@ impl Host {
         let mut deregister = false;
         let mut expired_session = None;
         if let FIRST_SESSION..=LAST_SESSION = token {
-            let sessions = self.sessions.read();
+            let sessions = self.sessions.sessions.read();
             if let Some(session) = sessions.get(&token).cloned() {
                 expired_session = Some(session.clone());
                 let mut s = session.lock();
@@ -1217,7 +1261,7 @@ impl Host {
                         io,
                         p,
                         expired_session.clone(),
-                        self.sessions.clone(),
+                        self.sessions.sessions.clone(),
                         &reserved,
                         &self.statistics,
                     ),
@@ -1234,7 +1278,7 @@ impl Host {
     fn update_nodes(&self, _io: &IoContext<NetworkIoMessage>, node_changes: TableUpdates) {
         let mut to_remove: Vec<PeerId> = Vec::new();
         {
-            let sessions = self.sessions.read();
+            let sessions = self.sessions.sessions.read();
             for c in sessions.iter() {
                 let s = c.1.lock();
                 if let Some(id) = s.id() {
@@ -1261,7 +1305,7 @@ impl Host {
             io,
             protocol,
             None,
-            self.sessions.clone(),
+            self.sessions.sessions.clone(),
             &reserved,
             &self.statistics,
         );
@@ -1283,12 +1327,13 @@ impl Host {
             io,
             protocol,
             None,
-            self.sessions.clone(),
+            self.sessions.sessions.clone(),
             &reserved,
             &self.statistics,
         );
         action(&context)
     }
+    
 }
 
 impl IoHandler<NetworkIoMessage> for Host {
@@ -1383,7 +1428,7 @@ impl IoHandler<NetworkIoMessage> for Host {
                                 io,
                                 timer.protocol,
                                 None,
-                                self.sessions.clone(),
+                                self.sessions.sessions.clone(),
                                 &reserved,
                                 &self.statistics,
                             ),
@@ -1414,7 +1459,7 @@ impl IoHandler<NetworkIoMessage> for Host {
                     io,
                     *protocol,
                     None,
-                    self.sessions.clone(),
+                    self.sessions.sessions.clone(),
                     &reserved,
                     &self.statistics,
                 ));
@@ -1451,7 +1496,7 @@ impl IoHandler<NetworkIoMessage> for Host {
                     .unwrap_or_else(|e| debug!("Error registering timer {}: {:?}", token, e));
             }
             NetworkIoMessage::Disconnect(ref peer) => {
-                let session = { self.sessions.read().get(&*peer).cloned() };
+                let session = { self.sessions.sessions.read().get(&*peer).cloned() };
                 if let Some(session) = session {
                     session
                         .lock()
@@ -1461,7 +1506,7 @@ impl IoHandler<NetworkIoMessage> for Host {
                 self.kill_connection(*peer, io, false);
             }
             NetworkIoMessage::DisablePeer(ref peer) => {
-                let session = { self.sessions.read().get(&*peer).cloned() };
+                let session = { self.sessions.sessions.read().get(&*peer).cloned() };
                 if let Some(session) = session {
                     session
                         .lock()
@@ -1490,7 +1535,7 @@ impl IoHandler<NetworkIoMessage> for Host {
     ) {
         match stream {
             FIRST_SESSION..=LAST_SESSION => {
-                let session = { self.sessions.read().get(&stream).cloned() };
+                let session = { self.sessions.sessions.read().get(&stream).cloned() };
                 if let Some(session) = session {
                     session
                         .lock()
@@ -1525,7 +1570,7 @@ impl IoHandler<NetworkIoMessage> for Host {
     ) {
         match stream {
             FIRST_SESSION..=LAST_SESSION => {
-                let mut connections = self.sessions.write();
+                let mut connections = self.sessions.sessions.write();
                 if let Some(connection) = connections.get(&stream).cloned() {
                     let c = connection.lock();
                     if c.expired() {
@@ -1549,7 +1594,7 @@ impl IoHandler<NetworkIoMessage> for Host {
     ) {
         match stream {
             FIRST_SESSION..=LAST_SESSION => {
-                let connection = { self.sessions.read().get(&&stream).cloned() };
+                let connection = { self.sessions.sessions.read().get(&&stream).cloned() };
                 if let Some(connection) = connection {
                     connection
                         .lock()
