@@ -19,9 +19,8 @@ use crypto::publickey::{Generator, KeyPair, Random, Secret};
 use ethereum_types::H256;
 use hash::keccak;
 use rlp::{Encodable, RlpStream};
-use slab::Index;
 use std::{
-    cmp::{max, min, Ordering},
+    cmp::{max, min},
     collections::{BTreeMap, HashMap, HashSet},
     fs,
     io::{self, Read, Write},
@@ -30,7 +29,7 @@ use std::{
     path::{Path, PathBuf},
     str::FromStr,
     sync::{
-        atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering as AtomicOrdering}, Arc
+        atomic::{AtomicBool, AtomicU64, Ordering as AtomicOrdering}, Arc
     },
     time::Duration,
 };
@@ -365,7 +364,7 @@ struct ProtocolTimer {
 
 struct SessionContainer {
     sessions: Arc<RwLock<std::collections::BTreeMap<usize, SharedSession>>>,
-    node_id_to_session: BTreeMap<H256, usize>,
+    node_id_to_session: Mutex<BTreeMap<ethereum_types::H512, usize>>,
     sessions_tokens: Mutex<usize>, // Used to generate new session tokens
 }
 
@@ -374,7 +373,7 @@ impl SessionContainer {
     pub fn new() -> Self {
         SessionContainer {
             sessions: Arc::new(RwLock::new(std::collections::BTreeMap::new())),
-            node_id_to_session: BTreeMap::new(),
+            node_id_to_session: Mutex::new(BTreeMap::new()),
             sessions_tokens: Mutex::new(0),
         }
     }
@@ -385,7 +384,9 @@ impl SessionContainer {
     }
 
     /// gets the next token ID and store this information 
-    fn next_token_id(&self) -> usize {
+    fn create_token_id(&self, tokens: &BTreeMap<ethereum_types::H512, usize>) -> usize {
+        
+        tokens.len
         let lock = self.sessions_tokens.lock();
 
         let next_id = 0;
@@ -397,6 +398,125 @@ impl SessionContainer {
 
         todo!("Implement next_token_id logic");
 
+    }
+    
+
+    /// Creates a new session and adds it to the session container.
+    /// returns the token ID of the new session, or an Error if not successful.
+    fn create_connection(&self, socket: TcpStream, id: Option<&ethereum_types::H512>, io: &IoContext<NetworkIoMessage>, nonce: &H256, host: &HostInfo) -> Result<usize, Error> {
+        
+       
+        // make sure noone else is trying to modify the sessions at the same time.
+        // creating a connection is a very rare event. 
+        
+        // always lock the node_id_to_session first, then the sessions.
+        let mut node_ids = self.node_id_to_session.lock();
+        let mut sessions = self.sessions.write();
+
+
+        // even a try without success will give a new token.
+        //let token = self.create_token_id(&id);
+        // we can add now the new session.
+        // if no NodeID is provided, we use the smalles used number.
+        
+        if let Some(node_id) = id {
+            
+            // check if there is already a connection for the given node id.
+            if let Some(existing_peer_id) = node_ids.get(node_id) {
+
+                if let Some(existing_session_mutex)  = sessions.get(existing_peer_id) {
+                    let session = existing_session_mutex.lock();
+                    if let Some(id_from_session) = &session.info.id {
+                        if session.info.id == Some(*node_id) {
+                            // we got already got a session for the specified node.
+                            // maybe the old session is already scheduled for getting deleted.
+                            if session.expired() {
+                                // if the session is expired, we will just create n new session for this node.
+                                let new_session =  Session::new(io, socket, existing_peer_id.clone(), id, nonce, host);
+                                match new_session {
+                                    Ok(session) => {
+                                        let old_session = sessions.insert(*existing_peer_id, Arc::new(Mutex::new(session)));
+                                        // node_ids does not need to get updated, since it uses the same value.
+
+                                        // in this context, the stream might already be unregistered ?!
+                                        // we can just register the stream again.
+                                        if let Err(err) =  io.register_stream(*existing_peer_id) {
+                                            // todo: research this topic, watch out for this message, 
+                                            // maybe we can keep track of stream registrations as well somehow.
+                                            debug!(target: "network", "Failed to register stream for token: {} : {}", existing_peer_id, err);
+                                        }
+
+                                        debug!(target: "network", "Created new session for node id: {}", node_id);
+                                        return Ok(*existing_peer_id);
+                                    },
+                                    Err(e) => {
+                                        error!(target: "network", "Failed to create session for node id: {}", node_id);
+                                        return Err(e);
+                                    }
+                                }
+                            } else {
+                                // this might happen if 2 nodes try to connect to each other at the same time.
+                                debug!(target: "network", "Session already exists for node id: {}", node_id);
+                                return Err(ErrorKind::AlreadyExists.into());
+                            }
+
+                        } else {
+                            error!(target: "network", "host cache inconsistency: Session node id missmatch. expected: {} is {}.", existing_peer_id, id_from_session);
+                            return Err(ErrorKind::HostCacheInconsistency.into());    
+                        } 
+                    } else {
+                        error!(target: "network", "host cache inconsistency: Session has no Node_id defined where it should for {}", existing_peer_id);
+                        return Err(ErrorKind::HostCacheInconsistency.into());
+                    }
+                } else {
+                    // we have a node id, but there is no session for it (anymore)
+
+                    match Session::new(io, socket, existing_peer_id.clone(), id, nonce, host) {
+                        Ok(new_session) => {
+
+                        },
+                        Err(err) => {
+
+                        }
+                    }
+                    error!(target: "network", "host cache inconsistency: Session does not exist for node id: {}", node_id);
+                    return Err(ErrorKind::HostCacheInconsistency.into());
+                }
+            } else {
+                // this should be the most common scenario.
+                // we have a new node id, we were either never connected to, or we forgot about it.
+
+                let next_free_token = self.get_next_free_token();
+
+            }
+        } else {
+            // we dont know the NodeID.
+            let address = socket.peer_addr().map_or("unknown".to_string(), |a| a.to_string());
+            debug!(target: "network", "No NodeID found for peer: {}", address);
+        }
+        // if we dont know a NodeID
+        // debug!(target: "network", "Session create error: {:?}", e);
+
+
+        let existing = sessions.get(&token);
+
+
+        trace!(target: "network", "{}: Initiating session {:?}", token, id);
+        let session = match Session::new(io, socket, token, id, &nonce, &self.info.read()) {
+            Ok(s) => Some(Arc::new(Mutex::new(s))),
+            Err(e) => {
+                debug!(target: "network", "Session create error: {:?}", e);
+                None
+            }
+        };
+
+        match token {
+            Some(t) => io.register_stream(t).map(|_| ()).map_err(Into::into),
+            None => {
+                debug!(target: "network", "Max sessions reached");
+                Ok(())
+            }
+        }
     }
 }
 
@@ -883,35 +1003,10 @@ impl Host {
         id: Option<&NodeId>,
         io: &IoContext<NetworkIoMessage>,
     ) -> Result<(), Error> {
+
         let nonce = self.info.write().next_nonce();
-        let mut sessions = self.sessions.sessions.write();
+        self.sessions.create_connection(socket, id, io, nonce)
 
-
-        // even a try without success will give a new token.
-        let token = self.session.next_token_id();
-        // we can add now the new session.
-        // if no NodeID is provided, we use the smalles used number.
-
-        let existing = sessions.get(&token);
-
-        
-
-        trace!(target: "network", "{}: Initiating session {:?}", token, id);
-        let session = match Session::new(io, socket, token, id, &nonce, &self.info.read()) {
-            Ok(s) => Some(Arc::new(Mutex::new(s))),
-            Err(e) => {
-                debug!(target: "network", "Session create error: {:?}", e);
-                None
-            }
-        };
-
-        match token {
-            Some(t) => io.register_stream(t).map(|_| ()).map_err(Into::into),
-            None => {
-                debug!(target: "network", "Max sessions reached");
-                Ok(())
-            }
-        }
     }
 
     fn accept(&self, io: &IoContext<NetworkIoMessage>) {
