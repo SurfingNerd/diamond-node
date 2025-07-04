@@ -160,6 +160,18 @@ error_chain! {
             display("Too many open files on system. Consider closing some processes/release some file handlers or increas the system-wide resource limits and restart openethereum."),
         }
 
+        #[doc = "A connection to the specified nodeId already exists."]
+        AlreadyExists {
+            description("A connection to the specified nodeId already exists."),
+            display("A connection to the specified nodeId already exists."),
+        }
+
+        #[doc = "A connection to the specified NodeId exists, but there is a missmatch in the host cache."]
+        HostCacheInconsistency {
+            description("A connection to the specified nodeId already exists."),
+            display("A connection to the specified NodeId exists, but there is a missmatch in the host cache."),
+        }
+
         #[doc = "An unknown IO error occurred."]
         Io(err: io::Error) {
             description("IO Error"),
