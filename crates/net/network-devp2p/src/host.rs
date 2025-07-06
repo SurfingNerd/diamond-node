@@ -29,7 +29,8 @@ use std::{
     path::{Path, PathBuf},
     str::FromStr,
     sync::{
-        atomic::{AtomicBool, AtomicU64, Ordering as AtomicOrdering}, Arc
+        Arc,
+        atomic::{AtomicBool, AtomicU64, Ordering as AtomicOrdering},
     },
     time::{Duration, Instant},
 };
@@ -49,7 +50,10 @@ use network::{
     client_version::ClientVersion,
 };
 use parity_path::restrict_permissions_owner;
-use parking_lot::{lock_api::{RwLockReadGuard, RwLockUpgradableReadGuard}, Mutex, RwLock};
+use parking_lot::{
+    Mutex, RwLock,
+    lock_api::{RwLockReadGuard, RwLockUpgradableReadGuard},
+};
 use stats::{PrometheusMetrics, PrometheusRegistry};
 
 type Slab<T> = ::slab::Slab<T, usize>;
@@ -360,16 +364,13 @@ struct ProtocolTimer {
     pub token: TimerToken, // Handler level token
 }
 
-
-
 struct SessionContainer {
     sessions: Arc<RwLock<std::collections::BTreeMap<usize, SharedSession>>>,
-    node_id_to_session: Mutex<BTreeMap<ethereum_types::H512, usize>>, // used to map Node IDs to last used session tokens. 
+    node_id_to_session: Mutex<BTreeMap<ethereum_types::H512, usize>>, // used to map Node IDs to last used session tokens.
     sessions_token_max: Mutex<usize>, // Used to generate new session tokens
 }
 
 impl SessionContainer {
-
     pub fn new() -> Self {
         SessionContainer {
             sessions: Arc::new(RwLock::new(std::collections::BTreeMap::new())),
@@ -383,39 +384,44 @@ impl SessionContainer {
         &self.sessions
     }
 
-    /// gets the next token ID and store this information 
-    fn create_token_id(&self, node_id: &NodeId, tokens: &mut BTreeMap<ethereum_types::H512, usize>) -> usize {
-        
-        let mut session_token_max = self.sessions_token_max.lock();    
+    /// gets the next token ID and store this information
+    fn create_token_id(
+        &self,
+        node_id: &NodeId,
+        tokens: &mut BTreeMap<ethereum_types::H512, usize>,
+    ) -> usize {
+        let mut session_token_max = self.sessions_token_max.lock();
         let next_id = session_token_max.clone();
-    
+
         *session_token_max += 1;
         if let Some(old) = tokens.insert(node_id.clone(), next_id) {
             warn!(target: "network", "Node ID {} already exists with token {}, overwriting with {}", node_id, old, next_id);
         }
-        
+
         return next_id;
     }
-    
 
     /// Creates a new session and adds it to the session container.
     /// returns the token ID of the new session, or an Error if not successful.
-    fn create_connection(&self, socket: TcpStream, id: Option<&ethereum_types::H512>, io: &IoContext<NetworkIoMessage>, nonce: &H256, host: &HostInfo) -> Result<usize, Error> {
-        
-       
+    fn create_connection(
+        &self,
+        socket: TcpStream,
+        id: Option<&ethereum_types::H512>,
+        io: &IoContext<NetworkIoMessage>,
+        nonce: &H256,
+        host: &HostInfo,
+    ) -> Result<usize, Error> {
         // make sure noone else is trying to modify the sessions at the same time.
-        // creating a connection is a very rare event. 
-        
+        // creating a connection is a very rare event.
+
         // always lock the node_id_to_session first, then the sessions.
         let mut node_ids = self.node_id_to_session.lock();
         let mut sessions = self.sessions.write();
-        
+
         if let Some(node_id) = id {
-            
             // check if there is already a connection for the given node id.
             if let Some(existing_peer_id) = node_ids.get(node_id) {
-
-                if let Some(existing_session_mutex)  = sessions.get(existing_peer_id) {
+                if let Some(existing_session_mutex) = sessions.get(existing_peer_id) {
                     let session = existing_session_mutex.lock();
                     if let Some(id_from_session) = &session.info.id {
                         if session.info.id == Some(*node_id) {
@@ -423,24 +429,34 @@ impl SessionContainer {
                             // maybe the old session is already scheduled for getting deleted.
                             if session.expired() {
                                 // if the session is expired, we will just create n new session for this node.
-                                let new_session =  Session::new(io, socket, existing_peer_id.clone(), id, nonce, host);
+                                let new_session = Session::new(
+                                    io,
+                                    socket,
+                                    existing_peer_id.clone(),
+                                    id,
+                                    nonce,
+                                    host,
+                                );
                                 match new_session {
                                     Ok(session) => {
                                         //let mut session_write =  RwLockUpgradableReadGuard::upgrade(sessions);
-                                        let _old_session = sessions.insert(*existing_peer_id, Arc::new(Mutex::new(session)));
+                                        let _old_session = sessions.insert(
+                                            *existing_peer_id,
+                                            Arc::new(Mutex::new(session)),
+                                        );
                                         // node_ids does not need to get updated, since it uses the same value.
 
                                         // in this context, the stream might already be unregistered ?!
                                         // we can just register the stream again.
-                                        if let Err(err) =  io.register_stream(*existing_peer_id) {
-                                            // todo: research this topic, watch out for this message, 
+                                        if let Err(err) = io.register_stream(*existing_peer_id) {
+                                            // todo: research this topic, watch out for this message,
                                             // maybe we can keep track of stream registrations as well somehow.
                                             debug!(target: "network", "Failed to register stream for token: {} : {}", existing_peer_id, err);
                                         }
 
                                         debug!(target: "network", "Created new session for node id: {}", node_id);
                                         return Ok(*existing_peer_id);
-                                    },
+                                    }
                                     Err(e) => {
                                         error!(target: "network", "Failed to create session for node id: {}", node_id);
                                         return Err(e);
@@ -451,11 +467,10 @@ impl SessionContainer {
                                 debug!(target: "network", "Session already exists for node id: {}", node_id);
                                 return Err(ErrorKind::AlreadyExists.into());
                             }
-
                         } else {
                             error!(target: "network", "host cache inconsistency: Session node id missmatch. expected: {} is {}.", existing_peer_id, id_from_session);
-                            return Err(ErrorKind::HostCacheInconsistency.into());    
-                        } 
+                            return Err(ErrorKind::HostCacheInconsistency.into());
+                        }
                     } else {
                         error!(target: "network", "host cache inconsistency: Session has no Node_id defined where it should for {}", existing_peer_id);
                         return Err(ErrorKind::HostCacheInconsistency.into());
@@ -464,12 +479,8 @@ impl SessionContainer {
                     // we have a node id, but there is no session for it (anymore)
 
                     match Session::new(io, socket, existing_peer_id.clone(), id, nonce, host) {
-                        Ok(new_session) => {
-
-                        },
-                        Err(err) => {
-
-                        }
+                        Ok(new_session) => {}
+                        Err(err) => {}
                     }
                     error!(target: "network", "host cache inconsistency: Session does not exist for node id: {}", node_id);
                     return Err(ErrorKind::HostCacheInconsistency.into());
@@ -479,7 +490,8 @@ impl SessionContainer {
                 // we have a new node id, we were either never connected to, or we forgot about it.
 
                 let next_free_token = self.create_token_id(&node_id, &mut node_ids);
-                let new_session =  Session::new(io, socket, next_free_token.clone(), id, nonce, host);
+                let new_session =
+                    Session::new(io, socket, next_free_token.clone(), id, nonce, host);
                 // the token is already registerd.
                 match new_session {
                     Ok(session) => {
@@ -492,24 +504,25 @@ impl SessionContainer {
                         node_ids.insert(node_id.clone(), next_free_token);
                         trace!(target: "network", "Created new session for node id: {}", node_id);
                         return Ok(next_free_token);
-                    },
+                    }
                     Err(e) => {
                         error!(target: "network", "Failed to create session for node id: {}", node_id);
                         return Err(e);
                     }
                 }
-
             }
         } else {
             // we dont know the NodeID.
-            let address = socket.peer_addr().map_or("unknown".to_string(), |a| a.to_string());
+            let address = socket
+                .peer_addr()
+                .map_or("unknown".to_string(), |a| a.to_string());
             debug!(target: "network", "No NodeID found for peer: {}", address);
-            return Err("connection to Nodes is only possible with Nodes that can provide a NodeID".into());
+            return Err(
+                "connection to Nodes is only possible with Nodes that can provide a NodeID".into(),
+            );
         }
         // if we dont know a NodeID
         // debug!(target: "network", "Session create error: {:?}", e);
-
-
     }
 }
 
@@ -809,7 +822,8 @@ impl Host {
     }
 
     fn have_session(&self, id: &NodeId) -> bool {
-        self.sessions.sessions
+        self.sessions
+            .sessions
             .read()
             .iter()
             .any(|e| e.1.lock().info.id == Some(*id))
@@ -852,7 +866,8 @@ impl Host {
 
     fn connecting_to(&self, id: &NodeId) -> bool {
         // todo: we can use the mapping here for faster access.
-        self.sessions.sessions
+        self.sessions
+            .sessions
             .read()
             .iter()
             .any(|e| e.1.lock().id() == Some(id))
@@ -996,10 +1011,9 @@ impl Host {
         id: Option<&NodeId>,
         io: &IoContext<NetworkIoMessage>,
     ) -> Result<usize, Error> {
-
         let nonce = self.info.write().next_nonce();
-        self.sessions.create_connection(socket, id, io, &nonce, &self.info.read())
-
+        self.sessions
+            .create_connection(socket, id, io, &nonce, &self.info.read())
     }
 
     fn accept(&self, io: &IoContext<NetworkIoMessage>) {
@@ -1421,7 +1435,6 @@ impl Host {
         );
         action(&context)
     }
-    
 }
 
 impl IoHandler<NetworkIoMessage> for Host {
