@@ -50,11 +50,8 @@ use network::{
     client_version::ClientVersion,
 };
 use parity_path::restrict_permissions_owner;
-use parking_lot::{
-    Mutex, RwLock,
-};
+use parking_lot::{Mutex, RwLock};
 use stats::{PrometheusMetrics, PrometheusRegistry};
-
 
 const MAX_SESSIONS: usize = 2048 + MAX_HANDSHAKES;
 const MAX_HANDSHAKES: usize = 1024;
@@ -375,7 +372,7 @@ impl SessionContainer {
             sessions: Arc::new(RwLock::new(std::collections::BTreeMap::new())),
             expired_sessions: Arc::new(RwLock::new(Vec::new())),
             node_id_to_session: Mutex::new(BTreeMap::new()),
-            sessions_token_max: Mutex::new(0)
+            sessions_token_max: Mutex::new(0),
         }
     }
 
@@ -447,20 +444,20 @@ impl SessionContainer {
                                 let new_session_arc = Arc::new(Mutex::new(session));
                                 let old_session_o =
                                     sessions.insert(*existing_peer_id, new_session_arc);
-                                
+
                                 match old_session_o {
                                     Some(old) => {
                                         // we remember the expired session, so it can get closed and cleaned up in a nice way later.
                                         expired_session.push(old);
-                                    },
+                                    }
                                     None => {
                                         // we have a cache missmatch.
                                         // but the only thing is missing is a clean ending of the old session.
                                         // nothing mission critical.
                                         error!(target: "network", "host cache inconsistency: Session for node id {} was not found in sessions map, but it should be there.", node_id);
-                                    },
+                                    }
                                 }
-                            
+
                                 // in this context, the stream might already be unregistered ?!
                                 // we can just register the stream again.
                                 if let Err(err) = io.register_stream(*existing_peer_id) {
@@ -488,7 +485,10 @@ impl SessionContainer {
                     // we reuse that peer_id, so other in flight actions are pointing to the same node again.
                     match Session::new(io, socket, existing_peer_id.clone(), id, nonce, host) {
                         Ok(new_session) => {
-                            sessions.insert(existing_peer_id.clone(), Arc::new(Mutex::new(new_session)));
+                            sessions.insert(
+                                existing_peer_id.clone(),
+                                Arc::new(Mutex::new(new_session)),
+                            );
                             return Ok(existing_peer_id.clone());
                         }
                         Err(err) => {
@@ -536,14 +536,15 @@ impl SessionContainer {
         // if we dont know a NodeID
         // debug!(target: "network", "Session create error: {:?}", e);
     }
-    
+
     fn get_session_for(&self, id: &NodeId) -> Option<SharedSession> {
-        
-        self.node_id_to_session.lock().get(id).map_or(None, |peer_id| {
-            let sessions = self.sessions.read();
-            sessions.get(peer_id).cloned()
-        })
-        
+        self.node_id_to_session
+            .lock()
+            .get(id)
+            .map_or(None, |peer_id| {
+                let sessions = self.sessions.read();
+                sessions.get(peer_id).cloned()
+            })
     }
 }
 
@@ -843,7 +844,6 @@ impl Host {
     }
 
     fn have_session(&self, id: &NodeId) -> bool {
-
         self.sessions.get_session_for(id).is_some()
     }
 
@@ -1745,7 +1745,7 @@ impl IoHandler<NetworkIoMessage> for Host {
                         .update_socket(reg, event_loop)
                         .expect("Error updating socket");
                 }
-            },
+            }
         }
     }
 }
