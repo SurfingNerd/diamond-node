@@ -52,18 +52,16 @@ use network::{
 use parity_path::restrict_permissions_owner;
 use parking_lot::{
     Mutex, RwLock,
-    lock_api::{RwLockReadGuard, RwLockUpgradableReadGuard},
 };
 use stats::{PrometheusMetrics, PrometheusRegistry};
 
-type Slab<T> = ::slab::Slab<T, usize>;
 
 const MAX_SESSIONS: usize = 2048 + MAX_HANDSHAKES;
 const MAX_HANDSHAKES: usize = 1024;
 
 const DEFAULT_PORT: u16 = 30303;
 
-const SYS_TIMER: TimerToken = 0;
+//const SYS_TIMER: TimerToken = 0;
 // StreamToken/TimerToken
 const TCP_ACCEPT: StreamToken = 1;
 const IDLE: TimerToken = 2;
@@ -367,7 +365,6 @@ struct ProtocolTimer {
 struct SessionContainer {
     sessions: Arc<RwLock<std::collections::BTreeMap<usize, SharedSession>>>,
     expired_sessions: Arc<RwLock<Vec<SharedSession>>>,
-    discovery_session: Arc<RwLock<Option<SharedSession>>>,
     node_id_to_session: Mutex<BTreeMap<ethereum_types::H512, usize>>, // used to map Node IDs to last used session tokens.
     sessions_token_max: Mutex<usize>, // Used to generate new session tokens
 }
@@ -378,14 +375,8 @@ impl SessionContainer {
             sessions: Arc::new(RwLock::new(std::collections::BTreeMap::new())),
             expired_sessions: Arc::new(RwLock::new(Vec::new())),
             node_id_to_session: Mutex::new(BTreeMap::new()),
-            sessions_token_max: Mutex::new(0),
-            discovery_session: Arc::new(RwLock::new(None)),
+            sessions_token_max: Mutex::new(0)
         }
-    }
-
-    /// Returns a reference to the sessions map.
-    pub fn sessions(&self) -> &Arc<RwLock<std::collections::BTreeMap<usize, SharedSession>>> {
-        &self.sessions
     }
 
     /// gets the next token ID and store this information
@@ -398,6 +389,7 @@ impl SessionContainer {
         let next_id = session_token_max.clone();
 
         *session_token_max += 1;
+
         if let Some(old) = tokens.insert(node_id.clone(), next_id) {
             warn!(target: "network", "Node ID {} already exists with token {}, overwriting with {}", node_id, old, next_id);
         }
@@ -422,7 +414,6 @@ impl SessionContainer {
         let mut expired_session = self.expired_sessions.write();
         let mut node_ids = self.node_id_to_session.lock();
         let mut sessions = self.sessions.write();
-        
 
         if let Some(node_id) = id {
             // check if there is already a connection for the given node id.
@@ -492,14 +483,19 @@ impl SessionContainer {
                         return Err(ErrorKind::AlreadyExists.into());
                     }
                 } else {
+                    debug!(target: "network", "reusing peer ID {} for node: {}", existing_peer_id, node_id);
                     // we have a node id, but there is no session for it (anymore)
-
+                    // we reuse that peer_id, so other in flight actions are pointing to the same node again.
                     match Session::new(io, socket, existing_peer_id.clone(), id, nonce, host) {
-                        Ok(new_session) => {}
-                        Err(err) => {}
+                        Ok(new_session) => {
+                            sessions.insert(existing_peer_id.clone(), Arc::new(Mutex::new(new_session)));
+                            return Ok(existing_peer_id.clone());
+                        }
+                        Err(err) => {
+                            debug!(target: "network", "reusing peer ID {} for node: {}, but could not create session", existing_peer_id, node_id);
+                            return Err(err);
+                        }
                     }
-                    error!(target: "network", "host cache inconsistency: Session does not exist for node id: {}", node_id);
-                    return Err(ErrorKind::HostCacheInconsistency.into());
                 }
             } else {
                 // this should be the most common scenario.
