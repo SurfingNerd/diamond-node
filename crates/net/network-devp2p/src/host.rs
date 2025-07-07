@@ -63,18 +63,18 @@ const MAX_HANDSHAKES: usize = 1024;
 
 const DEFAULT_PORT: u16 = 30303;
 
+const SYS_TIMER: TimerToken = 0;
 // StreamToken/TimerToken
-const TCP_ACCEPT: StreamToken = SYS_TIMER + 1;
-const IDLE: TimerToken = SYS_TIMER + 2;
-const DISCOVERY: StreamToken = SYS_TIMER + 3;
-const DISCOVERY_REFRESH: TimerToken = SYS_TIMER + 4;
-const FAST_DISCOVERY_REFRESH: TimerToken = SYS_TIMER + 5;
-const DISCOVERY_ROUND: TimerToken = SYS_TIMER + 6;
-const NODE_TABLE: TimerToken = SYS_TIMER + 7;
-const FIRST_SESSION: StreamToken = 0;
-const LAST_SESSION: StreamToken = FIRST_SESSION + MAX_SESSIONS - 1;
-const USER_TIMER: TimerToken = LAST_SESSION + 256;
-const SYS_TIMER: TimerToken = LAST_SESSION + 1;
+const TCP_ACCEPT: StreamToken = 1;
+const IDLE: TimerToken = 2;
+const DISCOVERY: StreamToken = 3;
+const DISCOVERY_REFRESH: TimerToken = 4;
+const FAST_DISCOVERY_REFRESH: TimerToken = 5;
+const DISCOVERY_ROUND: TimerToken = 6;
+const NODE_TABLE: TimerToken = 7;
+const USER_TIMER: TimerToken = 8;
+
+const FIRST_SESSION: StreamToken = 9;
 
 // Timeouts
 // for IDLE TimerToken
@@ -366,6 +366,8 @@ struct ProtocolTimer {
 
 struct SessionContainer {
     sessions: Arc<RwLock<std::collections::BTreeMap<usize, SharedSession>>>,
+    expired_sessions: Arc<RwLock<Vec<SharedSession>>>,
+    discovery_session: Arc<RwLock<Option<SharedSession>>>,
     node_id_to_session: Mutex<BTreeMap<ethereum_types::H512, usize>>, // used to map Node IDs to last used session tokens.
     sessions_token_max: Mutex<usize>, // Used to generate new session tokens
 }
@@ -374,8 +376,10 @@ impl SessionContainer {
     pub fn new() -> Self {
         SessionContainer {
             sessions: Arc::new(RwLock::new(std::collections::BTreeMap::new())),
+            expired_sessions: Arc::new(RwLock::new(Vec::new())),
             node_id_to_session: Mutex::new(BTreeMap::new()),
             sessions_token_max: Mutex::new(0),
+            discovery_session: Arc::new(RwLock::new(None)),
         }
     }
 
@@ -415,65 +419,77 @@ impl SessionContainer {
         // creating a connection is a very rare event.
 
         // always lock the node_id_to_session first, then the sessions.
+        let mut expired_session = self.expired_sessions.write();
         let mut node_ids = self.node_id_to_session.lock();
         let mut sessions = self.sessions.write();
+        
 
         if let Some(node_id) = id {
             // check if there is already a connection for the given node id.
             if let Some(existing_peer_id) = node_ids.get(node_id) {
-                if let Some(existing_session_mutex) = sessions.get(existing_peer_id) {
-                    let session = existing_session_mutex.lock();
-                    if let Some(id_from_session) = &session.info.id {
-                        if session.info.id == Some(*node_id) {
-                            // we got already got a session for the specified node.
-                            // maybe the old session is already scheduled for getting deleted.
-                            if session.expired() {
-                                // if the session is expired, we will just create n new session for this node.
-                                let new_session = Session::new(
-                                    io,
-                                    socket,
-                                    existing_peer_id.clone(),
-                                    id,
-                                    nonce,
-                                    host,
-                                );
-                                match new_session {
-                                    Ok(session) => {
-                                        //let mut session_write =  RwLockUpgradableReadGuard::upgrade(sessions);
-                                        let _old_session = sessions.insert(
-                                            *existing_peer_id,
-                                            Arc::new(Mutex::new(session)),
-                                        );
-                                        // node_ids does not need to get updated, since it uses the same value.
+                let existing_session_mutex_o = sessions.get(existing_peer_id).clone();
 
-                                        // in this context, the stream might already be unregistered ?!
-                                        // we can just register the stream again.
-                                        if let Err(err) = io.register_stream(*existing_peer_id) {
-                                            // todo: research this topic, watch out for this message,
-                                            // maybe we can keep track of stream registrations as well somehow.
-                                            debug!(target: "network", "Failed to register stream for token: {} : {}", existing_peer_id, err);
-                                        }
-
-                                        debug!(target: "network", "Created new session for node id: {}", node_id);
-                                        return Ok(*existing_peer_id);
-                                    }
-                                    Err(e) => {
-                                        error!(target: "network", "Failed to create session for node id: {}", node_id);
-                                        return Err(e);
-                                    }
-                                }
+                if let Some(existing_session_mutex) = existing_session_mutex_o {
+                    let session_expired = {
+                        let session = existing_session_mutex.lock();
+                        if let Some(id_from_session) = &session.info.id {
+                            if session.info.id == Some(*node_id) {
+                                // we got already got a session for the specified node.
+                                // maybe the old session is already scheduled for getting deleted.
+                                session.expired()
                             } else {
-                                // this might happen if 2 nodes try to connect to each other at the same time.
-                                debug!(target: "network", "Session already exists for node id: {}", node_id);
-                                return Err(ErrorKind::AlreadyExists.into());
+                                error!(target: "network", "host cache inconsistency: Session node id missmatch. expected: {} is {}.", existing_peer_id, id_from_session);
+                                return Err(ErrorKind::HostCacheInconsistency.into());
                             }
                         } else {
-                            error!(target: "network", "host cache inconsistency: Session node id missmatch. expected: {} is {}.", existing_peer_id, id_from_session);
+                            error!(target: "network", "host cache inconsistency: Session has no Node_id defined where it should for {}", existing_peer_id);
                             return Err(ErrorKind::HostCacheInconsistency.into());
                         }
+                    }; // session guard is dropped here
+
+                    if session_expired {
+                        // if the session is expired, we will just create n new session for this node.
+                        let new_session =
+                            Session::new(io, socket, existing_peer_id.clone(), id, nonce, host);
+                        match new_session {
+                            Ok(session) => {
+                                let new_session_arc = Arc::new(Mutex::new(session));
+                                let old_session_o =
+                                    sessions.insert(*existing_peer_id, new_session_arc);
+                                
+                                match old_session_o {
+                                    Some(old) => {
+                                        // we remember the expired session, so it can get closed and cleaned up in a nice way later.
+                                        expired_session.push(old);
+                                    },
+                                    None => {
+                                        // we have a cache missmatch.
+                                        // but the only thing is missing is a clean ending of the old session.
+                                        // nothing mission critical.
+                                        error!(target: "network", "host cache inconsistency: Session for node id {} was not found in sessions map, but it should be there.", node_id);
+                                    },
+                                }
+                            
+                                // in this context, the stream might already be unregistered ?!
+                                // we can just register the stream again.
+                                if let Err(err) = io.register_stream(*existing_peer_id) {
+                                    // todo: research this topic, watch out for this message,
+                                    // maybe we can keep track of stream registrations as well somehow.
+                                    debug!(target: "network", "Failed to register stream for token: {} : {}", existing_peer_id, err);
+                                }
+
+                                debug!(target: "network", "Created new session for node id: {}", node_id);
+                                return Ok(*existing_peer_id);
+                            }
+                            Err(e) => {
+                                error!(target: "network", "Failed to create session for node id: {}", node_id);
+                                return Err(e);
+                            }
+                        }
                     } else {
-                        error!(target: "network", "host cache inconsistency: Session has no Node_id defined where it should for {}", existing_peer_id);
-                        return Err(ErrorKind::HostCacheInconsistency.into());
+                        // this might happen if 2 nodes try to connect to each other at the same time.
+                        debug!(target: "network", "Session already exists for node id: {}", node_id);
+                        return Err(ErrorKind::AlreadyExists.into());
                     }
                 } else {
                     // we have a node id, but there is no session for it (anymore)
@@ -523,6 +539,15 @@ impl SessionContainer {
         }
         // if we dont know a NodeID
         // debug!(target: "network", "Session create error: {:?}", e);
+    }
+    
+    fn get_session_for(&self, id: &NodeId) -> Option<SharedSession> {
+        
+        self.node_id_to_session.lock().get(id).map_or(None, |peer_id| {
+            let sessions = self.sessions.read();
+            sessions.get(peer_id).cloned()
+        })
+        
     }
 }
 
@@ -822,11 +847,8 @@ impl Host {
     }
 
     fn have_session(&self, id: &NodeId) -> bool {
-        self.sessions
-            .sessions
-            .read()
-            .iter()
-            .any(|e| e.1.lock().info.id == Some(*id))
+
+        self.sessions.get_session_for(id).is_some()
     }
 
     // returns (handshakes, egress, ingress)
@@ -1331,7 +1353,7 @@ impl Host {
         let mut failure_id = None;
         let mut deregister = false;
         let mut expired_session = None;
-        if let FIRST_SESSION..=LAST_SESSION = token {
+        if token >= FIRST_SESSION {
             let sessions = self.sessions.sessions.read();
             if let Some(session) = sessions.get(&token).cloned() {
                 expired_session = Some(session.clone());
@@ -1449,10 +1471,11 @@ impl IoHandler<NetworkIoMessage> for Host {
 
     fn stream_hup(&self, io: &IoContext<NetworkIoMessage>, stream: StreamToken) {
         trace!(target: "network", "Hup: {}", stream);
-        match stream {
-            FIRST_SESSION..=LAST_SESSION => self.connection_closed(stream, io),
-            _ => warn!(target: "network", "Unexpected hup"),
-        };
+        if stream >= FIRST_SESSION {
+            self.connection_closed(stream, io)
+        } else {
+            warn!(target: "network", "Unexpected hup for session {}", stream);
+        }
     }
 
     fn stream_readable(&self, io: &IoContext<NetworkIoMessage>, stream: StreamToken) {
@@ -1460,7 +1483,7 @@ impl IoHandler<NetworkIoMessage> for Host {
             return;
         }
         match stream {
-            FIRST_SESSION..=LAST_SESSION => self.session_readable(stream, io),
+            FIRST_SESSION.. => self.session_readable(stream, io),
             DISCOVERY => self.discovery_readable(io),
             TCP_ACCEPT => self.accept(io),
             _ => panic!("Received unknown readable token"),
@@ -1472,7 +1495,7 @@ impl IoHandler<NetworkIoMessage> for Host {
             return;
         }
         match stream {
-            FIRST_SESSION..=LAST_SESSION => self.session_writable(stream, io),
+            FIRST_SESSION.. => self.session_writable(stream, io),
             DISCOVERY => self.discovery_writable(io),
             _ => panic!("Received unknown writable token"),
         }
@@ -1484,7 +1507,7 @@ impl IoHandler<NetworkIoMessage> for Host {
         }
         match token {
             IDLE => self.maintain_network(io),
-            FIRST_SESSION..=LAST_SESSION => {
+            FIRST_SESSION.. => {
                 trace!(target: "network", "Timeout from Host impl: {}", token);
                 self.connection_timeout(token, io);
             }
@@ -1635,7 +1658,7 @@ impl IoHandler<NetworkIoMessage> for Host {
         event_loop: &mut EventLoop<IoManager<NetworkIoMessage>>,
     ) {
         match stream {
-            FIRST_SESSION..=LAST_SESSION => {
+            FIRST_SESSION.. => {
                 let session = { self.sessions.sessions.read().get(&stream).cloned() };
                 if let Some(session) = session {
                     session
@@ -1670,7 +1693,7 @@ impl IoHandler<NetworkIoMessage> for Host {
         event_loop: &mut EventLoop<IoManager<NetworkIoMessage>>,
     ) {
         match stream {
-            FIRST_SESSION..=LAST_SESSION => {
+            FIRST_SESSION.. => {
                 let mut connections = self.sessions.sessions.write();
                 if let Some(connection) = connections.get(&stream).cloned() {
                     let c = connection.lock();
@@ -1694,15 +1717,6 @@ impl IoHandler<NetworkIoMessage> for Host {
         event_loop: &mut EventLoop<IoManager<NetworkIoMessage>>,
     ) {
         match stream {
-            FIRST_SESSION..=LAST_SESSION => {
-                let connection = { self.sessions.sessions.read().get(&&stream).cloned() };
-                if let Some(connection) = connection {
-                    connection
-                        .lock()
-                        .update_socket(reg, event_loop)
-                        .expect("Error updating socket");
-                }
-            }
             DISCOVERY => match (
                 self.udp_socket.lock().as_ref(),
                 self.discovery.lock().as_ref(),
@@ -1727,7 +1741,15 @@ impl IoHandler<NetworkIoMessage> for Host {
                     PollOpt::edge(),
                 )
                 .expect("Error reregistering stream"),
-            _ => warn!("Unexpected stream update"),
+            _ => {
+                let connection = { self.sessions.sessions.read().get(&&stream).cloned() };
+                if let Some(connection) = connection {
+                    connection
+                        .lock()
+                        .update_socket(reg, event_loop)
+                        .expect("Error updating socket");
+                }
+            },
         }
     }
 }
