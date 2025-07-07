@@ -106,7 +106,7 @@ impl Encodable for CapabilityInfo {
 pub struct NetworkContext<'s> {
     io: &'s IoContext<NetworkIoMessage>,
     protocol: ProtocolId,
-    sessions: Arc<RwLock<std::collections::BTreeMap<usize, SharedSession>>>,
+    sessions: &'s SessionContainer,
     session: Option<SharedSession>,
     session_id: Option<StreamToken>,
     reserved_peers: &'s HashSet<NodeId>,
@@ -159,7 +159,7 @@ impl<'s> NetworkContext<'s> {
         io: &'s IoContext<NetworkIoMessage>,
         protocol: ProtocolId,
         session: Option<SharedSession>,
-        sessions: Arc<RwLock<std::collections::BTreeMap<usize, SharedSession>>>,
+        sessions: &'s SessionContainer,
         reserved_peers: &'s HashSet<NodeId>,
         statistics: &'s NetworkingStatistics,
     ) -> NetworkContext<'s> {
@@ -178,7 +178,7 @@ impl<'s> NetworkContext<'s> {
     fn resolve_session(&self, peer: PeerId) -> Option<SharedSession> {
         match self.session_id {
             Some(id) if id == peer => self.session.clone(),
-            _ => self.sessions.read().get(&peer).cloned(),
+            _ => self.sessions.sessions.read().get(&peer).cloned(),
         }
     }
 }
@@ -295,22 +295,7 @@ impl<'s> NetworkContextTrait for NetworkContext<'s> {
     }
 
     fn node_id_to_peer_id(&self, node_id: &NodeId) -> Option<PeerId> {
-        let sessions = self.sessions.read();
-        let sessions = &*sessions;
-
-        // todo:
-        // we can do deterministic lookup here ?!
-        for i in (0..MAX_SESSIONS).map(|x| x + FIRST_SESSION) {
-            if let Some(session) = sessions.get(&i) {
-                let session_node_id_o = session.lock().info.id;
-                if let Some(session_node_id) = session_node_id_o {
-                    if session_node_id == *node_id {
-                        return Some(i);
-                    }
-                }
-            }
-        }
-        None
+        self.sessions.node_id_to_peer_id(node_id, true)
     }
 }
 
@@ -372,7 +357,7 @@ impl SessionContainer {
             sessions: Arc::new(RwLock::new(std::collections::BTreeMap::new())),
             expired_sessions: Arc::new(RwLock::new(Vec::new())),
             node_id_to_session: Mutex::new(BTreeMap::new()),
-            sessions_token_max: Mutex::new(0),
+            sessions_token_max: Mutex::new(FIRST_SESSION),
         }
     }
 
@@ -386,6 +371,10 @@ impl SessionContainer {
         let next_id = session_token_max.clone();
 
         *session_token_max += 1;
+
+        // if we run out of token ids,
+        // we need to recycle Ids that are not used anymore.
+
 
         if let Some(old) = tokens.insert(node_id.clone(), next_id) {
             warn!(target: "network", "Node ID {} already exists with token {}, overwriting with {}", node_id, old, next_id);
@@ -412,6 +401,10 @@ impl SessionContainer {
         let mut node_ids = self.node_id_to_session.lock();
         let mut sessions = self.sessions.write();
 
+        if sessions.len() >= MAX_SESSIONS {
+            return Err( ErrorKind::TooManyConnections.into());
+        }
+
         if let Some(node_id) = id {
             // check if there is already a connection for the given node id.
             if let Some(existing_peer_id) = node_ids.get(node_id) {
@@ -436,10 +429,13 @@ impl SessionContainer {
                     }; // session guard is dropped here
 
                     if session_expired {
+
+                        debug!(target: "network", "Creating new session for expired {} token: {} node id: {:?}", socket_address_to_string(&socket), existing_peer_id, id);
                         // if the session is expired, we will just create n new session for this node.
                         let new_session =
                             Session::new(io, socket, existing_peer_id.clone(), id, nonce, host);
                         match new_session {
+                            
                             Ok(session) => {
                                 let new_session_arc = Arc::new(Mutex::new(session));
                                 let old_session_o =
@@ -466,7 +462,7 @@ impl SessionContainer {
                                     debug!(target: "network", "Failed to register stream for token: {} : {}", existing_peer_id, err);
                                 }
 
-                                debug!(target: "network", "Created new session for node id: {}", node_id);
+                                
                                 return Ok(*existing_peer_id);
                             }
                             Err(e) => {
@@ -489,6 +485,9 @@ impl SessionContainer {
                                 existing_peer_id.clone(),
                                 Arc::new(Mutex::new(new_session)),
                             );
+                            if let Err(err) = io.register_stream(existing_peer_id.clone()) {
+                                warn!(target: "network", "Failed to register stream for reused token: {} : {}", existing_peer_id, err);
+                            }
                             return Ok(existing_peer_id.clone());
                         }
                         Err(err) => {
@@ -502,6 +501,7 @@ impl SessionContainer {
                 // we have a new node id, we were either never connected to, or we forgot about it.
 
                 let next_free_token = self.create_token_id(&node_id, &mut node_ids);
+                trace!(target: "network", "Creating new session {} for new node id:{} with token {}", socket_address_to_string(&socket), node_id, next_free_token);
                 let new_session =
                     Session::new(io, socket, next_free_token.clone(), id, nonce, host);
                 // the token is already registerd.
@@ -514,7 +514,7 @@ impl SessionContainer {
                             debug!(target: "network", "Failed to register stream for token: {} : {}", next_free_token, err);
                         }
                         node_ids.insert(node_id.clone(), next_free_token);
-                        trace!(target: "network", "Created new session for node id: {}", node_id);
+                        
                         return Ok(next_free_token);
                     }
                     Err(e) => {
@@ -524,11 +524,9 @@ impl SessionContainer {
                 }
             }
         } else {
+
             // we dont know the NodeID.
-            let address = socket
-                .peer_addr()
-                .map_or("unknown".to_string(), |a| a.to_string());
-            debug!(target: "network", "No NodeID found for peer: {}", address);
+            trace!(target: "network", "No NodeID found for peer: {}", socket_address_to_string(&socket));
             return Err(
                 "connection to Nodes is only possible with Nodes that can provide a NodeID".into(),
             );
@@ -546,6 +544,37 @@ impl SessionContainer {
                 sessions.get(peer_id).cloned()
             })
     }
+    
+    fn node_id_to_peer_id(&self, node_id: &NodeId, only_available_sessions: bool) -> Option<usize> {
+
+        self.node_id_to_session
+            .lock()
+            .get(node_id)
+            .map_or(None, |peer_id| {
+                if !only_available_sessions {
+                    return Some(*peer_id);
+                }
+                let sessions = self.sessions.read();
+                
+                // we can do additional checks:
+                // we could ensure that the Node ID matches.
+                // we could also read the flag and check if it is not marked for
+                // getting disconnected.
+
+                if sessions.contains_key(peer_id) {
+                    return Some(*peer_id);
+                }
+
+                return None;
+            })
+    }
+}
+
+fn socket_address_to_string(socket: &TcpStream) -> String {
+    
+    socket
+    .peer_addr()
+    .map_or("unknown".to_string(), |a| a.to_string())
 }
 
 /// Root IO handler. Manages protocol handlers, IO timers and network connections.
@@ -1241,7 +1270,7 @@ impl Host {
                                 io,
                                 p,
                                 Some(session.clone()),
-                                self.sessions.sessions.clone(),
+                                &self.sessions,
                                 &reserved,
                                 &self.statistics,
                             ),
@@ -1262,7 +1291,7 @@ impl Host {
                             io,
                             p,
                             Some(session.clone()),
-                            self.sessions.sessions.clone(),
+                            &self.sessions,
                             &reserved,
                             &self.statistics,
                         ),
@@ -1366,6 +1395,8 @@ impl Host {
                     failure_id = s.id().cloned();
                 }
                 deregister = remote || s.done();
+            } else {
+                trace!(target: "network", "Session not found for token: {}", token);
             }
         }
         if let Some(id) = failure_id {
@@ -1381,7 +1412,7 @@ impl Host {
                         io,
                         p,
                         expired_session.clone(),
-                        self.sessions.sessions.clone(),
+                        &self.sessions,
                         &reserved,
                         &self.statistics,
                     ),
@@ -1425,7 +1456,7 @@ impl Host {
             io,
             protocol,
             None,
-            self.sessions.sessions.clone(),
+            &self.sessions,
             &reserved,
             &self.statistics,
         );
@@ -1447,7 +1478,7 @@ impl Host {
             io,
             protocol,
             None,
-            self.sessions.sessions.clone(),
+            &self.sessions,
             &reserved,
             &self.statistics,
         );
@@ -1548,7 +1579,7 @@ impl IoHandler<NetworkIoMessage> for Host {
                                 io,
                                 timer.protocol,
                                 None,
-                                self.sessions.sessions.clone(),
+                                &self.sessions,
                                 &reserved,
                                 &self.statistics,
                             ),
@@ -1579,7 +1610,7 @@ impl IoHandler<NetworkIoMessage> for Host {
                     io,
                     *protocol,
                     None,
-                    self.sessions.sessions.clone(),
+                    &self.sessions,
                     &reserved,
                     &self.statistics,
                 ));
@@ -1653,6 +1684,7 @@ impl IoHandler<NetworkIoMessage> for Host {
         reg: Token,
         event_loop: &mut EventLoop<IoManager<NetworkIoMessage>>,
     ) {
+        trace!(target: "network", "register_stream {}", stream);
         match stream {
             FIRST_SESSION.. => {
                 let session = { self.sessions.sessions.read().get(&stream).cloned() };

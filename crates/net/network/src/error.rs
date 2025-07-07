@@ -166,6 +166,12 @@ error_chain! {
             display("A connection to the specified nodeId already exists."),
         }
 
+        #[doc = "Reached maximum connections"]
+        TooManyConnections {
+            description("The maximum number of connections has been reached."),
+            display("The hardcoded maximum number of connections has been reached on this host."),
+        }
+
         #[doc = "A connection to the specified NodeId exists, but there is a missmatch in the host cache."]
         HostCacheInconsistency {
             description("A connection to the specified nodeId already exists."),
