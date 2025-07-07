@@ -372,13 +372,24 @@ impl SessionContainer {
 
         *session_token_max += 1;
 
-        // if we run out of token ids,
+        // TODO: if we run out of token ids,
         // we need to recycle Ids that are not used anymore.
-
 
         if let Some(old) = tokens.insert(node_id.clone(), next_id) {
             warn!(target: "network", "Node ID {} already exists with token {}, overwriting with {}", node_id, old, next_id);
         }
+
+        return next_id;
+    }
+
+    fn create_token_id_for_handshake(&self) -> usize {
+        let mut session_token_max = self.sessions_token_max.lock();
+        let next_id = session_token_max.clone();
+
+        *session_token_max += 1;
+
+        // TODO: if we run out of token ids,
+        // we need to recycle Ids that are not used anymore.
 
         return next_id;
     }
@@ -398,11 +409,11 @@ impl SessionContainer {
 
         // always lock the node_id_to_session first, then the sessions.
         let mut expired_session = self.expired_sessions.write();
-        let mut node_ids = self.node_id_to_session.lock();
         let mut sessions = self.sessions.write();
+        let mut node_ids = self.node_id_to_session.lock();
 
         if sessions.len() >= MAX_SESSIONS {
-            return Err( ErrorKind::TooManyConnections.into());
+            return Err(ErrorKind::TooManyConnections.into());
         }
 
         if let Some(node_id) = id {
@@ -429,13 +440,11 @@ impl SessionContainer {
                     }; // session guard is dropped here
 
                     if session_expired {
-
                         debug!(target: "network", "Creating new session for expired {} token: {} node id: {:?}", socket_address_to_string(&socket), existing_peer_id, id);
                         // if the session is expired, we will just create n new session for this node.
                         let new_session =
                             Session::new(io, socket, existing_peer_id.clone(), id, nonce, host);
                         match new_session {
-                            
                             Ok(session) => {
                                 let new_session_arc = Arc::new(Mutex::new(session));
                                 let old_session_o =
@@ -462,7 +471,6 @@ impl SessionContainer {
                                     debug!(target: "network", "Failed to register stream for token: {} : {}", existing_peer_id, err);
                                 }
 
-                                
                                 return Ok(*existing_peer_id);
                             }
                             Err(e) => {
@@ -514,7 +522,7 @@ impl SessionContainer {
                             debug!(target: "network", "Failed to register stream for token: {} : {}", next_free_token, err);
                         }
                         node_ids.insert(node_id.clone(), next_free_token);
-                        
+
                         return Ok(next_free_token);
                     }
                     Err(e) => {
@@ -524,12 +532,31 @@ impl SessionContainer {
                 }
             }
         } else {
+            let next_free_token = self.create_token_id_for_handshake();
 
-            // we dont know the NodeID.
-            trace!(target: "network", "No NodeID found for peer: {}", socket_address_to_string(&socket));
-            return Err(
-                "connection to Nodes is only possible with Nodes that can provide a NodeID".into(),
-            );
+            trace!(target: "network", "creating session for handshaking peer: {} token: {}", socket_address_to_string(&socket), next_free_token);
+            // we dont know the NodeID,
+            // we still need a session to do the handshake.
+
+            let new_session = Session::new(io, socket, next_free_token.clone(), id, nonce, host);
+            // the token is already registerd.
+            match new_session {
+                Ok(session) => {
+                    let session = Arc::new(Mutex::new(session));
+                    sessions.insert(next_free_token, session.clone());
+                    // register the stream for the new session.
+                    if let Err(err) = io.register_stream(next_free_token) {
+                        debug!(target: "network", "Failed to register stream for token: {} : {}", next_free_token, err);
+                    }
+                    //node_ids.insert(node_id.clone(), next_free_token);
+
+                    return Ok(next_free_token);
+                }
+                Err(e) => {
+                    error!(target: "network", "Failed to create handshake session for: {}", next_free_token);
+                    return Err(e);
+                }
+            }
         }
         // if we dont know a NodeID
         // debug!(target: "network", "Session create error: {:?}", e);
@@ -544,9 +571,8 @@ impl SessionContainer {
                 sessions.get(peer_id).cloned()
             })
     }
-    
-    fn node_id_to_peer_id(&self, node_id: &NodeId, only_available_sessions: bool) -> Option<usize> {
 
+    fn node_id_to_peer_id(&self, node_id: &NodeId, only_available_sessions: bool) -> Option<usize> {
         self.node_id_to_session
             .lock()
             .get(node_id)
@@ -555,7 +581,7 @@ impl SessionContainer {
                     return Some(*peer_id);
                 }
                 let sessions = self.sessions.read();
-                
+
                 // we can do additional checks:
                 // we could ensure that the Node ID matches.
                 // we could also read the flag and check if it is not marked for
@@ -568,13 +594,35 @@ impl SessionContainer {
                 return None;
             })
     }
+    
+    fn register_finalized_handshake(&self, token: usize, id: Option<&ethereum_types::H512>) {
+        let node_id = match id {
+            Some(id) => id.clone(),
+            None => {
+                error!(target: "network", "Tried to register finalized handshake without node id");
+                // we have no node id, so we can not register it.
+                return;
+            }
+        };
+
+        // register this session.
+        if let Some(old) = self.node_id_to_session.lock().insert(node_id, token) {
+            // in scenarios where we did have registered the session to this node, 
+            // the token id wont change.
+            // but still we need a lock to node_id_to_session anyway.
+            if old != token {
+                debug!(target: "network", "handshake completed: changed primary session for node id {} from {}  to {}", node_id, token, old);
+            }
+        } else {
+            debug!(target: "network", "handshake completed: node id {} registered primary session token {}", node_id, token);
+        }
+    }
 }
 
 fn socket_address_to_string(socket: &TcpStream) -> String {
-    
     socket
-    .peer_addr()
-    .map_or("unknown".to_string(), |a| a.to_string())
+        .peer_addr()
+        .map_or("unknown".to_string(), |a| a.to_string())
 }
 
 /// Root IO handler. Manages protocol handlers, IO timers and network connections.
@@ -789,10 +837,10 @@ impl Host {
         let sessions = &*sessions;
 
         let mut peers = Vec::with_capacity(sessions.len());
-        for i in (0..MAX_SESSIONS).map(|x| x + FIRST_SESSION) {
-            if sessions.get(&i).is_some() {
-                peers.push(i);
-            }
+
+        
+        for peer_id in sessions.keys() {
+            peers.push(peer_id.clone());
         }
         peers
     }
@@ -911,15 +959,6 @@ impl Host {
         return None;
     }
 
-    fn connecting_to(&self, id: &NodeId) -> bool {
-        // todo: we can use the mapping here for faster access.
-        self.sessions
-            .sessions
-            .read()
-            .iter()
-            .any(|e| e.1.lock().id() == Some(id))
-    }
-
     fn keep_alive(&self, io: &IoContext<NetworkIoMessage>) {
         let mut to_kill = Vec::new();
         for e in self.sessions.sessions.read().iter() {
@@ -948,7 +987,8 @@ impl Host {
     }
 
     fn connect_peers(&self, io: &IoContext<NetworkIoMessage>) {
-        let (min_peers, mut pin, max_handshakes, allow_ips, self_id) = {
+        
+        let (min_peers, pin, max_handshakes, allow_ips, self_id) = {
             let info = self.info.read();
             if info.capabilities.is_empty() {
                 return;
@@ -963,64 +1003,56 @@ impl Host {
                 *info.id(),
             )
         };
+    
+        let (mut handshake_count, egress_count, ingress_count) = self.session_count();
+        // we clone the reserved nodes, to avoid deadlocks and reduce locking time.
+        let unconnected_reserved_nodes: Vec<NodeId> = self.reserved_nodes.read().clone().into_iter().filter(|f| !self.have_session(f)).collect();
 
-        let (handshake_count, egress_count, ingress_count) = self.session_count();
-        let reserved_nodes = self.reserved_nodes.read();
-        if egress_count + ingress_count >= min_peers as usize + reserved_nodes.len() {
-            // check if all pinned nodes are connected.
-            if reserved_nodes
-                .iter()
-                .all(|n| self.have_session(n) && self.connecting_to(n))
-            {
-                return;
-            }
+        // reserved peers are already findable in the SessionContainer, even they are handshaking.
+        // so we wont trigger a second handshake here.
+        
+        let mut started: usize = 0;
 
-            // if not, only attempt connect to reserved peers
-            pin = true;
+        for reserved in &unconnected_reserved_nodes {
+            self.connect_peer(reserved, io);
+            started += 1;
+            handshake_count += 1;
         }
 
-        // allow 16 slots for incoming connections
+        if (pin) {
+            return;
+        }
+
         if handshake_count >= max_handshakes {
             return;
         }
 
-        // iterate over all nodes, reserved ones coming first.
-        // if we are pinned to only reserved nodes, ignore all others.
-        let nodes = reserved_nodes.iter().cloned().chain(if !pin {
-            self.nodes.read().nodes(&allow_ips)
-        } else {
-            Vec::new()
-        });
-
         let max_handshakes_per_round = max_handshakes / 2;
-        let mut started: usize = 0;
-        for id in nodes
-            .filter(|id| {
-                !self.have_session(id)
-                    && !self.connecting_to(id)
-                    && *id != self_id
-                    && self.filter.as_ref().map_or(true, |f| {
-                        f.connection_allowed(&self_id, &id, ConnectionDirection::Outbound)
-                    })
+
+        // ip filter:
+        //.nodes(&allow_ips))
+        let number_of_connects_to_make =  max_handshakes_per_round.min(max_handshakes - handshake_count);
+
+        // now connect to nodes from the node table.
+        for id in self.nodes.read().nodes_filtered(number_of_connects_to_make, 
+            &allow_ips, 
+            |n: &Node| {
+                n.id != self_id
+                && self.filter.as_ref().map_or(true, |f| {
+                    f.connection_allowed(&self_id, &n.id, ConnectionDirection::Outbound)})
+                && !self.have_session(&n.id)
             })
-            .take(min(
-                max_handshakes_per_round,
-                max_handshakes - handshake_count,
-            ))
         {
             self.connect_peer(&id, io);
             started += 1;
         }
-        debug!(target: "network", "Connecting peers: {} sessions, {} pending + {} started", egress_count + ingress_count, handshake_count, started);
+
+        debug!(target: "network", "Connecting peers: {} sessions, {} handshakes {} started", egress_count + ingress_count, handshake_count, started);
     }
 
     fn connect_peer(&self, id: &NodeId, io: &IoContext<NetworkIoMessage>) {
         if self.have_session(id) {
             trace!(target: "network", "Aborted connect. Node already connected.");
-            return;
-        }
-        if self.connecting_to(id) {
-            trace!(target: "network", "Aborted connect. Node already connecting.");
             return;
         }
 
@@ -1136,6 +1168,7 @@ impl Host {
                             let (_, egress_count, ingress_count) = self.session_count();
                             let reserved_nodes = self.reserved_nodes.read();
                             let mut s = session.lock();
+                            self.sessions.register_finalized_handshake(token, s.id());
                             let (min_peers, mut max_peers, reserved_only, self_id) = {
                                 let info = self.info.read();
                                 let mut max_peers = info.config.max_peers;
@@ -1379,6 +1412,9 @@ impl Host {
         let mut deregister = false;
         let mut expired_session = None;
         if token >= FIRST_SESSION {
+            // we can shorten the session read lock here, if this causes a deadlock.
+            // on the other hand it is good, so not that many sessions manipulations can take place 
+            // at the same time.
             let sessions = self.sessions.sessions.read();
             if let Some(session) = sessions.get(&token).cloned() {
                 expired_session = Some(session.clone());
