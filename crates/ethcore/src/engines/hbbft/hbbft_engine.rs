@@ -344,7 +344,7 @@ impl IoHandler<()> for TransitionHandler {
     fn timeout(&self, io: &IoContext<()>, timer: TimerToken) {
         if timer == ENGINE_TIMEOUT_TOKEN {
             if let Err(err) = self.handle_engine(io) {
-                error!(target: "consensus", "Error in Honey Badger Engine timeout handler: {:?}", err);
+                trace!(target: "consensus", "Error in Honey Badger Engine timeout handler: {:?}", err);
             }
         } else if timer == ENGINE_SHUTDOWN {
             // we do not run this on the first occurence,
