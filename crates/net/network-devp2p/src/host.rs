@@ -409,8 +409,8 @@ impl SessionContainer {
 
         // always lock the node_id_to_session first, then the sessions.
         let mut expired_session = self.expired_sessions.write();
-        let mut sessions = self.sessions.write();
         let mut node_ids = self.node_id_to_session.lock();
+        let mut sessions = self.sessions.write();
 
         if sessions.len() >= MAX_SESSIONS {
             return Err(ErrorKind::TooManyConnections.into());
@@ -566,9 +566,10 @@ impl SessionContainer {
         self.node_id_to_session
             .lock()
             .get(id)
+            .cloned()
             .map_or(None, |peer_id| {
                 let sessions = self.sessions.read();
-                sessions.get(peer_id).cloned()
+                sessions.get(&peer_id).cloned()
             })
     }
 
@@ -921,6 +922,7 @@ impl Host {
     }
 
     fn have_session(&self, id: &NodeId) -> bool {
+        //self.sessions.have_session(id)
         self.sessions.get_session_for(id).is_some()
     }
 
@@ -1006,7 +1008,8 @@ impl Host {
     
         let (mut handshake_count, egress_count, ingress_count) = self.session_count();
         // we clone the reserved nodes, to avoid deadlocks and reduce locking time.
-        let unconnected_reserved_nodes: Vec<NodeId> = self.reserved_nodes.read().clone().into_iter().filter(|f| !self.have_session(f)).collect();
+        let reserved_nodes =  Arc::new(self.reserved_nodes.read().clone());
+        let unconnected_reserved_nodes: Vec<NodeId> = reserved_nodes.as_ref().into_iter().filter(|f| !self.have_session(f)).cloned().collect();
 
         // reserved peers are already findable in the SessionContainer, even they are handshaking.
         // so we wont trigger a second handshake here.
@@ -1019,7 +1022,7 @@ impl Host {
             handshake_count += 1;
         }
 
-        if (pin) {
+        if pin {
             return;
         }
 
@@ -1031,17 +1034,20 @@ impl Host {
 
         // ip filter:
         //.nodes(&allow_ips))
-        let number_of_connects_to_make =  max_handshakes_per_round.min(max_handshakes - handshake_count);
+        let number_of_connects_to_make =  (min_peers as usize).min(max_handshakes_per_round.min(max_handshakes - handshake_count));
 
-        // now connect to nodes from the node table.
-        for id in self.nodes.read().nodes_filtered(number_of_connects_to_make, 
+        let nodes_to_connect = self.nodes.read().nodes_filtered(number_of_connects_to_make, 
             &allow_ips, 
-            |n: &Node| {
+            |n: &Node|  {
                 n.id != self_id
+                && !&reserved_nodes.contains(&n.id)
                 && self.filter.as_ref().map_or(true, |f| {
                     f.connection_allowed(&self_id, &n.id, ConnectionDirection::Outbound)})
-                && !self.have_session(&n.id)
-            })
+                && !self.have_session(&n.id) // alternative strategy: we might also get an list of active connections, instead of locking here to figure out if we have a session or not. 
+            });
+
+        // now connect to nodes from the node table.
+        for id in nodes_to_connect
         {
             self.connect_peer(&id, io);
             started += 1;
@@ -1166,7 +1172,7 @@ impl Host {
                         }
                         Ok(SessionData::Ready) => {
                             let (_, egress_count, ingress_count) = self.session_count();
-                            let reserved_nodes = self.reserved_nodes.read();
+                            
                             let mut s = session.lock();
                             self.sessions.register_finalized_handshake(token, s.id());
                             let (min_peers, mut max_peers, reserved_only, self_id) = {
@@ -1200,7 +1206,7 @@ impl Host {
                                 || (s.info.originated && egress_count > min_peers)
                                 || (!s.info.originated && ingress_count > max_ingress)
                             {
-                                if !reserved_nodes.contains(&id) {
+                                if !self.reserved_nodes.read().contains(&id) {
                                     // only proceed if the connecting peer is reserved.
                                     trace!(target: "network", "Disconnecting non-reserved peer {:?} (TooManyPeers)", id);
                                     s.disconnect(io, DisconnectReason::TooManyPeers);
