@@ -595,7 +595,7 @@ impl SessionContainer {
                 return None;
             })
     }
-    
+
     fn register_finalized_handshake(&self, token: usize, id: Option<&ethereum_types::H512>) {
         let node_id = match id {
             Some(id) => id.clone(),
@@ -608,7 +608,7 @@ impl SessionContainer {
 
         // register this session.
         if let Some(old) = self.node_id_to_session.lock().insert(node_id, token) {
-            // in scenarios where we did have registered the session to this node, 
+            // in scenarios where we did have registered the session to this node,
             // the token id wont change.
             // but still we need a lock to node_id_to_session anyway.
             if old != token {
@@ -839,7 +839,6 @@ impl Host {
 
         let mut peers = Vec::with_capacity(sessions.len());
 
-        
         for peer_id in sessions.keys() {
             peers.push(peer_id.clone());
         }
@@ -989,7 +988,6 @@ impl Host {
     }
 
     fn connect_peers(&self, io: &IoContext<NetworkIoMessage>) {
-        
         let (min_peers, pin, max_handshakes, allow_ips, self_id) = {
             let info = self.info.read();
             if info.capabilities.is_empty() {
@@ -1005,15 +1003,20 @@ impl Host {
                 *info.id(),
             )
         };
-    
+
         let (mut handshake_count, egress_count, ingress_count) = self.session_count();
         // we clone the reserved nodes, to avoid deadlocks and reduce locking time.
-        let reserved_nodes =  Arc::new(self.reserved_nodes.read().clone());
-        let unconnected_reserved_nodes: Vec<NodeId> = reserved_nodes.as_ref().into_iter().filter(|f| !self.have_session(f)).cloned().collect();
+        let reserved_nodes = Arc::new(self.reserved_nodes.read().clone());
+        let unconnected_reserved_nodes: Vec<NodeId> = reserved_nodes
+            .as_ref()
+            .into_iter()
+            .filter(|f| !self.have_session(f))
+            .cloned()
+            .collect();
 
         // reserved peers are already findable in the SessionContainer, even they are handshaking.
         // so we wont trigger a second handshake here.
-        
+
         let mut started: usize = 0;
 
         for reserved in &unconnected_reserved_nodes {
@@ -1034,21 +1037,23 @@ impl Host {
 
         // ip filter:
         //.nodes(&allow_ips))
-        let number_of_connects_to_make =  (min_peers as usize).min(max_handshakes_per_round.min(max_handshakes - handshake_count));
+        let number_of_connects_to_make = (min_peers as usize)
+            .min(max_handshakes_per_round.min(max_handshakes - handshake_count));
 
-        let nodes_to_connect = self.nodes.read().nodes_filtered(number_of_connects_to_make, 
-            &allow_ips, 
-            |n: &Node|  {
-                n.id != self_id
-                && !&reserved_nodes.contains(&n.id)
-                && self.filter.as_ref().map_or(true, |f| {
-                    f.connection_allowed(&self_id, &n.id, ConnectionDirection::Outbound)})
-                && !self.have_session(&n.id) // alternative strategy: we might also get an list of active connections, instead of locking here to figure out if we have a session or not. 
-            });
+        let nodes_to_connect =
+            self.nodes
+                .read()
+                .nodes_filtered(number_of_connects_to_make, &allow_ips, |n: &Node| {
+                    n.id != self_id
+                        && !&reserved_nodes.contains(&n.id)
+                        && self.filter.as_ref().map_or(true, |f| {
+                            f.connection_allowed(&self_id, &n.id, ConnectionDirection::Outbound)
+                        })
+                        && !self.have_session(&n.id) // alternative strategy: we might also get an list of active connections, instead of locking here to figure out if we have a session or not. 
+                });
 
         // now connect to nodes from the node table.
-        for id in nodes_to_connect
-        {
+        for id in nodes_to_connect {
             self.connect_peer(&id, io);
             started += 1;
         }
@@ -1172,7 +1177,7 @@ impl Host {
                         }
                         Ok(SessionData::Ready) => {
                             let (_, egress_count, ingress_count) = self.session_count();
-                            
+
                             let mut s = session.lock();
                             self.sessions.register_finalized_handshake(token, s.id());
                             let (min_peers, mut max_peers, reserved_only, self_id) = {
@@ -1419,7 +1424,7 @@ impl Host {
         let mut expired_session = None;
         if token >= FIRST_SESSION {
             // we can shorten the session read lock here, if this causes a deadlock.
-            // on the other hand it is good, so not that many sessions manipulations can take place 
+            // on the other hand it is good, so not that many sessions manipulations can take place
             // at the same time.
             let sessions = self.sessions.sessions.read();
             if let Some(session) = sessions.get(&token).cloned() {
