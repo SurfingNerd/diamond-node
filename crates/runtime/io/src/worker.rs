@@ -19,11 +19,17 @@ use crate::{
     service_mio::{HandlerId, IoChannel, IoContext},
 };
 use deque;
-use futures::{future::{self, FutureResult, Loop}, Future};
+use futures::{
+    Future,
+    future::{self, FutureResult, Loop},
+};
 use std::{
-    io::{Error, ErrorKind}, sync::{
-        atomic::{AtomicBool, Ordering as AtomicOrdering}, Arc
-    }, thread::{self, JoinHandle}
+    io::{Error, ErrorKind},
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering as AtomicOrdering},
+    },
+    thread::{self, JoinHandle},
 };
 use tokio::{self};
 
@@ -55,24 +61,21 @@ pub struct Worker {
     wait_mutex: Arc<Mutex<()>>,
 }
 
-
-struct WorkerContext<Message> 
+struct WorkerContext<Message>
 where
-Message: Send + Sync + 'static,
+    Message: Send + Sync + 'static,
 {
-stealer: deque::Stealer<Work<Message>>,
-channel: IoChannel<Message>,
-wait: Arc<Condvar>,
-wait_mutex: Arc<Mutex<()>>,
-deleting: Arc<AtomicBool>,
+    stealer: deque::Stealer<Work<Message>>,
+    channel: IoChannel<Message>,
+    wait: Arc<Condvar>,
+    wait_mutex: Arc<Mutex<()>>,
+    deleting: Arc<AtomicBool>,
 }
 
-impl<Message> WorkerContext<Message> 
+impl<Message> WorkerContext<Message>
 where
-Message: Send + Sync + 'static,
+    Message: Send + Sync + 'static,
 {
-
-
     pub fn new(
         stealer: deque::Stealer<Work<Message>>,
         channel: IoChannel<Message>,
@@ -89,33 +92,28 @@ Message: Send + Sync + 'static,
         }
     }
 
-
-    fn execute(self) ->  Loop<(), Self> {
-
+    fn execute(self) -> future::FutureResult<(Self, bool), ()> {
         {
-            let mut lock = self.wait_mutex.lock();
             if self.deleting.load(AtomicOrdering::SeqCst) {
-                return Loop::Break(());// futures::future::err(Error::new(ErrorKind::Other, "shutting down worker")); // self; // Ok(Loop::Break(self));
+                return future::ok((self, false)); // Loop::Break(());// futures::future::err(Error::new(ErrorKind::Other, "shutting down worker")); // self; // Ok(Loop::Break(self));
                 //return Ok() //Ok(Loop::Break(()));
             }
+            let mut lock = self.wait_mutex.lock();
             self.wait.wait(&mut lock);
         }
 
         while !self.deleting.load(AtomicOrdering::SeqCst) {
             match self.stealer.steal() {
-                deque::Steal::Success(work) => {
-                    WorkerContext::do_work(work, self.channel.clone())
-                }
+                deque::Steal::Success(work) => WorkerContext::do_work(work, self.channel.clone()),
                 deque::Steal::Retry => {}
                 deque::Steal::Empty => break,
             }
         }
 
-        return Loop::Continue(self);
+        return future::ok((self, true)); // Loop::Continue(self);
     }
 
-    fn do_work(work: Work<Message>, channel: IoChannel<Message>)
-    {
+    fn do_work(work: Work<Message>, channel: IoChannel<Message>) {
         match work.work_type {
             WorkType::Readable => {
                 work.handler
@@ -139,15 +137,9 @@ Message: Send + Sync + 'static,
             }
         }
     }
-
-   
 }
 
 impl Worker {
-
-
-    
- 
     /// Creates a new worker instance.
     pub fn new<Message>(
         name: &str,
@@ -167,18 +159,7 @@ impl Worker {
             wait_mutex: wait_mutex.clone(),
         };
 
-
-
-
-        let mut context = WorkerContext::new(stealer,  channel, wait, wait_mutex, deleting);
-
-
-        let f =  |c: WorkerContext<Message>| {
-            c.execute()
-
-        };
-
-        let l = future::loop_fn(context, f);
+        let context = WorkerContext::new(stealer, channel, wait, wait_mutex, deleting);
 
         worker.thread = Some(
             thread::Builder::new()
@@ -186,41 +167,25 @@ impl Worker {
                 .name(format!("Worker {}", name))
                 .spawn(move || {
                     LOCAL_STACK_SIZE.with(|val| val.set(STACK_SIZE));
-                    let ini = (stealer, channel.clone(), wait, wait_mutex.clone(), deleting);
-                    let future = future::loop_fn(ini, |ini| {
-                        return Ok(Loop::Continue((stealer, channel, wait, wait_mutex, deleting)));
-                    });
-                    // future::loop_fn(ini, |(stealer, channel, wait, wait_mutex, deleting)| {
-                    //     {
-                    //         let mut lock = wait_mutex.lock();
-                    //         if deleting.load(AtomicOrdering::SeqCst) {
-                    //             return Ok(Loop::Break((stealer, channel, wait, wait_mutex, deleting)));
-                    //             //return Ok() //Ok(Loop::Break(()));
-                    //         }
-                    //         wait.wait(&mut lock);
-                    //     }
 
-                    //     while !deleting.load(AtomicOrdering::SeqCst) {
-                    //         match stealer.steal() {
-                    //             deque::Steal::Success(work) => {
-                    //                 Worker::do_work(work, channel.clone())
-                    //             }
-                    //             deque::Steal::Retry => {}
-                    //             deque::Steal::Empty => break,
-                    //         }
-                    //     }
-                    //     Ok(Loop::Continue((
-                    //         stealer, channel, wait, wait_mutex, deleting,
-                    //     )))
-                    // });
+                    let f = |c: WorkerContext<Message>| {
+                        c.execute().and_then(|r| {
+                            let (context, continue_loop) = r;
+                            if continue_loop {
+                                Ok(Loop::Continue(context))
+                            } else {
+                                Ok(Loop::Break(()))
+                            }
+                        })
+                    };
+
+                    future::loop_fn(context, f);
                 })
                 .expect("Error creating worker thread"),
         );
         worker
     }
-
 }
-
 
 impl Drop for Worker {
     fn drop(&mut self) {
