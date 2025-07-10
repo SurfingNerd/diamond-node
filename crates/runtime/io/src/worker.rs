@@ -94,11 +94,13 @@ where
 
     fn execute(self) -> future::FutureResult<(Self, bool), ()> {
         {
+            let mut lock = self.wait_mutex.lock();
             if self.deleting.load(AtomicOrdering::SeqCst) {
+                std::mem::drop(lock);
                 return future::ok((self, false)); // Loop::Break(());// futures::future::err(Error::new(ErrorKind::Other, "shutting down worker")); // self; // Ok(Loop::Break(self));
                 //return Ok() //Ok(Loop::Break(()));
             }
-            let mut lock = self.wait_mutex.lock();
+            
             self.wait.wait(&mut lock);
         }
 
