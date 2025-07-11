@@ -257,6 +257,7 @@ impl<'s> NetworkContextTrait for NetworkContext<'s> {
     }
 
     fn register_timer(&self, token: TimerToken, delay: Duration) -> std::result::Result<(), Error> {
+        trace!(target: "network", "Registering timer: {:?} for protocol: {} with delay {}", token, self.protocol, delay.as_millis());
         self.io
             .message(NetworkIoMessage::AddTimer {
                 token,
@@ -563,6 +564,7 @@ impl SessionContainer {
     }
 
     fn get_session_for(&self, id: &NodeId) -> Option<SharedSession> {
+        
         self.node_id_to_session
             .lock()
             .get(id)
@@ -617,6 +619,93 @@ impl SessionContainer {
         } else {
             debug!(target: "network", "handshake completed: node id {} registered primary session token {}", node_id, token);
         }
+    }
+
+    // handles duplicated sessions and desides wich one to be deleted. a duplicated session if it exists in a deterministic way, so both sides agree on the same session to keep.
+    // returns if this session is marked for deletion, and not being accepted by the SessionContainer.
+    // see: https://github.com/DMDcoin/diamond-node/issues/252 
+    fn should_delete_duplicate_session(&self, session: &SharedSession) -> Option<PeerId> {
+
+        let mut node_id = NodeId::zero();
+        let mut peer_id = PeerId::default();
+        let mut uid: H256 = H256::zero();
+
+        { 
+            let lock = session.lock();
+            peer_id = lock.token().clone();
+
+            node_id = match lock.id() {
+                Some(id) => id.clone(),
+                None => {
+                    trace!(target: "network", "Tried to delete duplicate session without node id");
+                    return None; // we have no node id, so we can not delete it.
+                }
+            };
+
+            uid = match lock.info.session_uid {
+                Some(u) => u.clone(),
+                None => {
+                    trace!(target: "network", "Tried to delete duplicate session without session uid");
+                    return None; // we have no session uid, so we can not delete it.
+                },
+            }; 
+        };
+
+        if let Some(existing_peer_id) = self.node_id_to_peer_id(&node_id, true) {
+            if existing_peer_id != peer_id {
+
+                // there may be an active session for this peer id.
+                let existing_session = self.get_session_for(&node_id);
+                if let Some(existing_session_mutex) = existing_session {
+                    let existing_lock = existing_session_mutex.lock();
+                    if existing_lock.expired() {
+                        // other session is already about to get deleted.
+                        trace!(target:"network", "existing peer session {existing_peer_id} is already about to get deleted.");
+                        return None;
+                    }
+                    if let Some(existing_uid) = existing_lock.info.session_uid {
+                        // the highest RNG wins.
+                        if existing_uid.lt(&uid) {
+                            // we keep the existing session, and delete the new one.
+                            trace!(target: "network", "Session {peer_id} has a duplicate :{existing_peer_id} for {node_id}, deleting this session");
+                            // we savely mark this connection to get killed softly.
+                            return Some(peer_id);
+                        } else {
+                            trace!(target: "network", "Session {peer_id} has a duplicate :{existing_peer_id} for {node_id}, deleting duplicated session");
+                            // and delete the existing one.
+                            return Some(existing_peer_id);
+                        }
+                    }
+                }
+
+                trace!(target: "network", "Session {peer_id} has a duplicate :{existing_peer_id} {node_id}");
+                return Some(existing_peer_id);
+            }
+        }
+
+        return None;
+    }
+    
+    // makes a shallow search if there is already a session for that connection
+    fn is_duplicate(&self, session: &SharedSession) -> bool {
+
+        
+        let (id, token) = { 
+            let lock = session.lock();
+            (lock.id().cloned(), lock.token().clone()) 
+        };
+        
+        if let Some(node_id)  = id {
+
+            if let Some(existing_peer_id) = self.node_id_to_peer_id(&node_id, true) {
+                if existing_peer_id != token {
+                    trace!(target: "network", "Session {token} has a duplicate :{existing_peer_id} {node_id}");
+                    return true;
+                }
+            }
+        } // else we dont have enough information to make a decision.
+
+        return false;
     }
 }
 
@@ -922,7 +1011,13 @@ impl Host {
 
     fn have_session(&self, id: &NodeId) -> bool {
         //self.sessions.have_session(id)
-        self.sessions.get_session_for(id).is_some()
+        let result = self.sessions.get_session_for(id).is_some();
+
+        if !result {
+            trace!(target: "network", "no session found for {id}");
+        }
+
+        return result;
     }
 
     // returns (handshakes, egress, ingress)
@@ -1005,6 +1100,10 @@ impl Host {
         };
 
         let (mut handshake_count, egress_count, ingress_count) = self.session_count();
+
+        trace!(target: "network", "initial handshake count: {handshake_count}");
+
+
         // we clone the reserved nodes, to avoid deadlocks and reduce locking time.
         let reserved_nodes = Arc::new(self.reserved_nodes.read().clone());
         let unconnected_reserved_nodes: Vec<NodeId> = reserved_nodes
@@ -1020,6 +1119,7 @@ impl Host {
         let mut started: usize = 0;
 
         for reserved in &unconnected_reserved_nodes {
+            trace!(target: "network", "connect_peer because it is unconnected reserved peer: {reserved}");
             self.connect_peer(reserved, io);
             started += 1;
             handshake_count += 1;
@@ -1051,6 +1151,8 @@ impl Host {
                         })
                         && !self.have_session(&n.id) // alternative strategy: we might also get an list of active connections, instead of locking here to figure out if we have a session or not. 
                 });
+
+        trace!(target: "network", "reserved nodes: {:?} nodes_to_connect: {:?}", reserved_nodes, nodes_to_connect);
 
         // now connect to nodes from the node table.
         for id in nodes_to_connect {
@@ -1147,7 +1249,7 @@ impl Host {
     fn session_readable(&self, token: StreamToken, io: &IoContext<NetworkIoMessage>) {
         let mut ready_data: Vec<ProtocolId> = Vec::new();
         let mut packet_data: Vec<(ProtocolId, PacketId, Vec<u8>)> = Vec::new();
-        let mut kill = false;
+        let mut kill : Option<PeerId> = None;
         let session = { self.sessions.sessions.read().get(&token).cloned() };
         let mut ready_id = None;
         if let Some(session) = session.clone() {
@@ -1172,14 +1274,25 @@ impl Host {
                                 }
                                 _ => {}
                             }
-                            kill = true;
+                            kill = Some(token);
                             break;
                         }
                         Ok(SessionData::Ready) => {
                             let (_, egress_count, ingress_count) = self.session_count();
 
+                            //if self.sessions.is_duplicate(&session) {
+
+                            kill = self.sessions.should_delete_duplicate_session(&session);
+
+                            if let Some(session_to_kill) = kill {
+                                if session_to_kill == token {
+                                    // if its our session wich gets to be killed, we can skip the next setup steps.
+                                    break;
+                                }
+                            }
+
                             let mut s = session.lock();
-                            self.sessions.register_finalized_handshake(token, s.id());
+                            // self.sessions.register_finalized_handshake(token, s.id());
                             let (min_peers, mut max_peers, reserved_only, self_id) = {
                                 let info = self.info.read();
                                 let mut max_peers = info.config.max_peers;
@@ -1215,7 +1328,7 @@ impl Host {
                                     // only proceed if the connecting peer is reserved.
                                     trace!(target: "network", "Disconnecting non-reserved peer {:?} (TooManyPeers)", id);
                                     s.disconnect(io, DisconnectReason::TooManyPeers);
-                                    kill = true;
+                                    kill = Some(token);
                                     break;
                                 }
                             }
@@ -1225,7 +1338,7 @@ impl Host {
                             }) {
                                 trace!(target: "network", "Inbound connection not allowed for {:?}", id);
                                 s.disconnect(io, DisconnectReason::UnexpectedIdentity);
-                                kill = true;
+                                kill = Some(token);
                                 break;
                             }
 
@@ -1276,9 +1389,13 @@ impl Host {
                 }
             }
 
-            if kill {
-                self.kill_connection(token, io, true);
+            if let Some(peer_to_kill) = kill {
+                self.kill_connection(peer_to_kill, io, true);
             }
+
+            // todo: because of new duplicated session detection logic,
+            // https://github.com/DMDcoin/diamond-node/issues/252
+            // this code should realisticly not be able to find duplicate sessions.
 
             let handlers = self.handlers.read();
             if !ready_data.is_empty() {
@@ -1289,7 +1406,7 @@ impl Host {
                     .iter()
                     .filter_map(|e| {
                         let session = e.1.lock();
-                        if session.token() != token && session.info.id == ready_id {
+                        if session.token() != token && session.info.id == ready_id && !session.expired(){
                             return Some(session.token());
                         } else {
                             return None;
@@ -1414,10 +1531,14 @@ impl Host {
 
     fn connection_timeout(&self, token: StreamToken, io: &IoContext<NetworkIoMessage>) {
         trace!(target: "network", "Connection timeout: {}", token);
-        self.kill_connection(token, io, true)
+        self.kill_connection(token, io, true);
     }
 
     fn kill_connection(&self, token: StreamToken, io: &IoContext<NetworkIoMessage>, remote: bool) {
+        self.kill_connection_with_failure(token, io, remote, true);
+    }
+
+    fn kill_connection_with_failure(&self, token: StreamToken, io: &IoContext<NetworkIoMessage>, remote: bool, as_failure: bool) {
         let mut to_disconnect: Vec<ProtocolId> = Vec::new();
         let mut failure_id = None;
         let mut deregister = false;
@@ -1431,15 +1552,18 @@ impl Host {
                 expired_session = Some(session.clone());
                 let mut s = session.lock();
                 if !s.expired() {
+                    if as_failure {
+                        failure_id = s.id().cloned();
+                    }
                     if s.is_ready() {
                         for (p, _) in self.handlers.read().iter() {
                             if s.have_capability(*p) {
-                                to_disconnect.push(*p);
+                                to_disconnect.push(p.clone());
                             }
                         }
                     }
+
                     s.set_expired();
-                    failure_id = s.id().cloned();
                 }
                 deregister = remote || s.done();
             } else {
@@ -1676,6 +1800,7 @@ impl IoHandler<NetworkIoMessage> for Host {
                 ref delay,
                 ref token,
             } => {
+                trace!(target: "network", "Adding timer for protocol: {:?}, delay: {:?}, token: {}", protocol, delay.as_millis(), token);
                 let handler_token = {
                     let mut timer_counter = self.timer_counter.write();
                     let counter = &mut *timer_counter;
