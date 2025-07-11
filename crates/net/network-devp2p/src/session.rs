@@ -62,6 +62,8 @@ enum ProtocolState {
 pub struct Session {
     /// Shared session information
     pub info: SessionInfo,
+
+    
     /// Session ready flag. Set after successful Hello packet exchange
     had_hello: bool,
     /// Session is no longer active flag.
@@ -142,6 +144,7 @@ impl Session {
         &mut self,
         io: &IoContext<Message>,
         host: &HostInfo,
+        session_uid: H256
     ) -> Result<(), Error>
     where
         Message: Send + Sync + Clone,
@@ -153,6 +156,7 @@ impl Session {
         } else {
             panic!("Unexpected state");
         };
+        self.info.session_uid = Some(session_uid);
         self.state = State::Session(connection);
         self.write_hello(io, host)?;
         Ok(())
@@ -207,13 +211,16 @@ impl Session {
         if self.expired() {
             return Ok(SessionData::None);
         }
-        let mut create_session = false;
+        let mut create_session_with_uid: Option<H256> = None;
         let mut packet_data = None;
         match self.state {
             State::Handshake(ref mut h) => {
                 h.readable(io, host)?;
                 if h.done() {
-                    create_session = true;
+                    // the Nonce Id is a unique ID shared on both endpoints
+                    // it can be used to order sessions for example duplicate removal,
+                    // so both Nodes can use the same algorithm to decide wich connection to keep.
+                    create_session_with_uid = Some(h.nonce ^ h.remote_nonce);
                 }
             }
             State::Session(ref mut c) => match c.readable(io)? {
@@ -224,8 +231,8 @@ impl Session {
         if let Some(data) = packet_data {
             return Ok(self.read_packet(io, &data, host)?);
         }
-        if create_session {
-            self.complete_handshake(io, host)?;
+        if let Some(session_uid) = create_session_with_uid {
+            self.complete_handshake(io, host, session_uid)?;
             io.update_registration(self.token())
                 .unwrap_or_else(|e| debug!(target: "network", "Token registration error: {:?}", e));
         }
@@ -570,7 +577,7 @@ impl Session {
             offset += caps[i].packet_count;
             i += 1;
         }
-        debug!(target: "network", "Hello: {} v{} {} {:?}", client_version, protocol, id, caps);
+        debug!(target: "network", "Hello: {} {} v{} {} {:?}", self.token(),  client_version, protocol, id, caps);
         let protocol = ::std::cmp::min(protocol, host.protocol_version);
         self.info.protocol_version = protocol;
         self.info.client_version = client_version;
@@ -617,6 +624,8 @@ impl Session {
     where
         Message: Send + Sync + Clone,
     {
+
+        
         if let State::Session(_) = self.state {
             let mut rlp = RlpStream::new();
             rlp.begin_list(1);
@@ -625,6 +634,8 @@ impl Session {
                 .ok();
         }
         ErrorKind::Disconnect(reason).into()
+
+        
     }
 
     fn send<Message>(&mut self, io: &IoContext<Message>, data: &[u8]) -> Result<(), Error>
