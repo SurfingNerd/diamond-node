@@ -562,6 +562,7 @@ impl PrometheusMetrics for SyncProtocolHandler {
 
 impl NetworkProtocolHandler for SyncProtocolHandler {
     fn initialize(&self, io: &dyn NetworkContext) {
+        trace!(target: "sync", "Initializing sync protocol handler for subprotocol: {}", io.subprotocol_name());
         if io.subprotocol_name() != PAR_PROTOCOL {
             io.register_timer(PEERS_TIMER, Duration::from_millis(700))
                 .expect("Error registering peers timer");
@@ -595,7 +596,7 @@ impl NetworkProtocolHandler for SyncProtocolHandler {
         trace_time!("sync::connected");
         let node_id = io.session_info(*peer).unwrap().id;
         if io.is_reserved_peer(*peer) {
-            trace!(target: "sync", "Connected to reserved peer {:?}", node_id);
+            trace!(target: "sync", "Connected to reserved peer {node_id:?} {peer}" );
         }
         // If warp protocol is supported only allow warp handshake
         let warp_protocol = io.protocol_version(PAR_PROTOCOL, *peer).unwrap_or(0) != 0;
@@ -611,7 +612,7 @@ impl NetworkProtocolHandler for SyncProtocolHandler {
     fn disconnected(&self, io: &dyn NetworkContext, peer: &PeerId) {
         trace_time!("sync::disconnected");
         if io.is_reserved_peer(*peer) {
-            warn!(target: "sync", "Disconnected from reserved peer peerID: {} {}",peer,  io.session_info(*peer).expect("").id.map_or("".to_string(), |f| format!("{:?}", f)));
+            warn!(target: "sync", "Disconnected from reserved peer peerID: {} protocol: {} peer: {}",peer , io.subprotocol_name(),  io.session_info(*peer).expect("").id.map_or("".to_string(), |f| format!("{:?}", f)));
         }
         if io.subprotocol_name() != PAR_PROTOCOL {
             self.sync.write().on_peer_aborting(
@@ -623,6 +624,10 @@ impl NetworkProtocolHandler for SyncProtocolHandler {
 
     fn timeout(&self, nc: &dyn NetworkContext, timer: TimerToken) {
         trace_time!("sync::timeout");
+
+        trace!(target: "sync", "Timer {} triggered.", timer);
+        // timer 2:
+        // Timer 0 triggered.
         let mut io = NetSyncIo::new(nc, &*self.chain, &*self.snapshot_service, &self.overlay);
         match timer {
             PEERS_TIMER => self.sync.write().maintain_peers(&mut io),
