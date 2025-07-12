@@ -63,7 +63,6 @@ pub struct Session {
     /// Shared session information
     pub info: SessionInfo,
 
-    
     /// Session ready flag. Set after successful Hello packet exchange
     had_hello: bool,
     /// Session is no longer active flag.
@@ -144,7 +143,7 @@ impl Session {
         &mut self,
         io: &IoContext<Message>,
         host: &HostInfo,
-        session_uid: H256
+        session_uid: H256,
     ) -> Result<(), Error>
     where
         Message: Send + Sync + Clone,
@@ -624,8 +623,6 @@ impl Session {
     where
         Message: Send + Sync + Clone,
     {
-
-        
         if let State::Session(_) = self.state {
             let mut rlp = RlpStream::new();
             rlp.begin_list(1);
@@ -634,8 +631,6 @@ impl Session {
                 .ok();
         }
         ErrorKind::Disconnect(reason).into()
-
-        
     }
 
     fn send<Message>(&mut self, io: &IoContext<Message>, data: &[u8]) -> Result<(), Error>
