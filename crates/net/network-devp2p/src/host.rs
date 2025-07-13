@@ -1113,7 +1113,6 @@ impl Host {
             .cloned()
             .collect();
 
-        
         // reserved peers are already findable in the SessionContainer, even they are handshaking.
         // so we wont trigger a second handshake here.
 
@@ -1292,7 +1291,6 @@ impl Host {
                                 }
                             }
 
-                            
                             let mut s = session.lock();
                             self.sessions.register_finalized_handshake(token, s.id());
                             let (min_peers, mut max_peers, reserved_only, self_id) = {
