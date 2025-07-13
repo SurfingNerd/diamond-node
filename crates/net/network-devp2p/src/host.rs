@@ -564,7 +564,6 @@ impl SessionContainer {
     }
 
     fn get_session_for(&self, id: &NodeId) -> Option<SharedSession> {
-        
         self.node_id_to_session
             .lock()
             .get(id)
@@ -623,21 +622,21 @@ impl SessionContainer {
 
     // handles duplicated sessions and desides wich one to be deleted. a duplicated session if it exists in a deterministic way, so both sides agree on the same session to keep.
     // returns if this session is marked for deletion, and not being accepted by the SessionContainer.
-    // see: https://github.com/DMDcoin/diamond-node/issues/252 
+    // see: https://github.com/DMDcoin/diamond-node/issues/252
     fn should_delete_duplicate_session(&self, session: &SharedSession) -> Option<PeerId> {
-
         let mut node_id = NodeId::zero();
         let mut peer_id = PeerId::default();
         let mut uid: H256 = H256::zero();
 
-        { 
+        {
             let lock = session.lock();
             peer_id = lock.token().clone();
 
             node_id = match lock.id() {
                 Some(id) => id.clone(),
                 None => {
-                    trace!(target: "network", "Tried to delete duplicate session without node id");
+                    // based on the control flow of the software, this should never happen.
+                    warn!(target: "network", "Tried to delete duplicate session without node id");
                     return None; // we have no node id, so we can not delete it.
                 }
             };
@@ -645,15 +644,15 @@ impl SessionContainer {
             uid = match lock.info.session_uid {
                 Some(u) => u.clone(),
                 None => {
-                    trace!(target: "network", "Tried to delete duplicate session without session uid");
+                    // based on the control flow of the software, this should never happen.
+                    warn!(target: "network", "Tried to delete duplicate session without session uid");
                     return None; // we have no session uid, so we can not delete it.
-                },
-            }; 
+                }
+            };
         };
 
         if let Some(existing_peer_id) = self.node_id_to_peer_id(&node_id, true) {
             if existing_peer_id != peer_id {
-
                 // there may be an active session for this peer id.
                 let existing_session = self.get_session_for(&node_id);
                 if let Some(existing_session_mutex) = existing_session {
@@ -676,27 +675,29 @@ impl SessionContainer {
                             return Some(existing_peer_id);
                         }
                     }
+                } else {
+                    trace!(target: "network", "No session active for {node_id} with peer id {existing_peer_id}");
+                    // todo: make sure the mapping is rewritten.
                 }
 
                 trace!(target: "network", "Session {peer_id} has a duplicate :{existing_peer_id} {node_id}");
                 return Some(existing_peer_id);
             }
+        } else {
+            trace!(target: "network", "No session known for {node_id}");
         }
 
         return None;
     }
-    
+
     // makes a shallow search if there is already a session for that connection
     fn is_duplicate(&self, session: &SharedSession) -> bool {
-
-        
-        let (id, token) = { 
+        let (id, token) = {
             let lock = session.lock();
-            (lock.id().cloned(), lock.token().clone()) 
+            (lock.id().cloned(), lock.token().clone())
         };
-        
-        if let Some(node_id)  = id {
 
+        if let Some(node_id) = id {
             if let Some(existing_peer_id) = self.node_id_to_peer_id(&node_id, true) {
                 if existing_peer_id != token {
                     trace!(target: "network", "Session {token} has a duplicate :{existing_peer_id} {node_id}");
@@ -1103,16 +1104,16 @@ impl Host {
 
         trace!(target: "network", "initial handshake count: {handshake_count}");
 
-
         // we clone the reserved nodes, to avoid deadlocks and reduce locking time.
         let reserved_nodes = Arc::new(self.reserved_nodes.read().clone());
         let unconnected_reserved_nodes: Vec<NodeId> = reserved_nodes
             .as_ref()
             .into_iter()
-            .filter(|f| !self.have_session(f))
+            .filter(|f| !self.have_session(f) && f.ne(&&self_id))
             .cloned()
             .collect();
 
+        
         // reserved peers are already findable in the SessionContainer, even they are handshaking.
         // so we wont trigger a second handshake here.
 
@@ -1249,7 +1250,7 @@ impl Host {
     fn session_readable(&self, token: StreamToken, io: &IoContext<NetworkIoMessage>) {
         let mut ready_data: Vec<ProtocolId> = Vec::new();
         let mut packet_data: Vec<(ProtocolId, PacketId, Vec<u8>)> = Vec::new();
-        let mut kill : Option<PeerId> = None;
+        let mut kill: Option<PeerId> = None;
         let session = { self.sessions.sessions.read().get(&token).cloned() };
         let mut ready_id = None;
         if let Some(session) = session.clone() {
@@ -1291,8 +1292,9 @@ impl Host {
                                 }
                             }
 
+                            
                             let mut s = session.lock();
-                            // self.sessions.register_finalized_handshake(token, s.id());
+                            self.sessions.register_finalized_handshake(token, s.id());
                             let (min_peers, mut max_peers, reserved_only, self_id) = {
                                 let info = self.info.read();
                                 let mut max_peers = info.config.max_peers;
@@ -1406,7 +1408,10 @@ impl Host {
                     .iter()
                     .filter_map(|e| {
                         let session = e.1.lock();
-                        if session.token() != token && session.info.id == ready_id && !session.expired(){
+                        if session.token() != token
+                            && session.info.id == ready_id
+                            && !session.expired()
+                        {
                             return Some(session.token());
                         } else {
                             return None;
@@ -1538,7 +1543,13 @@ impl Host {
         self.kill_connection_with_failure(token, io, remote, true);
     }
 
-    fn kill_connection_with_failure(&self, token: StreamToken, io: &IoContext<NetworkIoMessage>, remote: bool, as_failure: bool) {
+    fn kill_connection_with_failure(
+        &self,
+        token: StreamToken,
+        io: &IoContext<NetworkIoMessage>,
+        remote: bool,
+        as_failure: bool,
+    ) {
         let mut to_disconnect: Vec<ProtocolId> = Vec::new();
         let mut failure_id = None;
         let mut deregister = false;

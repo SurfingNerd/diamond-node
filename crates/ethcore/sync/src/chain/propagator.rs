@@ -131,6 +131,8 @@ impl ChainSync {
 
     /// propagates new transactions to all peers
     pub(crate) fn propagate_new_ready_transactions(&mut self, io: &mut dyn SyncIo) {
+        debug!(target: "sync", "propagate_new_ready_transactions");
+
         let deadline = Instant::now() + Duration::from_millis(500);
 
         self.propagate_ready_transactions(io, || {
@@ -497,6 +499,8 @@ impl ChainSync {
         F: FnMut() -> bool,
         G: Fn(&dyn SyncIo) -> Vec<Arc<VerifiedTransaction>>,
     {
+        trace!(target:"sync", "propagate_transactions");
+
         // Early out if nobody to send to.
         if self.peers.is_empty() {
             return 0;
