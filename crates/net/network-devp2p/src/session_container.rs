@@ -406,23 +406,4 @@ impl SessionContainer {
 
         return None;
     }
-
-    // makes a shallow search if there is already a session for that connection
-    fn is_duplicate(&self, session: &SharedSession) -> bool {
-        let (id, token) = {
-            let lock = session.lock();
-            (lock.id().cloned(), lock.token().clone())
-        };
-
-        if let Some(node_id) = id {
-            if let Some(existing_peer_id) = self.node_id_to_peer_id(&node_id, true) {
-                if existing_peer_id != token {
-                    trace!(target: "network", "Session {token} has a duplicate :{existing_peer_id} {node_id}");
-                    return true;
-                }
-            }
-        } // else we dont have enough information to make a decision.
-
-        return false;
-    }
 }
