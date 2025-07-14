@@ -496,7 +496,7 @@ impl Host {
             drop(info);
             if let NonReservedPeerMode::Deny = mode {
                 // disconnect all non-reserved peers here.
-                let reserved: HashSet<NodeId> = self.reserved_nodes.read().clone();
+                let reserved = self.reserved_nodes.read();
                 let mut to_kill = Vec::new();
                 for e in self.sessions.read().iter() {
                     let mut s = e.1.lock();
@@ -1057,7 +1057,7 @@ impl Host {
             }
 
             for (p, packet_id, data) in packet_data {
-                let reserved = self.reserved_nodes.read().clone();
+                let reserved = self.reserved_nodes.read();
                 if let Some(h) = handlers.get(&p) {
                     h.read(
                         &NetworkContext::new(
