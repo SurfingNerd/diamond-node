@@ -341,15 +341,13 @@ impl SessionContainer {
     // returns if this session is marked for deletion, and not being accepted by the SessionContainer.
     // see: https://github.com/DMDcoin/diamond-node/issues/252
     pub fn should_delete_duplicate_session(&self, session: &SharedSession) -> Option<PeerId> {
-        let mut node_id = NodeId::zero();
-        let mut peer_id = PeerId::default();
-        let mut uid: H256 = H256::zero();
 
+        let (node_id, peer_id, uid) =
         {
             let lock = session.lock();
-            peer_id = lock.token().clone();
+            let peer_id = lock.token().clone();
 
-            node_id = match lock.id() {
+            let node_id = match lock.id() {
                 Some(id) => id.clone(),
                 None => {
                     // based on the control flow of the software, this should never happen.
@@ -358,7 +356,7 @@ impl SessionContainer {
                 }
             };
 
-            uid = match lock.info.session_uid {
+            let uid = match lock.info.session_uid {
                 Some(u) => u.clone(),
                 None => {
                     // based on the control flow of the software, this should never happen.
@@ -366,6 +364,8 @@ impl SessionContainer {
                     return None; // we have no session uid, so we can not delete it.
                 }
             };
+
+            (node_id, peer_id, uid)
         };
 
         if let Some(existing_peer_id) = self.node_id_to_peer_id(&node_id, true) {
