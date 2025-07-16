@@ -902,7 +902,7 @@ impl Host {
                             }
 
                             let mut s = session.lock();
-                            self.sessions.register_finalized_handshake(token, s.id());
+                            self.sessions.register_finalized_handshake(&mut s);
                             let (min_peers, mut max_peers, reserved_only, self_id) = {
                                 let info = self.info.read();
                                 let mut max_peers = info.config.max_peers;

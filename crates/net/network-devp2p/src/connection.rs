@@ -236,6 +236,11 @@ impl Connection {
         })
     }
 
+    pub fn switch_session_token(&mut self, token: StreamToken) {
+        trace!(target: "network", "Switching connection token from {:?} to {:?}", self.token, token);
+        self.token = token;
+    }
+
     /// Register this connection with the IO event loop.
     pub fn register_socket<Host: Handler>(
         &self,

@@ -139,6 +139,18 @@ impl Session {
         })
     }
 
+    pub fn switch_session_token(&mut self, token_id: StreamToken) {
+
+        match &mut self.state {
+            State::Handshake(h) => {
+                error!(target: "network", "Setting token on handshake state is not allowed");
+            },
+            State::Session(s) => {
+                s.connection.switch_session_token(token_id);
+            },
+        }
+    }
+
     fn complete_handshake<Message>(
         &mut self,
         io: &IoContext<Message>,
