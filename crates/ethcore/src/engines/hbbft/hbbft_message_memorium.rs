@@ -110,18 +110,27 @@ impl NodeStakingEpochHistory {
             || self.last_good_sealing_message + 1 < block_num
             || self.last_error_sealing_message + 1 < block_num
         {
+
+            let latest_message = 
+            u64::max(
+                u64::max(
+                    u64::max(
+                        self.last_late_sealing_message,
+                        staking_epoch_start_block_num,
+                    ),
+                    self.last_good_sealing_message,
+                ),
+                self.last_error_sealing_message,
+            );
+
+            if (latest_message + 1) > block_num {
+                return 0;
+            }
+
             let difference = block_num
                 - 1
-                - u64::max(
-                    u64::max(
-                        u64::max(
-                            self.last_late_sealing_message,
-                            staking_epoch_start_block_num,
-                        ),
-                        self.last_good_sealing_message,
-                    ),
-                    self.last_error_sealing_message,
-                );
+                - latest_message;
+
             return (difference * (difference + 1)) / 2;
         }
         return 0;
