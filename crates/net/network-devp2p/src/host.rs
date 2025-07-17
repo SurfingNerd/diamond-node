@@ -70,9 +70,23 @@ const DISCOVERY_REFRESH: TimerToken = 4;
 const FAST_DISCOVERY_REFRESH: TimerToken = 5;
 const DISCOVERY_ROUND: TimerToken = 6;
 const NODE_TABLE: TimerToken = 7;
-const USER_TIMER: TimerToken = 8;
 
-const FIRST_SESSION: StreamToken = 9;
+// Maximum count of peer mappings we remember.  each node ID takes 64 bytes for nodeID, 8 bytes for peer id, and probabyl 3 * 8 bytes for internals. = about 100 bytes per entry.)
+// 10000 elements should take about 1 MB of memory.
+const MAX_NODE_TO_PEER_MAPPINGS: usize = 10000;
+
+// the user timers are a collection of timers that are registered by the protocol handlers.
+// therefore comming from other modules.
+// to be not in conflict with the token ID system, we choose a very
+// high number for the user timers,
+// that is realisticly unreachable by the peer stream tokens,
+// but still have enough number space for user timers.
+const FIRST_USER_TIMER: TimerToken = 8;
+const MAX_USER_TIMERS: TimerToken = 91;
+const LAST_USER_TIMER: TimerToken = FIRST_USER_TIMER + MAX_USER_TIMERS;
+
+const FIRST_SESSION: StreamToken = LAST_USER_TIMER + 1;
+const LAST_SESSION: StreamToken = StreamToken::MAX;
 
 // Timeouts
 // for IDLE TimerToken
@@ -423,11 +437,11 @@ impl Host {
             discovery: Mutex::new(None),
             udp_socket: Mutex::new(None),
             tcp_listener: Mutex::new(tcp_listener),
-            sessions: SessionContainer::new(FIRST_SESSION, MAX_SESSIONS),
+            sessions: SessionContainer::new(FIRST_SESSION, MAX_SESSIONS, MAX_NODE_TO_PEER_MAPPINGS),
             nodes: RwLock::new(NodeTable::new(path)),
             handlers: RwLock::new(HashMap::new()),
             timers: RwLock::new(HashMap::new()),
-            timer_counter: RwLock::new(USER_TIMER),
+            timer_counter: RwLock::new(FIRST_USER_TIMER),
             reserved_nodes: RwLock::new(HashSet::new()),
             stopping: AtomicBool::new(false),
             filter,
@@ -1299,7 +1313,7 @@ impl IoHandler<NetworkIoMessage> for Host {
             return;
         }
         match stream {
-            FIRST_SESSION.. => self.session_readable(stream, io),
+            FIRST_SESSION..LAST_SESSION => self.session_readable(stream, io),
             DISCOVERY => self.discovery_readable(io),
             TCP_ACCEPT => self.accept(io),
             _ => panic!("Received unknown readable token"),
@@ -1311,22 +1325,20 @@ impl IoHandler<NetworkIoMessage> for Host {
             return;
         }
         match stream {
-            FIRST_SESSION.. => self.session_writable(stream, io),
+            FIRST_SESSION..=LAST_SESSION => self.session_writable(stream, io),
             DISCOVERY => self.discovery_writable(io),
             _ => panic!("Received unknown writable token"),
         }
     }
 
     fn timeout(&self, io: &IoContext<NetworkIoMessage>, token: TimerToken) {
+        trace!(target: "network", "HOST timout: {}", token);
         if self.stopping.load(AtomicOrdering::SeqCst) {
             return;
         }
         match token {
             IDLE => self.maintain_network(io),
-            FIRST_SESSION.. => {
-                trace!(target: "network", "Timeout from Host impl: {}", token);
-                self.connection_timeout(token, io);
-            }
+
             DISCOVERY_REFRESH => {
                 // Run the _slow_ discovery if enough peers are connected
                 if !self.has_enough_peers() {
@@ -1356,7 +1368,7 @@ impl IoHandler<NetworkIoMessage> for Host {
                 nodes.clear_useless();
                 nodes.save();
             }
-            _ => match self.timers.read().get(&token).cloned() {
+            FIRST_USER_TIMER..=LAST_USER_TIMER => match self.timers.read().get(&token).cloned() {
                 Some(timer) => match self.handlers.read().get(&timer.protocol).cloned() {
                     None => {
                         warn!(target: "network", "No handler found for protocol: {:?}", timer.protocol)
@@ -1380,6 +1392,13 @@ impl IoHandler<NetworkIoMessage> for Host {
                     warn!("Unknown timer token: {}", token);
                 } // timer is not registerd through us
             },
+            FIRST_SESSION..=LAST_SESSION => {
+                trace!(target: "network", "Timeout from Host impl: {}", token);
+                self.connection_timeout(token, io);
+            }
+            _ => {
+                warn!(target: "network", "HOST: Unknown timer token tick: {}", token);
+            }
         }
     }
 
@@ -1419,6 +1438,12 @@ impl IoHandler<NetworkIoMessage> for Host {
                 ref token,
             } => {
                 trace!(target: "network", "Adding timer for protocol: {:?}, delay: {:?}, token: {}", protocol, delay.as_millis(), token);
+
+                if token >= &MAX_USER_TIMERS {
+                    warn!(target: "network", "Tried to register timer with token {} which is larger than MAX_USER_TIMERS {}", token, MAX_USER_TIMERS);
+                    return;
+                }
+
                 let handler_token = {
                     let mut timer_counter = self.timer_counter.write();
                     let counter = &mut *timer_counter;
@@ -1426,6 +1451,11 @@ impl IoHandler<NetworkIoMessage> for Host {
                     *counter += 1;
                     handler_token
                 };
+
+                if handler_token > LAST_USER_TIMER {
+                    warn!(target: "network", "Tried to register timer witch Index {token} what would be over the boundaries of usertimers: {LAST_USER_TIMER}");
+                    return;
+                }
                 self.timers.write().insert(
                     handler_token,
                     ProtocolTimer {
@@ -1433,6 +1463,8 @@ impl IoHandler<NetworkIoMessage> for Host {
                         token: *token,
                     },
                 );
+
+                trace!(target: "network", "Registering handler_token {} token {} for protocol {:?} with delay {:?}", handler_token, token, protocol, delay);
                 io.register_timer(handler_token, *delay)
                     .unwrap_or_else(|e| debug!("Error registering timer {}: {:?}", token, e));
             }

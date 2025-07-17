@@ -1,5 +1,6 @@
 use crate::host::HostInfo;
 use ethereum_types::H256;
+use lru_cache::LruCache;
 use mio::net::TcpStream;
 use std::{collections::BTreeMap, sync::Arc, time::Duration};
 
@@ -19,16 +20,16 @@ pub struct SessionContainer {
     max_sessions: usize,
     sessions: Arc<RwLock<std::collections::BTreeMap<usize, SharedSession>>>,
     expired_sessions: Arc<RwLock<Vec<SharedSession>>>,
-    node_id_to_session: Mutex<BTreeMap<ethereum_types::H512, usize>>, // used to map Node IDs to last used session tokens.
+    node_id_to_session: Mutex<LruCache<ethereum_types::H512, usize>>, // used to map Node IDs to last used session tokens.
     sessions_token_max: Mutex<usize>, // Used to generate new session tokens
 }
 
 impl SessionContainer {
-    pub fn new(first_session_token: usize, max_sessions: usize) -> Self {
+    pub fn new(first_session_token: usize, max_sessions: usize, max_node_mappings: usize) -> Self {
         SessionContainer {
             sessions: Arc::new(RwLock::new(std::collections::BTreeMap::new())),
             expired_sessions: Arc::new(RwLock::new(Vec::new())),
-            node_id_to_session: Mutex::new(BTreeMap::new()),
+            node_id_to_session: Mutex::new(LruCache::new(max_node_mappings)),
             sessions_token_max: Mutex::new(first_session_token),
             max_sessions,
         }
@@ -47,7 +48,7 @@ impl SessionContainer {
     fn create_token_id(
         &self,
         node_id: &NodeId,
-        tokens: &mut BTreeMap<ethereum_types::H512, usize>,
+        tokens: &mut LruCache<ethereum_types::H512, usize>,
     ) -> usize {
         let mut session_token_max = self.sessions_token_max.lock();
         let next_id = session_token_max.clone();
@@ -132,7 +133,7 @@ impl SessionContainer {
 
         if let Some(node_id) = id {
             // check if there is already a connection for the given node id.
-            if let Some(existing_peer_id) = node_ids.get(node_id) {
+            if let Some(existing_peer_id) = node_ids.get_mut(node_id) {
                 let existing_session_mutex_o = sessions.get(existing_peer_id).clone();
 
                 if let Some(existing_session_mutex) = existing_session_mutex_o {
@@ -279,7 +280,7 @@ impl SessionContainer {
     pub fn get_session_for(&self, id: &NodeId) -> Option<SharedSession> {
         self.node_id_to_session
             .lock()
-            .get(id)
+            .get_mut(id)
             .cloned()
             .map_or(None, |peer_id| {
                 let sessions = self.sessions.read();
@@ -294,7 +295,7 @@ impl SessionContainer {
     ) -> Option<usize> {
         self.node_id_to_session
             .lock()
-            .get(node_id)
+            .get_mut(node_id)
             .map_or(None, |peer_id| {
                 if !only_available_sessions {
                     return Some(*peer_id);
