@@ -401,9 +401,12 @@ impl SessionContainer {
 
         return None;
     }
-    
-    pub(crate) fn deregister_session_stream<Host: mio::deprecated::Handler>(&self, stream: usize, event_loop: &mut mio::deprecated::EventLoop<Host>) {
-        
+
+    pub(crate) fn deregister_session_stream<Host: mio::deprecated::Handler>(
+        &self,
+        stream: usize,
+        event_loop: &mut mio::deprecated::EventLoop<Host>,
+    ) {
         let mut connections = self.sessions.write();
         if let Some(connection) = connections.get(&stream).cloned() {
             let c = connection.lock();
