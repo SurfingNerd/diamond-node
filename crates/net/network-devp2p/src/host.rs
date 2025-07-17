@@ -1544,16 +1544,7 @@ impl IoHandler<NetworkIoMessage> for Host {
     ) {
         match stream {
             FIRST_SESSION.. => {
-                let mut connections = self.sessions.write();
-                if let Some(connection) = connections.get(&stream).cloned() {
-                    let c = connection.lock();
-                    if c.expired() {
-                        // make sure it is the same connection that the event was generated for
-                        c.deregister_socket(event_loop)
-                            .expect("Error deregistering socket");
-                        connections.remove(&stream);
-                    }
-                }
+                self.sessions.deregister_session_stream(stream, event_loop);
             }
             DISCOVERY => (),
             _ => warn!("Unexpected stream deregistration"),

@@ -40,10 +40,6 @@ impl SessionContainer {
         self.sessions.read()
     }
 
-    pub fn write(&self) -> RwLockWriteGuard<BTreeMap<usize, SharedSession>> {
-        self.sessions.write()
-    }
-
     /// gets the next token ID and store this information
     fn create_token_id(
         &self,
@@ -404,5 +400,19 @@ impl SessionContainer {
         }
 
         return None;
+    }
+    
+    pub(crate) fn deregister_session_stream<Host: mio::deprecated::Handler>(&self, stream: usize, event_loop: &mut mio::deprecated::EventLoop<Host>) {
+        
+        let mut connections = self.sessions.write();
+        if let Some(connection) = connections.get(&stream).cloned() {
+            let c = connection.lock();
+            if c.expired() {
+                // make sure it is the same connection that the event was generated for
+                c.deregister_socket(event_loop)
+                    .expect("Error deregistering socket");
+                connections.remove(&stream);
+            }
+        }
     }
 }
