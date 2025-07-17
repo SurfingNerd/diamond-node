@@ -6,7 +6,7 @@ use std::{collections::BTreeMap, sync::Arc, time::Duration};
 
 use crate::{io::*, node_table::*, session::Session};
 use network::{Error, ErrorKind, NetworkIoMessage, PeerId};
-use parking_lot::{Mutex, RwLock, RwLockReadGuard, RwLockWriteGuard};
+use parking_lot::{Mutex, RwLock, RwLockReadGuard};
 
 pub type SharedSession = Arc<Mutex<Session>>;
 
