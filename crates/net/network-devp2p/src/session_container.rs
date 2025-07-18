@@ -141,7 +141,7 @@ impl SessionContainer {
                                 // maybe the old session is already scheduled for getting deleted.
                                 session.expired()
                             } else {
-                                error!(target: "network", "host cache inconsistency: Session node id missmatch. expected: {} is {}.", existing_peer_id, id_from_session);
+                                error!(target: "network", "host cache inconsistency: Session node id mismatch. expected: {} is {}.", existing_peer_id, id_from_session);
                                 return Err(ErrorKind::HostCacheInconsistency.into());
                             }
                         } else {
@@ -167,9 +167,9 @@ impl SessionContainer {
                                         expired_session.push(old);
                                     }
                                     None => {
-                                        // we have a cache missmatch.
+                                        // we have a cache mismatch.
                                         // but the only thing is missing is a clean ending of the old session.
-                                        // nothing mission critical.
+                                        // nothing mission-critical.
                                         error!(target: "network", "host cache inconsistency: Session for node id {} was not found in sessions map, but it should be there.", node_id);
                                     }
                                 }
