@@ -178,6 +178,11 @@ impl<Socket: GenericSocket> GenericConnection<Socket> {
             Ok(r)
         })
     }
+    
+    pub(crate) fn set_token(&mut self, token: usize) {
+        self.token = token;
+    }
+    
 }
 
 /// Low level tcp connection
@@ -460,6 +465,8 @@ impl EncryptedConnection {
 
         Ok(())
     }
+
+
 
     /// Decrypt and authenticate an incoming packet header. Prepare for receiving payload.
     fn read_header(&mut self, mut header: Bytes) -> Result<(), Error> {

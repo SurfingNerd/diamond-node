@@ -57,7 +57,7 @@ use parking_lot::{Mutex, RwLock};
 use stats::{PrometheusMetrics, PrometheusRegistry};
 
 const MAX_SESSIONS: usize = 2048 + MAX_HANDSHAKES;
-const MAX_HANDSHAKES: usize = 1024;
+const MAX_HANDSHAKES: usize = 99;
 
 const DEFAULT_PORT: u16 = 30303;
 
@@ -437,7 +437,7 @@ impl Host {
             discovery: Mutex::new(None),
             udp_socket: Mutex::new(None),
             tcp_listener: Mutex::new(tcp_listener),
-            sessions: SessionContainer::new(FIRST_SESSION, MAX_SESSIONS, MAX_NODE_TO_PEER_MAPPINGS),
+            sessions: SessionContainer::new(FIRST_SESSION, MAX_SESSIONS, MAX_NODE_TO_PEER_MAPPINGS, MAX_HANDSHAKES),
             nodes: RwLock::new(NodeTable::new(path)),
             handlers: RwLock::new(HashMap::new()),
             timers: RwLock::new(HashMap::new()),

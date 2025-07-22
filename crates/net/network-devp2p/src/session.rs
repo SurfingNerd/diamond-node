@@ -161,6 +161,21 @@ impl Session {
         Ok(())
     }
 
+    /// After handshakes, it is possible to set the token of the session, 
+    /// in order of promoting a handshaking session to a real session.
+    pub fn set_token(&mut self, token: StreamToken) -> Result<(), Error> {
+        match self.state {
+            State::Handshake(ref mut _h) => {
+                // set token should only be called if a handshake gets protomoted to a regular session.
+                return Err(ErrorKind::HostCacheInconsistency.into());
+            }
+            State::Session(ref mut s) => {
+                s.connection.set_token(token);
+                return Ok(());
+            }
+        }
+    }
+
     fn connection(&self) -> &Connection {
         match self.state {
             State::Handshake(ref h) => &h.connection,
@@ -231,6 +246,7 @@ impl Session {
             return Ok(self.read_packet(io, &data, host)?);
         }
         if let Some(session_uid) = create_session_with_uid {
+
             self.complete_handshake(io, host, session_uid)?;
             io.update_registration(self.token())
                 .unwrap_or_else(|e| debug!(target: "network", "Token registration error: {:?}", e));
