@@ -645,4 +645,14 @@ impl Session {
         }
         Ok(())
     }
+
+    pub(crate) fn update_token_id(&mut self, token: StreamToken) -> Result<(), Error> {
+        match self.state {
+            State::Handshake(ref _h) => return Err(ErrorKind::HostCacheInconsistency.into()),
+            State::Session(ref mut s) => {
+                s.connection.token = token;
+                return Ok(());
+            }
+        }
+    }
 }

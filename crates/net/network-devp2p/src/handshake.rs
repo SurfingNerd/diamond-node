@@ -273,6 +273,7 @@ impl Handshake {
                 self.remote_ephemeral = Public::from_slice(&ack[0..64]);
                 self.remote_nonce = H256::from_slice(&ack[64..(64 + 32)]);
                 self.state = HandshakeState::StartSession;
+                trace!(target: "network", "handshake completed for from {:?}", self.connection.remote_addr_str());
             }
             Err(_) => {
                 // Try to interpret as EIP-8 packet

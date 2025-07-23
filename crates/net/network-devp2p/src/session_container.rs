@@ -18,26 +18,47 @@ fn socket_address_to_string(socket: &TcpStream) -> String {
 
 pub struct SessionContainer {
     max_sessions: usize,
+    max_handshakes: usize, // New field to limit concurrent handshakes
+    first_handshake: usize,
+    last_handshake: usize,
+    // the handshake cursor is a improvement to find new available handshake slots. it defines the next starting search position.
+    current_handshake_cursor: Mutex<usize>,
     sessions: Arc<RwLock<std::collections::BTreeMap<usize, SharedSession>>>,
+    handshakes: Arc<RwLock<std::collections::BTreeMap<usize, SharedSession>>>, // Separate map for handshakes
     expired_sessions: Arc<RwLock<Vec<SharedSession>>>,
     node_id_to_session: Mutex<LruCache<ethereum_types::H512, usize>>, // used to map Node IDs to last used session tokens.
-    sessions_token_max: Mutex<usize>, // Used to generate new session tokens
+    sessions_token_max: Mutex<usize>, // curent last used token for regular sessions.
 }
 
 impl SessionContainer {
-    pub fn new(first_session_token: usize, max_sessions: usize, max_node_mappings: usize) -> Self {
+    pub fn new(
+        first_handshake_token: usize,
+        max_sessions: usize,
+        max_node_mappings: usize,
+        max_handshakes: usize,
+    ) -> Self {
         SessionContainer {
             sessions: Arc::new(RwLock::new(std::collections::BTreeMap::new())),
+            handshakes: Arc::new(RwLock::new(std::collections::BTreeMap::new())),
+            current_handshake_cursor: Mutex::new(first_handshake_token),
+            first_handshake: first_handshake_token,
+            last_handshake: first_handshake_token + max_handshakes,
             expired_sessions: Arc::new(RwLock::new(Vec::new())),
             node_id_to_session: Mutex::new(LruCache::new(max_node_mappings)),
-            sessions_token_max: Mutex::new(first_session_token),
+            sessions_token_max: Mutex::new(first_handshake_token + max_handshakes + 1), // Renamed from first_session_token
             max_sessions,
+            max_handshakes,
         }
     }
 
     /// Returns a Read guard to the sessions.
     pub fn read(&self) -> RwLockReadGuard<BTreeMap<usize, SharedSession>> {
         self.sessions.read()
+    }
+
+    /// Returns a Read guard to the sessions.
+    pub fn read_handshakes(&self) -> RwLockReadGuard<BTreeMap<usize, SharedSession>> {
+        self.handshakes.read()
     }
 
     /// gets the next token ID and store this information
@@ -61,21 +82,54 @@ impl SessionContainer {
         return next_id;
     }
 
-    fn create_token_id_for_handshake(&self) -> usize {
-        let mut session_token_max = self.sessions_token_max.lock();
-        let next_id = session_token_max.clone();
+    fn create_token_id_for_handshake(
+        &self,
+        handshakes: &std::collections::BTreeMap<usize, SharedSession>,
+    ) -> Result<usize, Error> {
+        let mut cursor_lock = self.current_handshake_cursor.lock();
+        let start_cursor = *cursor_lock;
 
-        *session_token_max += 1;
+        for _ in 0..self.max_handshakes {
+            let current_token = *cursor_lock;
+            *cursor_lock = if current_token + 1 < self.last_handshake {
+                current_token + 1
+            } else {
+                self.first_handshake
+            };
 
-        // TODO: if we run out of token ids,
-        // we need to recycle Ids that are not used anymore.
+            if !handshakes.contains_key(&current_token) {
+                // Found an available token
+                return Ok(current_token);
+            }
 
-        return next_id;
+            if *cursor_lock == start_cursor {
+                // We've looped through all possible handshake tokens and found none free.
+                break;
+            }
+        }
+
+        // If we reach here, it means no available handshake token was found.
+        Err(ErrorKind::TooManyConnections.into())
+    }
+
+    pub(crate) fn session_count(&self) -> (usize, usize, usize) {
+        let mut egress = 0;
+        let mut ingress = 0;
+
+        // we avoid an intensive read lock on the sessions, and take a snapshot of current sessions.
+        for s in self.sessions.read().clone().iter() {
+            match s.1.lock() {
+                ref s if s.is_ready() && s.info.originated => egress += 1,
+                ref s if s.is_ready() && !s.info.originated => ingress += 1,
+                _ => {}
+            }
+        }
+
+        (self.handshakes.read().len(), egress, ingress)
     }
 
     // like session count, but does not block if read can not be achieved.
     pub fn session_count_try(&self, lock_duration: Duration) -> Option<(usize, usize, usize)> {
-        let mut handshakes = 0;
         let mut egress = 0;
         let mut ingress = 0;
 
@@ -91,18 +145,20 @@ impl SessionContainer {
                             } else {
                                 ingress += 1;
                             }
-                        } else {
-                            handshakes += 1;
                         }
                     }
-
                     None => return None,
                 }
             }
-            return Some((handshakes, egress, ingress));
+        } else {
+            return None;
         }
 
-        return None;
+        if let Some(lock) = self.handshakes.try_read_for(deadline.time_left()) {
+            return Some((lock.len(), egress, ingress));
+        } else {
+            return None;
+        }
     }
 
     /// Creates a new session and adds it to the session container.
@@ -115,13 +171,11 @@ impl SessionContainer {
         nonce: &H256,
         host: &HostInfo,
     ) -> Result<usize, Error> {
-        // make sure noone else is trying to modify the sessions at the same time.
-        // creating a connection is a very rare event.
-
         // always lock the node_id_to_session first, then the sessions.
         let mut expired_session = self.expired_sessions.write();
         let mut node_ids = self.node_id_to_session.lock();
         let mut sessions = self.sessions.write();
+        let mut handshakes = self.handshakes.write();
 
         if sessions.len() >= self.max_sessions {
             return Err(ErrorKind::TooManyConnections.into());
@@ -243,7 +297,12 @@ impl SessionContainer {
                 }
             }
         } else {
-            let next_free_token = self.create_token_id_for_handshake();
+            // Handle ingress handshakes separately
+            if handshakes.len() >= self.max_handshakes {
+                return Err(ErrorKind::TooManyConnections.into()); // Treat as too many handshakes
+            }
+
+            let next_free_token = self.create_token_id_for_handshake(&mut handshakes)?;
 
             trace!(target: "network", "creating session for handshaking peer: {} token: {}", socket_address_to_string(&socket), next_free_token);
             // we dont know the NodeID,
@@ -254,13 +313,11 @@ impl SessionContainer {
             match new_session {
                 Ok(session) => {
                     let session = Arc::new(Mutex::new(session));
-                    sessions.insert(next_free_token, session.clone());
+                    handshakes.insert(next_free_token, session.clone()); // Insert into handshakes map
                     // register the stream for the new session.
                     if let Err(err) = io.register_stream(next_free_token) {
                         debug!(target: "network", "Failed to register stream for token: {} : {}", next_free_token, err);
                     }
-                    //node_ids.insert(node_id.clone(), next_free_token);
-
                     return Ok(next_free_token);
                 }
                 Err(e) => {
@@ -269,8 +326,6 @@ impl SessionContainer {
                 }
             }
         }
-        // if we dont know a NodeID
-        // debug!(target: "network", "Session create error: {:?}", e);
     }
 
     pub fn get_session_for(&self, id: &NodeId) -> Option<SharedSession> {
@@ -311,26 +366,74 @@ impl SessionContainer {
             })
     }
 
-    pub fn register_finalized_handshake(&self, token: usize, id: Option<&ethereum_types::H512>) {
+    // This method will now handle both registration and promotion if applicable
+    pub fn register_finalized_handshake(
+        &self,
+        session: &mut Session,
+        io: &IoContext<NetworkIoMessage>,
+    ) -> Result<usize, Error> {
+        let token = session.token();
+        let id = session.id();
+
+        trace!(target: "network", "register_finalized_handshake for token: {} with id: {:?}", token,id);
         let node_id = match id {
             Some(id) => id.clone(),
             None => {
                 error!(target: "network", "Tried to register finalized handshake without node id");
-                // we have no node id, so we can not register it.
-                return;
+                // We have no Node ID, so we can't promote it to a full session mapped by Node ID.
+                // This might indicate an error state, or a handshake that failed to yield a Node ID.
+                // For now, we'll just log and return.
+                return Err(ErrorKind::HostCacheInconsistency.into());
             }
         };
 
-        // register this session.
-        if let Some(old) = self.node_id_to_session.lock().insert(node_id, token) {
-            // in scenarios where we did have registered the session to this node,
-            // the token id wont change.
-            // but still we need a lock to node_id_to_session anyway.
-            if old != token {
-                debug!(target: "network", "handshake completed: changed primary session for node id {} from {}  to {}", node_id, token, old);
+        let mut node_ids_lock = self.node_id_to_session.lock();
+        let mut sessions_lock = self.sessions.write();
+        let mut handshakes_lock = self.handshakes.write();
+
+        // 1. Try to promote from handshakes map
+        if let Some(handshake_session) = handshakes_lock.remove(&token) {
+            // Check session limit before promoting
+            if sessions_lock.len() >= self.max_sessions {
+                error!(target: "network", "Failed to promote handshake {}: too many active sessions.", token);
+                // The handshake session is removed from 'handshakes_lock' but not added to 'sessions_lock'.
+                // This session will effectively be dropped, and eventually cleaned up by `deregister_session_stream`.
+                return Err(ErrorKind::TooManyConnections.into());
             }
+
+            // switch the session token here,
+            let upgraded_token = self.create_token_id(&node_id, &mut node_ids_lock);
+
+            io.deregister_stream(token)?;
+            io.register_stream(upgraded_token.clone())?;
+            session.update_token_id(upgraded_token)?;
+
+            // Move to the sessions map
+            sessions_lock.insert(upgraded_token, handshake_session.clone());
+
+            // Register/update the NodeId to session token mapping
+            if let Some(old_token) = node_ids_lock.insert(node_id.clone(), upgraded_token) {
+                if old_token != token {
+                    debug!(target: "network", "Handshake completed: changed primary session for node id {} from {} to {}", node_id, old_token, upgraded_token);
+                }
+            } else {
+                debug!(target: "network", "Handshake completed: node id {} registered primary session token {}", node_id, upgraded_token);
+            }
+            return Ok(upgraded_token);
         } else {
-            debug!(target: "network", "handshake completed: node id {} registered primary session token {}", node_id, token);
+            return Err(ErrorKind::HostCacheInconsistency.into());
+            // // 2. If not found in handshakes, it might be an existing session being re-registered
+            // // (e.g., an outgoing connection where the Node ID was known from the start)
+            // if let Some(old_token) = node_ids_lock.insert(node_id, token) {
+            //     // in scenarios where we did have registered the session to this node,
+            //     // the token id wont change.
+            //     // but still we need a lock to node_id_to_session anyway.
+            //     if old_token != token {
+            //         debug!(target: "network", "Node ID {} already existed with token {}, overwriting with {}", node_id, old_token, token);
+            //     }
+            // } else {
+            //     debug!(target: "network", "Node ID {} registered primary session token {}", node_id, token);
+            // }
         }
     }
 
@@ -417,5 +520,24 @@ impl SessionContainer {
                 connections.remove(&stream);
             }
         }
+        // Also check the handshakes map for deregistration
+        let mut handshakes = self.handshakes.write();
+        if let Some(connection) = handshakes.get(&stream).cloned() {
+            let c = connection.lock();
+            if c.expired() {
+                c.deregister_socket(event_loop)
+                    .expect("Error deregistering socket");
+                handshakes.remove(&stream);
+            }
+        }
+    }
+
+    pub(crate) fn get_handshake(&self, stream: usize) -> Option<SharedSession> {
+        trace!(target: "network", "get_handshake for stream: {}. total handshakes: {}", stream, self.handshakes.read().len() );
+        self.handshakes.read().get(&stream).cloned()
+    }
+
+    pub(crate) fn get_session(&self, stream: usize) -> Option<SharedSession> {
+        self.sessions.read().get(&stream).cloned()
     }
 }
