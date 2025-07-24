@@ -16,7 +16,6 @@
 
 use crate::{
     mio::{deprecated::EventLoop, tcp::*, udp::*, *},
-    session,
     session_container::{SessionContainer, SharedSession},
 };
 use crypto::publickey::{Generator, KeyPair, Random, Secret};
@@ -57,7 +56,7 @@ use parity_path::restrict_permissions_owner;
 use parking_lot::{Mutex, RwLock};
 use stats::{PrometheusMetrics, PrometheusRegistry};
 
-const MAX_SESSIONS: usize = 2048 + MAX_HANDSHAKES;
+const MAX_SESSIONS: usize = 2048;
 const MAX_HANDSHAKES: usize = 99;
 
 const DEFAULT_PORT: u16 = 30303;
@@ -678,14 +677,13 @@ impl Host {
     }
 
     fn have_session(&self, id: &NodeId) -> bool {
-        //self.sessions.have_session(id)
-        let result = self.sessions.get_session_for(id).is_some();
+        return self.sessions.get_session_for(id).is_some();
+    }
 
-        if !result {
-            trace!(target: "network", "no session found for {id}");
-        }
-
-        return result;
+    /// returns if there is a known handshake for the given node id is going on.
+    /// Only Egress handshakes can be considered, for ingress handshakes the NodeID is unknown.
+    fn have_handshake(&self, id: &NodeId) -> bool {
+        return self.sessions.get_handshake_for(id).is_some();
     }
 
     // returns (handshakes, egress, ingress)
@@ -749,7 +747,7 @@ impl Host {
         let unconnected_reserved_nodes: Vec<NodeId> = reserved_nodes
             .as_ref()
             .into_iter()
-            .filter(|f| !self.have_session(f) && f.ne(&&self_id))
+            .filter(|f| f.ne(&&self_id) && !self.have_handshake(f) && !self.have_session(f))
             .cloned()
             .collect();
 
