@@ -16,6 +16,8 @@ fn socket_address_to_string(socket: &TcpStream) -> String {
         .map_or("unknown".to_string(), |a| a.to_string())
 }
 
+/// SessionContainer manages handshakes, and their upgrade to regular encrypted sessions.
+/// It has high performance lookup capabilities for NodeIDs by using a hashmap, instead of linear locking iteration of sessions. 
 pub struct SessionContainer {
     max_sessions: usize,
     max_handshakes: usize, // New field to limit concurrent handshakes
@@ -25,7 +27,6 @@ pub struct SessionContainer {
     current_handshake_cursor: Mutex<usize>,
     sessions: Arc<RwLock<std::collections::BTreeMap<usize, SharedSession>>>,
     handshakes: Arc<RwLock<std::collections::BTreeMap<usize, SharedSession>>>, // Separate map for handshakes
-    expired_sessions: Arc<RwLock<Vec<SharedSession>>>,
     node_id_to_session: Mutex<LruCache<ethereum_types::H512, usize>>, // used to map Node IDs to last used session tokens.
     sessions_token_max: Mutex<usize>, // curent last used token for regular sessions.
 }
@@ -43,7 +44,6 @@ impl SessionContainer {
             current_handshake_cursor: Mutex::new(first_handshake_token),
             first_handshake: first_handshake_token,
             last_handshake: first_handshake_token + max_handshakes,
-            expired_sessions: Arc::new(RwLock::new(Vec::new())),
             node_id_to_session: Mutex::new(LruCache::new(max_node_mappings)),
             sessions_token_max: Mutex::new(first_handshake_token + max_handshakes + 1), // Renamed from first_session_token
             max_sessions,
@@ -163,7 +163,7 @@ impl SessionContainer {
 
     /// Creates a new session and adds it to the session container.
     /// returns the token ID of the new session, or an Error if not successful.
-    pub fn create_connection(
+    pub fn create_handshake_connection(
         &self,
         socket: TcpStream,
         id: Option<&ethereum_types::H512>,
@@ -171,159 +171,65 @@ impl SessionContainer {
         nonce: &H256,
         host: &HostInfo,
     ) -> Result<usize, Error> {
-        // always lock the node_id_to_session first, then the sessions.
-        let mut expired_session = self.expired_sessions.write();
         let mut node_ids = self.node_id_to_session.lock();
-        let mut sessions = self.sessions.write();
         let mut handshakes = self.handshakes.write();
 
-        if sessions.len() >= self.max_sessions {
+        if self.sessions.read().len() >= self.max_sessions {
+            return Err(ErrorKind::TooManyConnections.into());
+        }
+
+        if handshakes.len() >= self.max_handshakes {
             return Err(ErrorKind::TooManyConnections.into());
         }
 
         if let Some(node_id) = id {
             // check if there is already a connection for the given node id.
             if let Some(existing_peer_id) = node_ids.get_mut(node_id) {
-                let existing_session_mutex_o = sessions.get(existing_peer_id).clone();
+                let existing_session_mutex_o = self.get_session(existing_peer_id.clone());
 
                 if let Some(existing_session_mutex) = existing_session_mutex_o {
-                    let session_expired = {
-                        let session = existing_session_mutex.lock();
-                        if let Some(id_from_session) = &session.info.id {
-                            if session.info.id == Some(*node_id) {
-                                // we got already got a session for the specified node.
-                                // maybe the old session is already scheduled for getting deleted.
-                                session.expired()
-                            } else {
-                                error!(target: "network", "host cache inconsistency: Session node id mismatch. expected: {} is {}.", existing_peer_id, id_from_session);
-                                return Err(ErrorKind::HostCacheInconsistency.into());
+                    let session = existing_session_mutex.lock();
+                    if let Some(id_from_session) = &session.info.id {
+                        if session.info.id == Some(*node_id) {
+                            // we got already got a session for the specified node.
+                            // maybe the old session is already scheduled for getting deleted.
+                            if !session.expired() {
+                                return Err(ErrorKind::AlreadyExists.into());
                             }
                         } else {
-                            error!(target: "network", "host cache inconsistency: Session has no Node_id defined where it should for {}", existing_peer_id);
+                            error!(target: "network", "host cache inconsistency: Session node id mismatch. expected: {} is {}.", existing_peer_id, id_from_session);
                             return Err(ErrorKind::HostCacheInconsistency.into());
                         }
-                    }; // session guard is dropped here
-
-                    if session_expired {
-                        debug!(target: "network", "Creating new session for expired {} token: {} node id: {:?}", socket_address_to_string(&socket), existing_peer_id, id);
-                        // if the session is expired, we will just create n new session for this node.
-                        let new_session =
-                            Session::new(io, socket, existing_peer_id.clone(), id, nonce, host);
-                        match new_session {
-                            Ok(session) => {
-                                let new_session_arc = Arc::new(Mutex::new(session));
-                                let old_session_o =
-                                    sessions.insert(*existing_peer_id, new_session_arc);
-
-                                match old_session_o {
-                                    Some(old) => {
-                                        // we remember the expired session, so it can get closed and cleaned up in a nice way later.
-                                        expired_session.push(old);
-                                    }
-                                    None => {
-                                        // we have a cache mismatch.
-                                        // but the only thing is missing is a clean ending of the old session.
-                                        // nothing mission-critical.
-                                        error!(target: "network", "host cache inconsistency: Session for node id {} was not found in sessions map, but it should be there.", node_id);
-                                    }
-                                }
-
-                                // in this context, the stream might already be unregistered ?!
-                                // we can just register the stream again.
-                                if let Err(err) = io.register_stream(*existing_peer_id) {
-                                    // todo: research this topic, watch out for this message,
-                                    // maybe we can keep track of stream registrations as well somehow.
-                                    debug!(target: "network", "Failed to register stream for token: {} : {}", existing_peer_id, err);
-                                }
-
-                                return Ok(*existing_peer_id);
-                            }
-                            Err(e) => {
-                                error!(target: "network", "Failed to create session for node id: {}", node_id);
-                                return Err(e);
-                            }
-                        }
                     } else {
-                        // this might happen if 2 nodes try to connect to each other at the same time.
-                        debug!(target: "network", "Session already exists for node id: {}", node_id);
-                        return Err(ErrorKind::AlreadyExists.into());
+                        error!(target: "network", "host cache inconsistency: Session has no Node_id defined where it should for {}", existing_peer_id);
+                        return Err(ErrorKind::HostCacheInconsistency.into());
                     }
-                } else {
-                    debug!(target: "network", "reusing peer ID {} for node: {}", existing_peer_id, node_id);
-                    // we have a node id, but there is no session for it (anymore)
-                    // we reuse that peer_id, so other in flight actions are pointing to the same node again.
-                    match Session::new(io, socket, existing_peer_id.clone(), id, nonce, host) {
-                        Ok(new_session) => {
-                            sessions.insert(
-                                existing_peer_id.clone(),
-                                Arc::new(Mutex::new(new_session)),
-                            );
-                            if let Err(err) = io.register_stream(existing_peer_id.clone()) {
-                                warn!(target: "network", "Failed to register stream for reused token: {} : {}", existing_peer_id, err);
-                            }
-                            return Ok(existing_peer_id.clone());
-                        }
-                        Err(err) => {
-                            debug!(target: "network", "reusing peer ID {} for node: {}, but could not create session", existing_peer_id, node_id);
-                            return Err(err);
-                        }
-                    }
-                }
-            } else {
-                // this should be the most common scenario.
-                // we have a new node id, we were either never connected to, or we forgot about it.
-
-                let next_free_token = self.create_token_id(&node_id, &mut node_ids);
-                trace!(target: "network", "Creating new session {} for new node id:{} with token {}", socket_address_to_string(&socket), node_id, next_free_token);
-                let new_session =
-                    Session::new(io, socket, next_free_token.clone(), id, nonce, host);
-                // the token is already registerd.
-                match new_session {
-                    Ok(session) => {
-                        let session = Arc::new(Mutex::new(session));
-                        sessions.insert(next_free_token, session.clone());
-                        // register the stream for the new session.
-                        if let Err(err) = io.register_stream(next_free_token) {
-                            debug!(target: "network", "Failed to register stream for token: {} : {}", next_free_token, err);
-                        }
-                        node_ids.insert(node_id.clone(), next_free_token);
-
-                        return Ok(next_free_token);
-                    }
-                    Err(e) => {
-                        error!(target: "network", "Failed to create session for node id: {}", node_id);
-                        return Err(e);
-                    }
+                    // session guard is dropped here
                 }
             }
-        } else {
-            // Handle ingress handshakes separately
-            if handshakes.len() >= self.max_handshakes {
-                return Err(ErrorKind::TooManyConnections.into()); // Treat as too many handshakes
+        }
+
+        let next_free_token = self.create_token_id_for_handshake(&mut handshakes)?;
+
+        trace!(target: "network", "creating session for handshaking peer: {} token: {}", socket_address_to_string(&socket), next_free_token);
+        // we dont know the NodeID,
+        // we still need a session to do the handshake.
+
+        let new_session = Session::new(io, socket, next_free_token.clone(), id, nonce, host);
+        // the token is already registerd.
+        match new_session {
+            Ok(session) => {
+                let session = Arc::new(Mutex::new(session));
+                handshakes.insert(next_free_token, session.clone()); // Insert into handshakes map
+                // register the stream for the new session.
+                if let Err(err) = io.register_stream(next_free_token) {
+                    debug!(target: "network", "Failed to register stream for token: {} : {}", next_free_token, err);
+                }
+                return Ok(next_free_token);
             }
-
-            let next_free_token = self.create_token_id_for_handshake(&mut handshakes)?;
-
-            trace!(target: "network", "creating session for handshaking peer: {} token: {}", socket_address_to_string(&socket), next_free_token);
-            // we dont know the NodeID,
-            // we still need a session to do the handshake.
-
-            let new_session = Session::new(io, socket, next_free_token.clone(), id, nonce, host);
-            // the token is already registerd.
-            match new_session {
-                Ok(session) => {
-                    let session = Arc::new(Mutex::new(session));
-                    handshakes.insert(next_free_token, session.clone()); // Insert into handshakes map
-                    // register the stream for the new session.
-                    if let Err(err) = io.register_stream(next_free_token) {
-                        debug!(target: "network", "Failed to register stream for token: {} : {}", next_free_token, err);
-                    }
-                    return Ok(next_free_token);
-                }
-                Err(e) => {
-                    error!(target: "network", "Failed to create handshake session for: {}", next_free_token);
-                    return Err(e);
-                }
+            Err(e) => {
+                error!(target: "network", "Failed to create handshake session for: {}", next_free_token);
+                return Err(e);
             }
         }
     }
@@ -401,10 +307,16 @@ impl SessionContainer {
                 return Err(ErrorKind::TooManyConnections.into());
             }
 
-            // switch the session token here,
-            let upgraded_token = self.create_token_id(&node_id, &mut node_ids_lock);
-
             io.deregister_stream(token)?;
+
+            let upgraded_token = match node_ids_lock.get_mut(&node_id) {
+                Some(t) => t.clone(),
+                None => self.create_token_id(&node_id, &mut node_ids_lock),
+            };
+
+            // switch the session token here,
+            // let upgraded_token = self.create_token_id(&node_id, &mut node_ids_lock);
+
             io.register_stream(upgraded_token.clone())?;
             session.update_token_id(upgraded_token)?;
 
@@ -413,7 +325,7 @@ impl SessionContainer {
 
             // Register/update the NodeId to session token mapping
             if let Some(old_token) = node_ids_lock.insert(node_id.clone(), upgraded_token) {
-                if old_token != token {
+                if old_token != upgraded_token {
                     debug!(target: "network", "Handshake completed: changed primary session for node id {} from {} to {}", node_id, old_token, upgraded_token);
                 }
             } else {
@@ -510,7 +422,12 @@ impl SessionContainer {
         stream: usize,
         event_loop: &mut mio::deprecated::EventLoop<Host>,
     ) {
-        let mut connections = self.sessions.write();
+        let mut connections = if stream < self.last_handshake {
+            self.handshakes.write()
+        } else {
+            self.sessions.write()
+        };
+
         if let Some(connection) = connections.get(&stream).cloned() {
             let c = connection.lock();
             if c.expired() {
@@ -518,16 +435,6 @@ impl SessionContainer {
                 c.deregister_socket(event_loop)
                     .expect("Error deregistering socket");
                 connections.remove(&stream);
-            }
-        }
-        // Also check the handshakes map for deregistration
-        let mut handshakes = self.handshakes.write();
-        if let Some(connection) = handshakes.get(&stream).cloned() {
-            let c = connection.lock();
-            if c.expired() {
-                c.deregister_socket(event_loop)
-                    .expect("Error deregistering socket");
-                handshakes.remove(&stream);
             }
         }
     }

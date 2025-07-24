@@ -202,7 +202,7 @@ impl<'s> NetworkContext<'s> {
                 if peer >= FIRST_SESSION {
                     self.sessions.get_session(peer)
                 } else {
-                    self.sessions.get_session(peer)
+                    self.sessions.get_handshake(peer)
                 }
             }
         }
@@ -845,7 +845,7 @@ impl Host {
     ) -> Result<usize, Error> {
         let nonce = self.info.write().next_nonce();
         self.sessions
-            .create_connection(socket, id, io, &nonce, &self.info.read())
+            .create_handshake_connection(socket, id, io, &nonce, &self.info.read())
     }
 
     fn accept(&self, io: &IoContext<NetworkIoMessage>) {
@@ -875,8 +875,6 @@ impl Host {
             if s.done() {
                 io.deregister_stream(s.token())
                     .unwrap_or_else(|e| debug!("Error deregistering stream: {:?}", e));
-            } else {
-                trace!(target: "network", "Session writable not done: {}", s.token());
             }
         }
     }
@@ -892,7 +890,7 @@ impl Host {
         let mut kill: Option<PeerId> = None;
         let mut ready_id = None;
         if let Some(session) = session {
-            let token = session.lock().token();
+            let mut token = session.lock().token();
             trace!(target: "network", "Session readable called: {}", token);
             {
                 loop {
@@ -1002,6 +1000,8 @@ impl Host {
 
                             trace!(target: "network", "upgraded handshake to regular session for token: {} -> {}", token, new_token);
 
+                            token = new_token;
+
                             // Add it to the node table
                             if !s.info.originated {
                                 if let Ok(address) = s.remote_addr() {
@@ -1083,8 +1083,9 @@ impl Host {
                     self.kill_connection(token, io, false);
                     return;
                 }
+
+                let reserved = self.reserved_nodes.read().clone();
                 for p in ready_data {
-                    let reserved = self.reserved_nodes.read().clone();
                     if let Some(h) = handlers.get(&p) {
                         h.connected(
                             &NetworkContext::new(
