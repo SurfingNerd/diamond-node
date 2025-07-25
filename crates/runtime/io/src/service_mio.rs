@@ -309,7 +309,7 @@ where
                 debug!(target: "io", "No timer available for token {}. handler_index {handler_index}, subtoken {token_id}", token.0);
             }
         } else {
-            debug!(target: "io", "No handler for token {} registererd. handler_index {handler_index}, subtoken {token_id}", token.0);
+            debug!(target: "io", "No handler for token {} registered. handler_index {handler_index}, subtoken {token_id}", token.0);
         }
     }
 
