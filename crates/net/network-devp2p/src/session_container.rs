@@ -48,7 +48,7 @@ impl SessionContainer {
             first_handshake: first_handshake_token,
             last_handshake: first_handshake_token + max_handshakes,
             node_id_to_session: Mutex::new(LruCache::new(max_node_mappings)),
-            sessions_token_max: Mutex::new(first_handshake_token + max_handshakes + 1), // Renamed from first_session_token
+            sessions_token_max: Mutex::new(first_handshake_token + max_handshakes + 1),
             max_sessions,
             max_handshakes,
         }
