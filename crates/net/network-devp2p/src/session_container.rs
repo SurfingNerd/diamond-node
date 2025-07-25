@@ -178,7 +178,7 @@ impl SessionContainer {
 
         // if we known the ID, we also require a lock on the egress map in the same order as we do use to read the egress map
 
-        let mut handshakes_egress_map = id.map(|_| self.handshakes_egress_map.write());
+        let handshakes_egress_map = id.map(|_| self.handshakes_egress_map.write());
 
         let mut handshakes = self.handshakes.write();
 
