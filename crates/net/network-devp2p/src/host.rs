@@ -787,7 +787,7 @@ impl Host {
                         && self.filter.as_ref().map_or(true, |f| {
                             f.connection_allowed(&self_id, &n.id, ConnectionDirection::Outbound)
                         })
-                        && !self.have_session(&n.id) // alternative strategy: we might also get an list of active connections, instead of locking here to figure out if we have a session or not. 
+                        && !self.have_session(&n.id) // alternative strategy: we might also get a list of active connections, instead of locking here to figure out if we have a session or not. 
                 });
 
         trace!(target: "network", "reserved nodes: {:?} nodes_to_connect: {:?}", reserved_nodes, nodes_to_connect);
