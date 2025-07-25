@@ -258,7 +258,7 @@ fn to_toml(
     misc.insert(
         "logging".into(),
         Value::String(
-            logging.unwrap_or("txqueue=trace,consensus=debug,engine=debug,own_tx=trace,tx_filter=trace,sync=trace,network=trace,io=trace")
+            logging.unwrap_or("txqueue=trace,consensus=trace,engine=trace,own_tx=trace,tx_filter=trace,sync=trace,network=trace,io=trace")
                 .into(),
         ),
     );
