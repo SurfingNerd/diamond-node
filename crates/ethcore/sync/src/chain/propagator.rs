@@ -27,7 +27,7 @@ use crate::{
 use bytes::Bytes;
 use ethereum_types::{H256, H512};
 use fastmap::H256FastSet;
-use network::{client_version::ClientCapabilities, Error, ErrorKind, PeerId};
+use network::{Error, ErrorKind, PeerId, client_version::ClientCapabilities};
 use rand::RngCore;
 use rlp::RlpStream;
 
