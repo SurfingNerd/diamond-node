@@ -1020,7 +1020,7 @@ impl HoneyBadgerBFT {
 
                 {
                     let hbbft_state_option =
-                        self.hbbft_state.try_read_for(Duration::from_millis(50));
+                        self.hbbft_state.try_read_for(Duration::from_millis(250));
                     match hbbft_state_option {
                         Some(hbbft_state) => {
                             should_handle_early_epoch_end = hbbft_state.is_validator();
@@ -1037,7 +1037,7 @@ impl HoneyBadgerBFT {
                         }
                         None => {
                             // maybe improve here, to return with a result, that triggers a retry soon.
-                            info!(target: "engine", "Unable to do_validator_engine_actions: Could not acquire read lock for hbbft state. Unable to decide about early epoch end. retrying soon.");
+                            debug!(target: "engine", "Unable to do_validator_engine_actions: Could not acquire read lock for hbbft state. Unable to decide about early epoch end. retrying soon.");
                         }
                     };
                 } // drop lock for hbbft_state
