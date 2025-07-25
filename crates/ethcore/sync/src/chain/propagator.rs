@@ -27,7 +27,7 @@ use crate::{
 use bytes::Bytes;
 use ethereum_types::{H256, H512};
 use fastmap::H256FastSet;
-use network::{Error, PeerId, client_version::ClientCapabilities};
+use network::{client_version::ClientCapabilities, Error, ErrorKind, PeerId};
 use rand::RngCore;
 use rlp::RlpStream;
 
@@ -429,17 +429,17 @@ impl ChainSync {
             Some(id) => id,
             None => {
                 warn!(target: "sync", "Peer with node id {} not found in peers list.", peer);
-                return Err("No Session for Peer".into());
+                return Err(ErrorKind::PeerNotFound.into());
             }
         };
         let packet_len = packet.len();
         let send_result = ChainSync::send_packet(io, peer_id, ConsensusDataPacket, packet.clone());
-        match &send_result {
+        match send_result {
             Ok(_) => {
                 self.statistics.log_consensus(packet_len);
             }
             Err(e) => {
-                warn!(target: "sync", "Error sending consensus packet to peer {}: {:?}", peer_id, e);
+                return Err(e);
             }
         }
         return send_result;
