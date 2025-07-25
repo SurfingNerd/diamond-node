@@ -345,6 +345,12 @@ impl IoHandler<()> for TransitionHandler {
         if timer == ENGINE_TIMEOUT_TOKEN {
             if let Err(err) = self.handle_engine(io) {
                 trace!(target: "consensus", "Error in Honey Badger Engine timeout handler: {:?}", err);
+
+                // in error cases we try again soon.
+                io.register_timer_once(ENGINE_TIMEOUT_TOKEN, DEFAULT_DURATION)
+                .unwrap_or_else(
+                    |e| warn!(target: "consensus", "Failed to restart consensus step timer: {}.", e),
+                );
             }
         } else if timer == ENGINE_SHUTDOWN {
             // we do not run this on the first occurence,
