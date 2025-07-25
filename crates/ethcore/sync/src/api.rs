@@ -596,7 +596,7 @@ impl NetworkProtocolHandler for SyncProtocolHandler {
         trace_time!("sync::connected");
         let node_id = io
             .session_info(*peer)
-            .expect(format!("peer not found: {peer}").as_str())
+            .unwrap_or_else(|| panic!("peer not found: {peer}"))
             .id;
         if io.is_reserved_peer(*peer) {
             trace!(target: "sync", "Connected to reserved peer {node_id:?} {peer}" );
