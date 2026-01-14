@@ -1609,26 +1609,6 @@ impl Engine<EthereumMachine> for HoneyBadgerBFT {
         }
 
         *self.signer.write() = signer;
-
-        if let Some(client) = self.client_arc() {
-            // client.as_full_client().and_then(|c| {
-            //     self.peers_management.lock().set_peers_management(self.peers_management.clone());
-            //     None
-            //     }
-            // );
-            // setting peers management here.
-            if let None = self.hbbft_state.write().update_honeybadger(
-                client,
-                &self.signer,
-                &self.hbbft_peers_service,
-                &self.early_epoch_manager,
-                &self.current_minimum_gas_price,
-                BlockId::Latest,
-                true,
-            ) {
-                info!(target: "engine", "HoneyBadger Algorithm could not be created, Client possibly not set yet.");
-            }
-        }
     }
 
     fn sign(&self, hash: H256) -> Result<Signature, Error> {
