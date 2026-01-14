@@ -1617,8 +1617,6 @@ impl Engine<EthereumMachine> for HoneyBadgerBFT {
             //     }
             // );
             // setting peers management here.
-
-            warn!(target: "engine", "set_signer - update_honeybadger...");
             if let None = self.hbbft_state.write().update_honeybadger(
                 client,
                 &self.signer,
