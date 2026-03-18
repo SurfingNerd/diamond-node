@@ -1096,7 +1096,7 @@ impl HoneyBadgerBFT {
 
             // what is the best set of transactions ??
             // pending_transactions() vs queued_transactions() vs ready_transactions()
-            // the proposal generation is done with "queued_transactions()" 
+            // the proposal generation is done with "queued_transactions()"
             // queued transactions = transaction_queue.pending
 
             let queue_length = client.queued_transactions().len();
