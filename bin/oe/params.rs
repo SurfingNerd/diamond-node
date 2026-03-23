@@ -67,7 +67,7 @@ impl str::FromStr for SpecType {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let spec = match s {
             "diamond" | "dmd" => SpecType::Diamond,
-            "diamond-testnet" | "dmd-testnet"  => SpecType::DiamondTestnet,
+            "diamond-testnet" | "dmd-testnet" => SpecType::DiamondTestnet,
             "eth" | "ethereum" | "foundation" | "mainnet" => SpecType::Ethereum,
             "poanet" | "poacore" => SpecType::Poanet,
             "xdai" => SpecType::Xdai,
@@ -94,8 +94,8 @@ impl str::FromStr for SpecType {
 impl fmt::Display for SpecType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str(match *self {
-            SpecType::Diamond  => "diamond",
-            SpecType::DiamondTestnet  => "diamond-testnet",
+            SpecType::Diamond => "diamond",
+            SpecType::DiamondTestnet => "diamond-testnet",
             SpecType::Ethereum => "ethereum",
             SpecType::Poanet => "poanet",
             SpecType::Xdai => "xdai",
